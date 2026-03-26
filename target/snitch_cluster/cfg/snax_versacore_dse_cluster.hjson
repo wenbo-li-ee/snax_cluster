@@ -371,6 +371,15 @@ Naming convention:
                     64
                 ]
             ]
+            datapath_extensions:
+            [
+                {
+                    HasVerilogSiLu:
+                    {
+                        dataWidth: 4096
+                    }
+                }
+            ]
         }
         snax_library_name: versacore-dse
     }

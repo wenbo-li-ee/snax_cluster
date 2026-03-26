@@ -773,6 +773,11 @@ def emit_matmul_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_B", 0)]
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_C", 0)]
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_D32", 0)]
+    # Writer extension (SiLU) CSR settings.
+    # Keep golden/reference data as pure matmul; enable SiLU in C to observe
+    # intentional mismatch versus reference.
+    data_str += [format_scalar_definition("int32_t", "writer_extension_enable", 0)]
+    data_str += [format_scalar_definition("int32_t", "writer_extension_csr_0", 0)]
 
     data_str = "\n\n".join(data_str)
 

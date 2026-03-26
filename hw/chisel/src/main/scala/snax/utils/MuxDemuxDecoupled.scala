@@ -91,17 +91,14 @@ class MuxDecoupled[T <: Data](dataType: T, numInput: Int) extends Module with Re
     val out = Decoupled(dataType)
     val sel = Input(UInt(log2Ceil(numInput).W))
   })
-  // Default assigns
-  io.out.valid := false.B
-  io.out.bits := 0.U.asTypeOf(dataType)
-  // Mux logic
+  // Use an explicit one-hot mux structure to avoid emitting packed-array
+  // dynamic indexing in SystemVerilog, which some Verilator versions choke on.
+  val selVec = VecInit((0 until numInput).map(i => io.sel === i.U))
+
+  io.out.valid := Mux1H(selVec, io.in.map(_.valid))
+  io.out.bits  := Mux1H(selVec, io.in.map(_.bits))
+
   for (i <- 0 until numInput) {
-    when(io.sel === i.U) {
-      io.out.valid   := io.in(i).valid
-      io.in(i).ready := io.out.ready
-      io.out.bits    := io.in(i).bits
-    } otherwise {
-      io.in(i).ready := false.B // Unselected input should not be ready
-    }
+    io.in(i).ready := selVec(i) && io.out.ready
   }
 }

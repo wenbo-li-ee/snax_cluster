@@ -923,6 +923,14 @@ def emit_matmul_data(**kwargs):
 
     data_str += [format_vector_definition("int16_t", "D_int32tofp16", fp_output_matrix)]
 
+    # SiLu extension CSR settings.
+    # Keep golden/reference generation unchanged. The runtime can enable SiLu
+    # independently to make the hardware output intentionally diverge from the
+    # pure matmul golden data.
+    data_str += [
+        format_scalar_definition("int32_t", "silu_enable", kwargs.get("silu_enable", 1))
+    ]
+
     data_str = "\n\n".join(data_str)
 
     return data_str

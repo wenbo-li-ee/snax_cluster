@@ -47,7 +47,8 @@ void set_versacore_streamer_csr(
 
     int32_t delta_local_d32, int32_t* D32slstride, int32_t* D32tlbound,
     int32_t* D32tlstride, int32_t set_addr_remap_index_D32,
-    int32_t* channel_en_D);
+    int32_t* channel_en_D, int32_t writer_extension_enable,
+    int32_t writer_extension_csr_0);
 
 // Set CSR to start STREAMER
 inline void set_versacore_streamer_start() { csrw_ss(STREAMER_START_CSR, 1); }
@@ -73,6 +74,6 @@ uint32_t read_versacore_streamer_perf_counter();
 uint32_t read_versacore_perf_counter();
 
 // Check the result of GEMMX
-uint32_t check_versacore_result_D32(int8_t* output, int8_t* output_golden,
-                                    int32_t data_length,
+uint32_t check_versacore_result_D32(int32_t* output, int32_t* output_golden,
+                                    int32_t element_count,
                                     bool banked_data_layout);

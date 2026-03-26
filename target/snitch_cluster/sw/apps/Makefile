@@ -46,12 +46,14 @@ SUBDIRS += snax-xdma-rescale-up
 SUBDIRS += snax-xdma-avgpool
 endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_versacore_to_cluster.hjson)
-SUBDIRS += snax-versacore-to-matmul
 SUBDIRS += snax-versacore-to-matmul-profile
-SUBDIRS += snax-xdma-memset
-SUBDIRS += snax-xdma-maxpool
-SUBDIRS += snax-xdma-transpose
-SUBDIRS += snax-xdma-reshape-comparison
+# Temporarily keep the software build focused on the profile app while
+# the other versacore-to call sites are updated to the new streamer CSR API.
+# SUBDIRS += snax-versacore-to-matmul
+# SUBDIRS += snax-xdma-memset
+# SUBDIRS += snax-xdma-maxpool
+# SUBDIRS += snax-xdma-transpose
+# SUBDIRS += snax-xdma-reshape-comparison
 endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_versacore_dse_cluster.hjson)
 SUBDIRS += snax-versacore-dse-matmul-profile

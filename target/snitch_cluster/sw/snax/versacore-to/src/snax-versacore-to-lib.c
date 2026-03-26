@@ -31,7 +31,7 @@ void set_versacore_streamer_csr(
     int32_t* channel_en_D, int32_t array_shape, uint32_t quantization_enable,
     uint32_t shift_i, uint32_t multiplier_i, int32_t input_zp_i,
     int32_t output_zp_i, int32_t int32tofp16_enable, int32_t int4_a_enable,
-    int32_t int4_b_enable) {
+    int32_t int4_b_enable, int32_t silu_enable) {
     // ----------------------------------A-----------------------------------
     // ----------------------------------A-----------------------------------
     // ----------------------------------A-----------------------------------
@@ -189,8 +189,12 @@ void set_versacore_streamer_csr(
 #endif
 
 #ifdef READER_WRITER_EXTENSION_1_CSR_BASE
+    // Extension order must match snax_versacore_to_cluster.hjson:
+    // bit 0 -> RescaleDownEfficientDynamic enable
+    // bit 1 -> VerilogSiLu enable
+    // bit 2 -> Int32ToFp16Converter enable
     csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE,
-            (int32tofp16_enable << 1) | quantization_enable);
+            (int32tofp16_enable << 2) | (silu_enable << 1) | quantization_enable);
     csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 1, input_zp_i);
     csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 2, multiplier_i);
     csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 3, output_zp_i);
@@ -203,12 +207,15 @@ void set_versacore_streamer_csr(
     } else {
         csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 5, 0);
     }
+    // SiLu user CSR: current SV wrapper consumes one user CSR but ignores it.
+    csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 6, 0);
+
     // for the int32 to fp16 conversion
     if (array_shape == 4) {
         // for rescale-down per output channel
-        csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 6, 0);
+        csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 7, 0);
     } else {
-        csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 6, 0);
+        csrw_ss(READER_WRITER_EXTENSION_1_CSR_BASE + 7, 0);
     }
 #endif
 }

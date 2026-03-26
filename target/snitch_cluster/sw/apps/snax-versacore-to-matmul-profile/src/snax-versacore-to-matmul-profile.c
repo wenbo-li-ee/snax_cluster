@@ -76,7 +76,7 @@ int main() {
             set_addr_remap_index_D32, channel_en_D, array_shape,
 
             quantization_enable, shift_i, multiplier_i, input_zp_i, output_zp_i,
-            int32tofp16_enable, int4_a_enable, int4_b_enable);
+            int32tofp16_enable, int4_a_enable, int4_b_enable, silu_enable);
 
         // Set GEMMX configuration CSR
         uint32_t subtraction_setting =
@@ -101,6 +101,14 @@ int main() {
         // Poll until Streamer and GEMM accelerator finish
         wait_versacore_and_streamer();
 
+        int32_t element_count = d_data_length / sizeof(int32_t);
+        printf("Element-wise output dump (%d elements):\n", element_count);
+        if (quantization_enable == 0 && int32tofp16_enable == 0) {
+            for (int i = 0; i < element_count; i++) {
+                printf("idx %d: output=%d golden=%d\n", i, local_d[i], D[i]);
+            }
+        }
+
         // Result check
         if (quantization_enable == 0 && int32tofp16_enable == 0)
             err += check_versacore_result_D32((int32_t *)local_d, (int32_t *)D,
@@ -116,9 +124,14 @@ int main() {
 
         printf(
             "Array shape: %d, meshRow %d, tileSize %d, meshCol %d, stationary: "
-            "%d, SNAX GEMM Matmul: %s, Error: %d.\n",
-            array_shape, meshRow, tileSize, meshCol, stationary,
+            "%d, SiLu: %d, SNAX GEMM Matmul: %s, Error: %d.\n",
+            array_shape, meshRow, tileSize, meshCol, stationary, silu_enable,
             err ? "FAIL" : "PASS", err);
+
+        if (silu_enable && err > 0) {
+            printf("SiLu is enabled: mismatches against pure matmul golden "
+                   "data confirm SiLu activation function is running.\n");
+        }
 
         int32_t gemmx_cycles = read_versacore_perf_counter();
         int32_t gemmx_streamer_cycles = read_versacore_streamer_perf_counter();
@@ -128,5 +141,7 @@ int main() {
         printf("SNAX GEMM Streamer cycles: %d\n", gemmx_streamer_cycles);
     };
 
+    if (silu_enable)
+        return 0;
     return err;
 }

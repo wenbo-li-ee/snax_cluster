@@ -29,7 +29,8 @@ void set_versacore_streamer_csr(
 
     int32_t delta_local_d32, int32_t* D32slstride, int32_t* D32tlbound,
     int32_t* D32tlstride, int32_t set_addr_remap_index_D32,
-    int32_t* channel_en_D) {
+    int32_t* channel_en_D, int32_t writer_extension_enable,
+    int32_t writer_extension_csr_0) {
 #ifdef SNAX_VERSACORE_OUTPUT_STATIONARY_ONLY
 
     // ----------------------------------A-----------------------------------
@@ -329,6 +330,17 @@ void set_versacore_streamer_csr(
 #endif
 
 #endif
+
+    // ------------------------- datapath extension ----------------------------
+    // Writer extension 0 CSR layout in Streamer:
+    // [0] enable bits (bit0 controls first extension in the chain)
+    // [1..] user CSRs for that extension.
+#ifdef WRITER_EXTENSION_0_CSR_BASE
+    csrw_ss(WRITER_EXTENSION_0_CSR_BASE, writer_extension_enable);
+#if defined(WRITER_EXTENSION_0_CSR_NUM) && (WRITER_EXTENSION_0_CSR_NUM > 1)
+    csrw_ss(WRITER_EXTENSION_0_CSR_BASE + 1, writer_extension_csr_0);
+#endif
+#endif
 }
 
 // Set GEMM configuration CSR
@@ -380,13 +392,13 @@ uint32_t read_versacore_perf_counter() {
     return perf_counter;
 }
 
-uint32_t check_versacore_result_D32(int8_t* output, int8_t* output_golden,
-                                    int32_t data_length,
+uint32_t check_versacore_result_D32(int32_t* output, int32_t* output_golden,
+                                    int32_t element_count,
                                     bool banked_data_layout) {
     uint32_t err = 0;
 
     if (banked_data_layout) {
-        for (int i = 0; i < data_length / 16; i += 1) {
+        for (int i = 0; i < element_count / 16; i += 1) {
             for (int j = 0; j < 16; j++) {
                 if (*(output + i * (256 / 4) + j) !=
                     output_golden[i * 16 + j]) {
@@ -395,7 +407,7 @@ uint32_t check_versacore_result_D32(int8_t* output, int8_t* output_golden,
             }
         }
     } else {
-        for (int i = 0; i < data_length; i++) {
+        for (int i = 0; i < element_count; i++) {
             if (output[i] != output_golden[i]) {
                 err++;
                 printf("Unequals. output[%d] = %d, output_golden[%d] = %d\n", i,

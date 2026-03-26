@@ -459,6 +459,10 @@ Naming convention:
                         out_elementWidth: 8
                         dataWidth: 1024
                     }
+                    HasVerilogSiLu:
+                    {
+                        dataWidth: 1024
+                    }
                     HasInt32ToFp16Converter:
                     {
                         dataWidth: 1024

@@ -73,7 +73,8 @@ int main() {
             set_addr_remap_index_C, channel_en_C,
 
             delta_local_d, D32slstride, D32tlbound, D32tlstride,
-            set_addr_remap_index_D32, channel_en_D);
+            set_addr_remap_index_D32, channel_en_D, writer_extension_enable,
+            writer_extension_csr_0);
 
         // Set GEMMX configuration CSR
         uint32_t subtraction_setting =
@@ -99,8 +100,9 @@ int main() {
         wait_versacore_and_streamer();
 
         // Result check
-        err += check_versacore_result_D32((int8_t *)local_d, (int8_t *)D,
-                                          d_data_length, false);
+        err += check_versacore_result_D32(local_d, D,
+                                          d_data_length / sizeof(int32_t),
+                                          false);
 
         printf(
             "Array shape: %d, meshRow %d, tileSize %d, meshCol %d, stationary: "

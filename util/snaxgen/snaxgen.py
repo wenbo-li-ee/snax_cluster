@@ -75,6 +75,31 @@ def gen_chisel_file(chisel_path, chisel_param, gen_path):
     return
 
 
+def cleanup_blackbox_resource_manifest_from_sv(file_path):
+    """Remove FIRRTL blackbox resource manifest trailer from generated SV.
+
+    Chisel/FIRRTL may append:
+      // ----- 8< ----- FILE "firrtl_black_box_resource_files.f" ----- 8< -----
+      <resource>.sv
+    at the end of emitted SystemVerilog. This trailer is not valid SV syntax
+    for all downstream tools (e.g., Verilator).
+    """
+    marker = '// ----- 8< ----- FILE "firrtl_black_box_resource_files.f" ----- 8< -----'
+    if not os.path.exists(file_path):
+        return
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    marker_pos = content.find(marker)
+    if marker_pos == -1:
+        return
+
+    cleaned_content = content[:marker_pos].rstrip() + "\n"
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(cleaned_content)
+
+
 # Count number of CSRs for streamer
 def streamer_csr_num(acc_cfgs):
     # Regardless if shared or not, it is the same total
@@ -276,29 +301,107 @@ def streamer_csr_num(acc_cfgs):
     )
 
     # datapath extension CSRs.
-    # Note: this only works for transposer with one possible shape!
-    if "has_transpose" in acc_cfgs["snax_streamer_cfg"]:
-        if acc_cfgs["snax_streamer_cfg"]["has_transpose"]:
-            streamer_csr_num += 2
+    # Prefer explicit datapath_extensions in streamer cfg.
+    # Fallback to legacy has_* flags for backward compatibility.
+    def extension_user_csr_num(ext_name, ext_cfg):
+        if ext_name in (
+            "HasInt32ToFp16Converter",
+            "HasRescaleUp",
+            "HasRescaleDown",
+            "HasRescaleDownEfficient",
+            "HasRescaleDownEfficientDynamic",
+            "HasVerilogMemset",
+            "HasVerilogMinusOne",
+            "HasVerilogSiLu",
+            "HasMemset",
+            "HasMaxPool",
+            "HasElementwiseAdd",
+            "HasElementwiseAddToLong",
+        ):
+            mapping = {
+                "HasInt32ToFp16Converter": 1,
+                "HasRescaleUp": 4,
+                "HasRescaleDown": 4,
+                "HasRescaleDownEfficient": 4,
+                "HasRescaleDownEfficientDynamic": 5,
+                "HasVerilogMemset": 1,
+                "HasVerilogMinusOne": 1,
+                "HasVerilogSiLu": 1,
+                "HasMemset": 1,
+                "HasMaxPool": 1,
+                "HasElementwiseAdd": 1,
+                "HasElementwiseAddToLong": 1,
+            }
+            return mapping[ext_name]
 
-    # Note: this only works for transposer
-    # with multiple possible shapes and
-    # for both two streamers have the extension!
-    if "has_flexible_transpose" in acc_cfgs["snax_streamer_cfg"]:
-        if acc_cfgs["snax_streamer_cfg"]["has_flexible_transpose"]:
-            streamer_csr_num += 4
+        if ext_name == "HasTransposer":
+            row = ext_cfg.get("row", []) if isinstance(ext_cfg, dict) else []
+            return 1 if isinstance(row, list) and len(row) > 1 else 0
 
-    if "has_int32_to_fp16_converter" in acc_cfgs["snax_streamer_cfg"]:
-        if acc_cfgs["snax_streamer_cfg"]["has_int32_to_fp16_converter"]:
-            streamer_csr_num += 1
+        # These extensions do not require user CSR.
+        if ext_name in ("HasBroadcaster", "HasIntlowToInthighConverter"):
+            return 0
 
-    if "has_rescaledown_dynamic" in acc_cfgs["snax_streamer_cfg"]:
-        if acc_cfgs["snax_streamer_cfg"]["has_rescaledown_dynamic"]:
-            streamer_csr_num += 6
+        return 0
 
-    if "has_C_broadcast" in acc_cfgs["snax_streamer_cfg"]:
-        if acc_cfgs["snax_streamer_cfg"]["has_C_broadcast"]:
-            streamer_csr_num += 1
+    def extension_chain_csr_num(extension_chain):
+        if not isinstance(extension_chain, dict):
+            return 0
+        extension_entries = [
+            (k, v) for k, v in extension_chain.items() if isinstance(k, str) and k.startswith("Has")
+        ]
+        if len(extension_entries) == 0:
+            return 0
+        # +1 for extension-chain start CSR in Streamer.scala
+        return 1 + sum(extension_user_csr_num(name, cfg) for name, cfg in extension_entries)
+
+    def explicit_extension_csr_num(streamer_cfg):
+        extension_csr = 0
+        has_explicit_extensions = False
+        for mover_key in (
+            "data_reader_params",
+            "data_writer_params",
+            "data_reader_writer_params",
+        ):
+            mover_cfg = streamer_cfg.get(mover_key, {})
+            extension_list = mover_cfg.get("datapath_extensions")
+            if extension_list is None:
+                continue
+            has_explicit_extensions = True
+            extension_csr += sum(extension_chain_csr_num(chain) for chain in extension_list)
+
+        return extension_csr, has_explicit_extensions
+
+    explicit_ext_csr_num, has_explicit_extensions = explicit_extension_csr_num(
+        acc_cfgs["snax_streamer_cfg"]
+    )
+    if has_explicit_extensions:
+        streamer_csr_num += explicit_ext_csr_num
+    else:
+        # Legacy flags: kept to support older cfgs without datapath_extensions.
+        # Note: this only works for transposer with one possible shape!
+        if "has_transpose" in acc_cfgs["snax_streamer_cfg"]:
+            if acc_cfgs["snax_streamer_cfg"]["has_transpose"]:
+                streamer_csr_num += 2
+
+        # Note: this only works for transposer
+        # with multiple possible shapes and
+        # for both two streamers have the extension!
+        if "has_flexible_transpose" in acc_cfgs["snax_streamer_cfg"]:
+            if acc_cfgs["snax_streamer_cfg"]["has_flexible_transpose"]:
+                streamer_csr_num += 4
+
+        if "has_int32_to_fp16_converter" in acc_cfgs["snax_streamer_cfg"]:
+            if acc_cfgs["snax_streamer_cfg"]["has_int32_to_fp16_converter"]:
+                streamer_csr_num += 1
+
+        if "has_rescaledown_dynamic" in acc_cfgs["snax_streamer_cfg"]:
+            if acc_cfgs["snax_streamer_cfg"]["has_rescaledown_dynamic"]:
+                streamer_csr_num += 6
+
+        if "has_C_broadcast" in acc_cfgs["snax_streamer_cfg"]:
+            if acc_cfgs["snax_streamer_cfg"]["has_C_broadcast"]:
+                streamer_csr_num += 1
 
     return streamer_csr_num
 
@@ -544,6 +647,9 @@ def main():
                 + " "
                 + " --hw-target-dir "
                 + rtl_target_path,
+            )
+            cleanup_blackbox_resource_manifest_from_sv(
+                rtl_target_path + acc_cfgs[i]["snax_acc_name"] + "_Streamer.sv"
             )
 
         print("Generation of accelerator specific wrappers done!")
