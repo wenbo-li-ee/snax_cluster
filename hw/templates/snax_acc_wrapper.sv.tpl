@@ -232,7 +232,15 @@ module ${cfg["tag_name"]}_wrapper # (
   // Do not pass it from the top towards here to achieve
   // Uniform shell wrapping :)
   
+% if "snax_shell_wrapper_params" in cfg and len(cfg["snax_shell_wrapper_params"]) > 0:
+  ${cfg["tag_name"]}_shell_wrapper #(
+% for param_name, param_value in cfg["snax_shell_wrapper_params"].items():
+    .${param_name} ( ${param_value} )${',' if not loop.last else ''}
+% endfor
+  ) i_${cfg["tag_name"]}_shell_wrapper (
+% else:
   ${cfg["tag_name"]}_shell_wrapper i_${cfg["tag_name"]}_shell_wrapper (
+% endif
     //-------------------------------
     // Clocks and reset
     //-------------------------------
