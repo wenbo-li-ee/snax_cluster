@@ -235,6 +235,9 @@ def emit_matmul_data(**kwargs):
     # --------------------------------------------------------------
 
     snax_acc_cfg = kwargs["snax_versacore_core_template"]["snax_acc_cfg"][0]
+    post_d2s_shift_right_two = snax_acc_cfg.get(
+        "snax_versacore_post_d2s_shift_right_two", False
+    )
     meshRow = snax_acc_cfg["snax_versacore_spatial_unrolling"][data_type][array_shape][
         0
     ]
@@ -767,6 +770,8 @@ def emit_matmul_data(**kwargs):
             subtraction_b,
             C,
         )
+        if post_d2s_shift_right_two:
+            D = D >> 2
         data_str += [format_vector_definition("int32_t", "D", D)]
 
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_A", 0)]

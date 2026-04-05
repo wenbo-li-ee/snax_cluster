@@ -376,6 +376,7 @@ sources:
     files:
       # Level 0
       - target/snitch_cluster/generated/snax_versacore/VersaCore.sv
+      - target/snitch_cluster/generated/snax_versacore/VersaCorePostD2SShiftRightTwo.sv
       - target/snitch_cluster/generated/snax_versacore/snax_versacore_shell_wrapper.sv
       - target/snitch_cluster/generated/snax_versacore/snax_versacore_reqrspman_ReqRspManager.sv
       - target/snitch_cluster/generated/snax_versacore/snax_versacore_Streamer.sv

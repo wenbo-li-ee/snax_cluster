@@ -118,8 +118,11 @@ object VersaCoreGen {
     )
 
     val versacoreCfg = parsedArgs.find(_._1 == "versacoreCfg").get._2
+    val cfgJson      = ujson.read(versacoreCfg)
 
     val params = SpatialArrayParamParser.parseFromHjsonString(versacoreCfg)
+    val enablePostD2SShiftRightTwo =
+      cfgJson.obj.get("snax_versacore_post_d2s_shift_right_two").exists(_.bool)
     parsedArgs.getOrElse(
       "tag",
       "default"
@@ -176,6 +179,34 @@ object VersaCoreGen {
     val DataWidthB     = params.arrayInputBWidth
     val DataWidthC     = params.serialInputCDataWidth
     val DataWidthD     = params.serialOutputDDataWidth
+    val postD2SWires   =
+      if (enablePostD2SShiftRightTwo) {
+        s"""
+  logic [DataWidthD-1:0] versacore_out_d_data;
+  logic versacore_out_d_valid;
+  logic versacore_out_d_ready;
+"""
+      } else ""
+    val postD2SModule =
+      if (enablePostD2SShiftRightTwo) {
+        s"""
+  VersaCorePostD2SShiftRightTwo #(
+      .DataWidth(DataWidthD)
+  ) i_versacore_post_d2s_shift_right_two (
+      .clk_i      (clk_i),
+      .rst_ni     (rst_ni),
+      .in_data_i  (versacore_out_d_data),
+      .in_valid_i (versacore_out_d_valid),
+      .in_ready_o (versacore_out_d_ready),
+      .out_data_o (acc2stream_0_data_o),
+      .out_valid_o(acc2stream_0_valid_o),
+      .out_ready_i(acc2stream_0_ready_i)
+  );
+"""
+      } else ""
+    val outReadySignal = if (enablePostD2SShiftRightTwo) "versacore_out_d_ready" else "acc2stream_0_ready_i"
+    val outValidSignal = if (enablePostD2SShiftRightTwo) "versacore_out_d_valid" else "acc2stream_0_valid_o"
+    val outBitsSignal  = if (enablePostD2SShiftRightTwo) "versacore_out_d_data" else "acc2stream_0_data_o"
 
     macro_template = header + s"""
 module snax_versacore_shell_wrapper #(
@@ -229,6 +260,7 @@ module snax_versacore_shell_wrapper #(
     output logic [RegROCount-1:0][RegDataWidth-1:0] csr_reg_ro_set_o
 );
   assign csr_reg_ro_set_o[0][31:1] = 0;
+${postD2SWires}
 
   VersaCore inst_VersaCore (
       .clock(clk_i),
@@ -246,9 +278,9 @@ module snax_versacore_shell_wrapper #(
       .io_versacore_data_in_c_valid(stream2acc_2_valid_i),
       .io_versacore_data_in_c_bits (stream2acc_2_data_i),
 
-      .io_versacore_data_out_d_ready(acc2stream_0_ready_i),
-      .io_versacore_data_out_d_valid(acc2stream_0_valid_o),
-      .io_versacore_data_out_d_bits (acc2stream_0_data_o),
+      .io_versacore_data_out_d_ready($outReadySignal),
+      .io_versacore_data_out_d_valid($outValidSignal),
+      .io_versacore_data_out_d_bits ($outBitsSignal),
 
       .io_ctrl_ready(csr_reg_set_ready_o),
       .io_ctrl_valid(csr_reg_set_valid_i),
@@ -263,6 +295,7 @@ module snax_versacore_shell_wrapper #(
       .io_performance_counter(csr_reg_ro_set_o[1])
 
   );
+${postD2SModule}
 
 endmodule
 """
@@ -273,6 +306,17 @@ endmodule
     )
 
     println(s"Generated macro file: $macro_dir")
+
+    if (enablePostD2SShiftRightTwo) {
+      val svSource = Paths.get("src/main/resources/snax_acc/versacore/VersaCorePostD2SShiftRightTwo.sv")
+      val svTarget = Paths.get(s"$outPath/VersaCorePostD2SShiftRightTwo.sv")
+      Files.copy(
+        svSource,
+        svTarget,
+        java.nio.file.StandardCopyOption.REPLACE_EXISTING
+      )
+      println(s"Generated helper file: $svTarget")
+    }
 
     // generate the c lib header file
     val headerFile = s"$outPath/../../sw/snax/versacore-dse/include/snax_versacore_stationarity.h"

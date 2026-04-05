@@ -201,6 +201,7 @@ Naming convention:
                 snax_versacore_serial_b_width: 8192
                 snax_versacore_serial_c_d_width: 4096
                 snax_versacore_adder_tree_delay: 0
+                snax_versacore_post_d2s_shift_right_two: true
                 snax_versacore_spatial_unrolling:
                 [
                     [
