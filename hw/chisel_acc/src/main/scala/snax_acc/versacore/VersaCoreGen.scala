@@ -119,7 +119,9 @@ object VersaCoreGen {
 
     val versacoreCfg = parsedArgs.find(_._1 == "versacoreCfg").get._2
 
-    val params = SpatialArrayParamParser.parseFromHjsonString(versacoreCfg)
+    val params      = SpatialArrayParamParser.parseFromHjsonString(versacoreCfg)
+    val cfg         = ujson.read(versacoreCfg)
+    val roCsrCount  = cfg.obj.get("snax_num_ro_csr").map(_.num.toInt).getOrElse(2)
     parsedArgs.getOrElse(
       "tag",
       "default"
@@ -182,7 +184,7 @@ module snax_versacore_shell_wrapper #(
     // Custom parameters. As much as possible,
     // these parameters should not be taken from outside
     parameter int unsigned RegRWCount   = ${params.csrNum},
-    parameter int unsigned RegROCount   = 2,
+    parameter int unsigned RegROCount   = $roCsrCount,
     parameter int unsigned DataWidthA   = $DataWidthA,
     parameter int unsigned DataWidthB   = $DataWidthB,
     parameter int unsigned DataWidthC   = $DataWidthC,
@@ -229,6 +231,7 @@ module snax_versacore_shell_wrapper #(
     output logic [RegROCount-1:0][RegDataWidth-1:0] csr_reg_ro_set_o
 );
   assign csr_reg_ro_set_o[0][31:1] = 0;
+${if (roCsrCount > 2) "  assign csr_reg_ro_set_o[2][31:1] = 0;\n" else ""}
 
   VersaCore inst_VersaCore (
       .clock(clk_i),
@@ -260,7 +263,7 @@ module snax_versacore_shell_wrapper #(
       .io_ctrl_bits_arrayCfg_dataTypeCfg(csr_reg_set_i[5]),
 
       .io_busy_o(csr_reg_ro_set_o[0][0]),
-      .io_performance_counter(csr_reg_ro_set_o[1])
+      .io_performance_counter(csr_reg_ro_set_o[1])${if (roCsrCount > 2) ",\n      .io_writeback_done(csr_reg_ro_set_o[2][0])" else ""}
 
   );
 

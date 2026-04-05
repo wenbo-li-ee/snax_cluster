@@ -45,6 +45,7 @@ class VersaCoreIO(params: SpatialArrayParam) extends Bundle {
   // profiling and status signals
   val busy_o              = Output(Bool())
   val performance_counter = Output(UInt(params.configWidth.W))
+  val writeback_done      = Output(Bool())
 }
 
 /** VersaCore is the top-level module for VersaCore. */
@@ -95,9 +96,6 @@ class VersaCore(params: SpatialArrayParam) extends Module with RequireAsyncReset
       }
     }
   }
-
-  config_fire   := io.ctrl.fire && cstate === sIDLE
-  io.ctrl.ready := cstate === sIDLE
 
   val csrReg = RegInit(0.U.asTypeOf(new VersaCoreCfg(params)))
 
@@ -154,13 +152,21 @@ class VersaCore(params: SpatialArrayParam) extends Module with RequireAsyncReset
       )
     )
 
+  val expected_output_count        = csrReg.fsmCfg.output_times
+  val expected_serial_output_count = expected_output_count * output_d_serial_factor
+
   // counter for output data count
   val dOutputCounter = Module(new BasicCounter(params.configWidth, hasCeil = false, nameTag = "dOutputCounter"))
 
-  // all number of counts that the data needs to be outputted
-  // dOutputCounter.io.ceil  := csrReg.fsmCfg.output_times * output_d_serial_factor
-  dOutputCounter.io.tick  := io.versacore_data.out_d.fire && cstate === sBUSY
-  dOutputCounter.io.reset := versacore_finish
+  dOutputCounter.io.tick  := io.versacore_data.out_d.fire
+  dOutputCounter.io.reset := config_fire
+
+  val writeback_finish =
+    Mux(expected_output_count === 0.U, cstate === sIDLE, dOutputCounter.io.value === expected_serial_output_count)
+  val writeback_done = cstate === sIDLE && writeback_finish
+
+  config_fire   := io.ctrl.fire && writeback_done
+  io.ctrl.ready := writeback_done
 
   // -----------------------------------
   // state machine ends
@@ -493,21 +499,38 @@ class VersaCore(params: SpatialArrayParam) extends Module with RequireAsyncReset
   val dOutputValidCounter = Module(
     new BasicCounter(params.configWidth, hasCeil = true, nameTag = "dOutputValidCounter")
   )
-  dOutputValidCounter.io.ceilOpt.get := csrReg.fsmCfg.a_b_input_times_one_output
+  dOutputValidCounter.io.ceilOpt.get := Mux(
+    csrReg.fsmCfg.a_b_input_times_one_output === 0.U,
+    1.U,
+    csrReg.fsmCfg.a_b_input_times_one_output
+  )
   dOutputValidCounter.io.tick  := array.io.array_data.out_d.fire && cstate === sBUSY
-  dOutputValidCounter.io.reset := versacore_finish
+  dOutputValidCounter.io.reset := config_fire
 
-  // array output data to the D_p2s converter
-  D_p2s.io.in.bits                := array.io.array_data.out_d.bits
-  // output_times == 0 means no output
-  // If output_times is 0, we need to ensure that the valid signal is not asserted
-  // othwerwise, output one valid signal after a_b_input_times_one_output computations
-  when(csrReg.fsmCfg.output_times === 0.U) {
-    D_p2s.io.in.valid := false.B
-  }.otherwise {
-    D_p2s.io.in.valid := array.io.array_data.out_d.valid && cstate === sBUSY && dOutputValidCounter.io.value === (csrReg.fsmCfg.a_b_input_times_one_output - 1.U)
+  val outputBufferDepth = 4
+  val outputBuffer = Module(
+    new Queue(UInt(params.arrayOutputDWidth.W), entries = outputBufferDepth, pipe = true, flow = false)
+  )
+
+  val finalParallelOutputValid = WireDefault(false.B)
+  when(csrReg.fsmCfg.output_times =/= 0.U) {
+    finalParallelOutputValid := array.io.array_data.out_d.valid &&
+      cstate === sBUSY &&
+      dOutputValidCounter.io.value === (csrReg.fsmCfg.a_b_input_times_one_output - 1.U)
   }
-  array.io.array_data.out_d.ready := Mux(D_p2s.io.in.valid, D_p2s.io.in.ready, true.B)
+
+  outputBuffer.io.enq.bits  := array.io.array_data.out_d.bits
+  outputBuffer.io.enq.valid := finalParallelOutputValid
+  array.io.array_data.out_d.ready := Mux(finalParallelOutputValid, outputBuffer.io.enq.ready, true.B)
+
+  D_p2s.io.in <> outputBuffer.io.deq
+
+  val parallelOutputAcceptedCounter = Module(
+    new BasicCounter(params.configWidth, hasCeil = true, nameTag = "parallelOutputAcceptedCounter")
+  )
+  parallelOutputAcceptedCounter.io.ceilOpt.get := Mux(expected_output_count === 0.U, 1.U, expected_output_count)
+  parallelOutputAcceptedCounter.io.tick  := outputBuffer.io.enq.fire
+  parallelOutputAcceptedCounter.io.reset := config_fire
 
   // ------------------------------------
   // array instance and data handshake signal connections ends
@@ -525,20 +548,19 @@ class VersaCore(params: SpatialArrayParam) extends Module with RequireAsyncReset
   // output control signals for read-only csrs
   io.performance_counter := performance_counter
 
-  // all the data is outputted means the computation is finished
-  val output_finish =
-    (dOutputCounter.io.value === csrReg.fsmCfg.output_times * output_d_serial_factor) && cstate === sBUSY
+  // Computation is done once all final array outputs have been captured by the local buffer.
   val computation_finish = WireInit(0.B)
   // if no output, computation finish depends on the computeFireCounter only
   when(csrReg.fsmCfg.output_times === 0.U && cstate === sBUSY) {
     computation_finish := (computeFireCounter.io.lastVal) && cstate === sBUSY
   }.otherwise {
-    computation_finish := output_finish
+    computation_finish := parallelOutputAcceptedCounter.io.lastVal && cstate === sBUSY
   }
 
-  versacore_finish := computation_finish && output_finish
+  versacore_finish := computation_finish
 
   io.busy_o := cstate =/= sIDLE
+  io.writeback_done := writeback_done
 }
 
 object VersaCoreEmitter extends App {

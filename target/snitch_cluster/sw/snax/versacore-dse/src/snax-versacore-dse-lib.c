@@ -368,6 +368,11 @@ void wait_versacore() {
     }
 }
 
+void wait_versacore_writeback_done() {
+    while (!csrr_ss(GEMMX_WRITEBACK_DONE)) {
+    }
+}
+
 // Read performance counter of the Streamer, a read-only CSR
 uint32_t read_versacore_streamer_perf_counter() {
     uint32_t perf_counter = csrr_ss(STREAMER_PERFORMANCE_COUNTER_CSR);
@@ -378,6 +383,10 @@ uint32_t read_versacore_streamer_perf_counter() {
 uint32_t read_versacore_perf_counter() {
     uint32_t perf_counter = csrr_ss(GEMMX_PERFORMANCE_COUNTER);
     return perf_counter;
+}
+
+uint32_t read_versacore_writeback_done() {
+    return csrr_ss(GEMMX_WRITEBACK_DONE);
 }
 
 uint32_t check_versacore_result_D32(int8_t* output, int8_t* output_golden,
