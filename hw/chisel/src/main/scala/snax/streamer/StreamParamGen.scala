@@ -58,7 +58,7 @@ object StreamerParametersGen {
    ), 
     new ReaderWriterParam(
       spatialBounds = List(
-        64
+        8
       ),
       temporalDimension = 4,
       tcdmDataWidth = 64,
@@ -68,7 +68,7 @@ object StreamerParametersGen {
         128,
         64
       ),
-      numChannel = 64,
+      numChannel = 8,
       addressBufferDepth = 1,
       dataBufferDepth = 1,
       configurableChannel = true,
@@ -79,7 +79,7 @@ object StreamerParametersGen {
   def writerParams = Seq(
     new ReaderWriterParam(
       spatialBounds = List(
-        64
+        8
       ),
       temporalDimension = 4,
       tcdmDataWidth = 64,
@@ -89,7 +89,7 @@ object StreamerParametersGen {
         128,
         64
       ),
-      numChannel = 64,
+      numChannel = 8,
       addressBufferDepth = 1,
       dataBufferDepth = 1,
       configurableChannel = true,

@@ -135,7 +135,7 @@ Naming convention:
                 [
                     snax_versacore
                 ]
-                snax_tcdm_ports: 272
+                snax_tcdm_ports: 160
                 sparse_interconnect_config:
                 [
                     [
@@ -147,12 +147,12 @@ Naming convention:
                         8
                     ]
                     [
-                        64
-                        16
+                        8
+                        8
                     ]
                     [
-                        64
-                        16
+                        8
+                        8
                     ]
                 ]
                 snax_num_rw_csr: 7
@@ -199,7 +199,7 @@ Naming convention:
                 snax_versacore_array_output_d_width: 4096
                 snax_versacore_serial_a_width: 1024
                 snax_versacore_serial_b_width: 8192
-                snax_versacore_serial_c_d_width: 4096
+                snax_versacore_serial_c_d_width: 512
                 snax_versacore_adder_tree_delay: 0
                 snax_versacore_spatial_unrolling:
                 [
@@ -228,7 +228,7 @@ Naming convention:
                 }
                 granularity_a: 4
                 granularity_b: 8
-                granularity_c_d: 16
+                granularity_c_d: 8
             }
         ]
         snax_use_custom_ports: false
@@ -293,7 +293,7 @@ Naming convention:
                     128
                 ]
                 [
-                    64
+                    8
                 ]
             ]
             temporal_dim:
@@ -306,7 +306,7 @@ Naming convention:
             [
                 16
                 128
-                64
+                8
             ]
             fifo_depth:
             [
@@ -344,7 +344,7 @@ Naming convention:
             spatial_bounds:
             [
                 [
-                    64
+                    8
                 ]
             ]
             temporal_dim:
@@ -353,7 +353,7 @@ Naming convention:
             ]
             num_channel:
             [
-                64
+                8
             ]
             fifo_depth:
             [

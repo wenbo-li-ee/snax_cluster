@@ -55,9 +55,9 @@ class VersaCore(params: SpatialArrayParam) extends Module with RequireAsyncReset
 
   if (params.dataflow.length > 1) {
     require(
-      params.arrayInputAWidth == params.serialInputADataWidth && params.arrayInputBWidth == params.serialInputBDataWidth && params.arrayInputCWidth == params.serialInputCDataWidth &&
-        params.arrayOutputDWidth == params.serialOutputDDataWidth,
-      "For multi-dataflow, the array input/output widths must match the serial input/output data widths."
+      params.arrayInputAWidth == params.serialInputADataWidth &&
+        params.arrayInputBWidth == params.serialInputBDataWidth,
+      "For multi-dataflow, A/B widths must match their serial widths."
     )
   }
 

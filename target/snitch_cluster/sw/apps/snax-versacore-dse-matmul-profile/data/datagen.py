@@ -505,7 +505,6 @@ def emit_matmul_data(**kwargs):
         Ctlbound3 = K
         Ctlstride3 = 0
 
-    # Checker for tstrides of operand C
     assert Ctlstride0 % (bankWidth / 8 * granularity_c_d) == 0
     assert Ctlstride1 % (bankWidth / 8 * granularity_c_d) == 0
     assert Ctlstride2 % (bankWidth / 8 * granularity_c_d) == 0
@@ -530,8 +529,9 @@ def emit_matmul_data(**kwargs):
     )
     channel_en_C = [0] * C_enabled_channel_CSR_num
 
+    active_c_bits = int((min(meshRow * meshCol * c_len, snax_versacore_serial_c_d_width) + bankWidth - 1) // bankWidth)
     if enable_full_C == 1:
-        channel_en_C_bits = int((meshRow * meshCol * c_len / bankWidth + 7) // 8 * 8)
+        channel_en_C_bits = int((active_c_bits + 7) // 8 * 8)
     else:
         channel_en_C_bits = 0
 
@@ -585,7 +585,6 @@ def emit_matmul_data(**kwargs):
         D32tlbound3 = K
         D32tlstride3 = 0
 
-    # Checker for tstrides of operand D
     assert D32tlstride0 % (bankWidth / 8 * granularity_c_d) == 0
     assert D32tlstride1 % (bankWidth / 8 * granularity_c_d) == 0
     assert D32tlstride2 % (bankWidth / 8 * granularity_c_d) == 0
@@ -605,7 +604,8 @@ def emit_matmul_data(**kwargs):
     )
 
     channel_en_D = [0] * D_enabled_channel_CSR_num
-    channel_en_D_bits = int((meshRow * meshCol * c_len / bankWidth + 7) // 8 * 8)
+    active_d_bits = int((min(meshRow * meshCol * c_len, snax_versacore_serial_c_d_width) + bankWidth - 1) // bankWidth)
+    channel_en_D_bits = int((active_d_bits + 7) // 8 * 8)
     channel_en_D = gen_channel_enable_CSR(
         channel_en_D,
         channel_en_D_bits,
