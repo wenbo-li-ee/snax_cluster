@@ -45,6 +45,7 @@ class VersaCoreIO(params: SpatialArrayParam) extends Bundle {
   // profiling and status signals
   val busy_o              = Output(Bool())
   val performance_counter = Output(UInt(params.configWidth.W))
+  val computation_done    = Output(Bool())
   val writeback_done      = Output(Bool())
 }
 
@@ -558,8 +559,15 @@ class VersaCore(params: SpatialArrayParam) extends Module with RequireAsyncReset
   }
 
   versacore_finish := computation_finish
+  val computation_done_reg = RegInit(true.B)
+  when(config_fire) {
+    computation_done_reg := false.B
+  }.elsewhen(computation_finish) {
+    computation_done_reg := true.B
+  }
 
   io.busy_o := cstate =/= sIDLE
+  io.computation_done := computation_done_reg
   io.writeback_done := writeback_done
 }
 

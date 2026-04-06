@@ -355,7 +355,7 @@ void wait_versacore_and_streamer() {
     csrw_ss(STREAMER_START_CSR, 0);
     csrw_ss(STREAMER_START_CSR, 0);
     csrw_ss(GEMMX_START, 0);
-    while (csrr_ss(GEMMX_BUSY)) {
+    while (!csrr_ss(GEMMX_FINAL_DONE)) {
     }
     while (csrr_ss(STREAMER_BUSY_CSR)) {
     }
@@ -368,8 +368,13 @@ void wait_versacore() {
     }
 }
 
+void wait_versacore_computation_done() {
+    while (!csrr_ss(GEMMX_COMPUTATION_DONE)) {
+    }
+}
+
 void wait_versacore_writeback_done() {
-    while (!csrr_ss(GEMMX_WRITEBACK_DONE)) {
+    while (!csrr_ss(GEMMX_FINAL_DONE)) {
     }
 }
 
@@ -385,8 +390,16 @@ uint32_t read_versacore_perf_counter() {
     return perf_counter;
 }
 
+uint32_t read_versacore_computation_done() {
+    return csrr_ss(GEMMX_COMPUTATION_DONE);
+}
+
 uint32_t read_versacore_writeback_done() {
-    return csrr_ss(GEMMX_WRITEBACK_DONE);
+    return csrr_ss(GEMMX_FINAL_DONE);
+}
+
+uint32_t read_versacore_system_done() {
+    return csrr_ss(GEMMX_FINAL_DONE) && !csrr_ss(STREAMER_BUSY_CSR);
 }
 
 uint32_t check_versacore_result_D32(int8_t* output, int8_t* output_golden,

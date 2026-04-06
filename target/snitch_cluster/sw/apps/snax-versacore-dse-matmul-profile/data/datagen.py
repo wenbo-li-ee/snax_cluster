@@ -235,6 +235,9 @@ def emit_matmul_data(**kwargs):
     # --------------------------------------------------------------
 
     snax_acc_cfg = kwargs["snax_versacore_core_template"]["snax_acc_cfg"][0]
+    post_d2s_shift_right_two = snax_acc_cfg.get(
+        "snax_versacore_post_d2s_shift_right_two", False
+    )
     meshRow = snax_acc_cfg["snax_versacore_spatial_unrolling"][data_type][array_shape][
         0
     ]
@@ -635,7 +638,15 @@ def emit_matmul_data(**kwargs):
     delta_local_c = align_wide_addr(
         delta_local_c, snax_acc_cfg["granularity_c_d"] * bankWidth / 8
     )
-    if stationary == output_stationary:
+    if post_d2s_shift_right_two:
+        # Once D writeback is decoupled from the compute core and a post-D2S stage
+        # is inserted, D can start overwriting memory before C has been fully
+        # consumed in non-output-stationary flows. Keep D in a disjoint L1 region.
+        delta_local_d = align_wide_addr(
+            delta_local_c + c_data_length * c_len / 8,
+            snax_acc_cfg["granularity_c_d"] * bankWidth / 8,
+        )
+    elif stationary == output_stationary:
         delta_local_d = delta_local_c
     elif stationary == weight_stationary:
         delta_local_d = delta_local_c
@@ -767,6 +778,8 @@ def emit_matmul_data(**kwargs):
             subtraction_b,
             C,
         )
+        if post_d2s_shift_right_two:
+            D = D >> 2
         data_str += [format_vector_definition("int32_t", "D", D)]
 
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_A", 0)]

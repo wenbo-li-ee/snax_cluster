@@ -29,7 +29,8 @@
 // GeMMX read-only CSR
 #define GEMMX_BUSY (GEMMX_START + 1)
 #define GEMMX_PERFORMANCE_COUNTER (GEMMX_BUSY + 1)
-#define GEMMX_WRITEBACK_DONE (GEMMX_PERFORMANCE_COUNTER + 1)
+#define GEMMX_COMPUTATION_DONE (GEMMX_PERFORMANCE_COUNTER + 1)
+#define GEMMX_FINAL_DONE (GEMMX_COMPUTATION_DONE + 1)
 
 // Pack two subtraction values to one CSR
 int32_t gen_subtraction_config(int8_t subtraction_a, int8_t subtraction_b);
@@ -67,6 +68,8 @@ void wait_versacore_and_streamer();
 
 void wait_versacore();
 
+void wait_versacore_computation_done();
+
 void wait_versacore_writeback_done();
 
 // Read performance counter of the Streamer, a read-only CSR
@@ -75,7 +78,11 @@ uint32_t read_versacore_streamer_perf_counter();
 // Read performance counter of GEMM, a read-only CSR
 uint32_t read_versacore_perf_counter();
 
+uint32_t read_versacore_computation_done();
+
 uint32_t read_versacore_writeback_done();
+
+uint32_t read_versacore_system_done();
 
 // Check the result of GEMMX
 uint32_t check_versacore_result_D32(int8_t* output, int8_t* output_golden,

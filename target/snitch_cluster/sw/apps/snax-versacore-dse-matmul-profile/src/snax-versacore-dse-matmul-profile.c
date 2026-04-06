@@ -110,10 +110,14 @@ int main() {
 
         int32_t gemmx_cycles = read_versacore_perf_counter();
         int32_t gemmx_streamer_cycles = read_versacore_streamer_perf_counter();
+        int32_t gemmx_computation_done = read_versacore_computation_done();
+        int32_t gemmx_final_done = read_versacore_writeback_done();
         printf("Workload size: M = %d, N = %d, K = %d\n", M, N, K);
         printf("SNAX GEMM Ideal cycles: %d\n", M * K * N);
         printf("SNAX GEMM cycles: %d\n", gemmx_cycles);
         printf("SNAX GEMM Streamer cycles: %d\n", gemmx_streamer_cycles);
+        printf("SNAX GEMM computation done: %d\n", gemmx_computation_done);
+        printf("SNAX GEMM final done: %d\n", gemmx_final_done);
     };
 
     return err;

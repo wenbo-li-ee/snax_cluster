@@ -119,9 +119,11 @@ object VersaCoreGen {
 
     val versacoreCfg = parsedArgs.find(_._1 == "versacoreCfg").get._2
 
-    val params      = SpatialArrayParamParser.parseFromHjsonString(versacoreCfg)
-    val cfg         = ujson.read(versacoreCfg)
-    val roCsrCount  = cfg.obj.get("snax_num_ro_csr").map(_.num.toInt).getOrElse(2)
+    val params                     = SpatialArrayParamParser.parseFromHjsonString(versacoreCfg)
+    val cfg                        = ujson.read(versacoreCfg)
+    val roCsrCount                 = cfg.obj.get("snax_num_ro_csr").map(_.num.toInt).getOrElse(2)
+    val enablePostD2SShiftRightTwo =
+      cfg.obj.get("snax_versacore_post_d2s_shift_right_two").exists(_.bool)
     parsedArgs.getOrElse(
       "tag",
       "default"
@@ -178,6 +180,54 @@ object VersaCoreGen {
     val DataWidthB     = params.arrayInputBWidth
     val DataWidthC     = params.serialInputCDataWidth
     val DataWidthD     = params.serialOutputDDataWidth
+    val postD2SWires   =
+      if (enablePostD2SShiftRightTwo) {
+        s"""
+  logic [DataWidthD-1:0] versacore_out_d_data;
+  logic versacore_out_d_valid;
+  logic versacore_out_d_ready;
+  logic versacore_ctrl_ready;
+  logic versacore_computation_done;
+  logic versacore_writeback_done;
+  logic post_d2s_busy;
+"""
+      } else ""
+    val postD2SModule =
+      if (enablePostD2SShiftRightTwo) {
+        s"""
+  VersaCorePostD2SShiftRightTwo #(
+      .DataWidth(DataWidthD)
+  ) i_versacore_post_d2s_shift_right_two (
+      .clk_i      (clk_i),
+      .rst_ni     (rst_ni),
+      .in_data_i  (versacore_out_d_data),
+      .in_valid_i (versacore_out_d_valid),
+      .in_ready_o (versacore_out_d_ready),
+      .out_data_o (acc2stream_0_data_o),
+      .out_valid_o(acc2stream_0_valid_o),
+      .out_ready_i(acc2stream_0_ready_i),
+      .busy_o      (post_d2s_busy)
+  );
+
+  assign csr_reg_set_ready_o = versacore_ctrl_ready && !post_d2s_busy;
+  assign csr_reg_ro_set_o[2][0] = versacore_computation_done;
+  assign csr_reg_ro_set_o[3][0] = versacore_writeback_done && !post_d2s_busy;
+"""
+      } else ""
+    val outReadySignal = if (enablePostD2SShiftRightTwo) "versacore_out_d_ready" else "acc2stream_0_ready_i"
+    val outValidSignal = if (enablePostD2SShiftRightTwo) "versacore_out_d_valid" else "acc2stream_0_valid_o"
+    val outBitsSignal  = if (enablePostD2SShiftRightTwo) "versacore_out_d_data" else "acc2stream_0_data_o"
+    val ctrlReadySignal =
+      if (enablePostD2SShiftRightTwo) "versacore_ctrl_ready" else "csr_reg_set_ready_o"
+    val computationDoneSignal =
+      if (enablePostD2SShiftRightTwo) "versacore_computation_done"
+      else if (roCsrCount > 2) "csr_reg_ro_set_o[2][0]"
+      else ""
+    val writebackDoneSignal =
+      if (enablePostD2SShiftRightTwo) "versacore_writeback_done"
+      else if (roCsrCount > 3) "csr_reg_ro_set_o[3][0]"
+      else if (roCsrCount > 2) "csr_reg_ro_set_o[2][0]"
+      else ""
 
     macro_template = header + s"""
 module snax_versacore_shell_wrapper #(
@@ -232,6 +282,8 @@ module snax_versacore_shell_wrapper #(
 );
   assign csr_reg_ro_set_o[0][31:1] = 0;
 ${if (roCsrCount > 2) "  assign csr_reg_ro_set_o[2][31:1] = 0;\n" else ""}
+${if (roCsrCount > 3) "  assign csr_reg_ro_set_o[3][31:1] = 0;\n" else ""}
+${postD2SWires}
 
   VersaCore inst_VersaCore (
       .clock(clk_i),
@@ -249,11 +301,11 @@ ${if (roCsrCount > 2) "  assign csr_reg_ro_set_o[2][31:1] = 0;\n" else ""}
       .io_versacore_data_in_c_valid(stream2acc_2_valid_i),
       .io_versacore_data_in_c_bits (stream2acc_2_data_i),
 
-      .io_versacore_data_out_d_ready(acc2stream_0_ready_i),
-      .io_versacore_data_out_d_valid(acc2stream_0_valid_o),
-      .io_versacore_data_out_d_bits (acc2stream_0_data_o),
+      .io_versacore_data_out_d_ready($outReadySignal),
+      .io_versacore_data_out_d_valid($outValidSignal),
+      .io_versacore_data_out_d_bits ($outBitsSignal),
 
-      .io_ctrl_ready(csr_reg_set_ready_o),
+      .io_ctrl_ready($ctrlReadySignal),
       .io_ctrl_valid(csr_reg_set_valid_i),
       .io_ctrl_bits_fsmCfg_take_in_new_c(csr_reg_set_i[0]),
       .io_ctrl_bits_fsmCfg_a_b_input_times_one_output(csr_reg_set_i[1]),
@@ -263,9 +315,10 @@ ${if (roCsrCount > 2) "  assign csr_reg_ro_set_o[2][31:1] = 0;\n" else ""}
       .io_ctrl_bits_arrayCfg_dataTypeCfg(csr_reg_set_i[5]),
 
       .io_busy_o(csr_reg_ro_set_o[0][0]),
-      .io_performance_counter(csr_reg_ro_set_o[1])${if (roCsrCount > 2) ",\n      .io_writeback_done(csr_reg_ro_set_o[2][0])" else ""}
+      .io_performance_counter(csr_reg_ro_set_o[1])${if (roCsrCount > 2) s",\n      .io_computation_done($computationDoneSignal)" else ""}${if (roCsrCount > 3) s",\n      .io_writeback_done($writebackDoneSignal)" else ""}
 
   );
+${postD2SModule}
 
 endmodule
 """
@@ -276,6 +329,17 @@ endmodule
     )
 
     println(s"Generated macro file: $macro_dir")
+
+    if (enablePostD2SShiftRightTwo) {
+      val svSource = Paths.get("src/main/resources/snax_acc/versacore/VersaCorePostD2SShiftRightTwo.sv")
+      val svTarget = Paths.get(s"$outPath/VersaCorePostD2SShiftRightTwo.sv")
+      Files.copy(
+        svSource,
+        svTarget,
+        java.nio.file.StandardCopyOption.REPLACE_EXISTING
+      )
+      println(s"Generated helper file: $svTarget")
+    }
 
     // generate the c lib header file
     val headerFile = s"$outPath/../../sw/snax/versacore-dse/include/snax_versacore_stationarity.h"

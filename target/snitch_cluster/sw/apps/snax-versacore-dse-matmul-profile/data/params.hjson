@@ -12,7 +12,7 @@
     M: 20
     quantization_enable: 0
     channel_en_C: 1
-    stationary: 2
+    stationary: 0
     transposed_A: 0
     transposed_B: 0
 }
