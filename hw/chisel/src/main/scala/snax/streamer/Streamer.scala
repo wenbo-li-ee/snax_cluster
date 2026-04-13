@@ -146,8 +146,8 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
   val csrManager = Module(
     new ReqRspManager(
       numReadWriteReg = csrNumReadWrite,
-      // 2 ready only csr for every streamer
-      numReadOnlyReg  = 2,
+      // 3 ready only csr for every streamer (busy, perf_counter, writer_busy)
+      numReadOnlyReg  = 3,
       addrWidth       = param.csrAddrWidth,
       ioDataWidth     = 32,
       regDataWidth    = 32,
@@ -301,6 +301,14 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
     .getOrElse(0.B))
   dontTouch(streamer_finish)
 
+  // Signal: all readers (and reader extensions) are done, even if writers are still busy
+  val readers_all_done = Wire(Bool())
+  readers_all_done := !reader
+    .map(_.io.busy)
+    .reduceLeftOption(_ || _)
+    .getOrElse(false.B)
+  dontTouch(readers_all_done)
+
   // --------------------------------------------------------------------------------
   // -----------------------data movers start-----------------------------------------
   // --------------------------------------------------------------------------------
@@ -311,7 +319,7 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
       reader(i).io.start := streamer_config_fire
     } else {
       if (i < param.readerNum + param.writerNum) {
-        writer(i - param.readerNum).io.start := streamer_config_fire
+        writer(i - param.readerNum).io.start := streamer_config_fire && streamer_ready
       } else {
         reader_writer_idx = (i - param.readerNum - param.writerNum) / 2
         reader_writer(
@@ -350,7 +358,8 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
   csrManager.io.reqRspIO.rsp <> io.csr.rsp
 
   // connect the reader/writer ready and csrManager output ready
-  csrManager.io.readWriteRegIO.ready := streamer_ready
+  // Allow new config when IDLE or when all readers are done (block pipeline)
+  csrManager.io.readWriteRegIO.ready := streamer_ready || readers_all_done
 
   // add performance counter for streamer
   val streamerIdle2Busy = WireInit(false.B)
@@ -367,6 +376,11 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
   // connect the performance counter to the first ready only csr
   csrManager.io.readOnlyReg(0) := streamer_busy
   csrManager.io.readOnlyReg(1) := performance_counter
+  // writer-only busy: allows SW to poll writer completion independently
+  csrManager.io.readOnlyReg(2) := writer
+    .map(_.io.busy)
+    .reduceLeftOption(_ || _)
+    .getOrElse(false.B)
 
   // store the configuration csr for each data mover when config fire
   val csrCfgReg = RegInit(VecInit(Seq.fill(csrNumReadWrite)(0.U(32.W))))
@@ -797,6 +811,11 @@ object Streamer {
 
     // streamer performance counter csr
     csrMap = csrMap + "#define STREAMER_PERFORMANCE_COUNTER_CSR " + csrBase + "\n"
+    csrBase = csrBase + 1
+
+    // streamer writer busy csr
+    csrMap = csrMap + "#define STREAMER_WRITER_BUSY_CSR " + csrBase + "\n"
+    csrBase = csrBase + 1
 
     val macro_dir      = param.headerFilepath + "/streamer_csr_addr_map.h"
     val macro_template =

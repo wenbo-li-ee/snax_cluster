@@ -10,8 +10,11 @@
 
 #pragma once
 
-// Accelerator CSR addresses (after streamer CSRs)
-#define DUAL_VC_CSR_ADDR_BASE (STREAMER_PERFORMANCE_COUNTER_CSR + 1)
+// Writer-only busy CSR (new streamer RO CSR for block pipeline)
+#define WRITER_BUSY_CSR STREAMER_WRITER_BUSY_CSR
+
+// Accelerator CSR addresses (after streamer CSRs, including new writer_busy)
+#define DUAL_VC_CSR_ADDR_BASE (STREAMER_WRITER_BUSY_CSR + 1)
 #define DUAL_VC_OVERWRITE_ACCUM (DUAL_VC_CSR_ADDR_BASE)
 #define DUAL_VC_ACCUM_BOUND (DUAL_VC_OVERWRITE_ACCUM + 1)
 #define DUAL_VC_OUTPUT_BOUND (DUAL_VC_ACCUM_BOUND + 1)
@@ -79,3 +82,20 @@ uint32_t read_dual_versacore_streamer_perf_counter();
 // Check result
 uint32_t check_dual_versacore_result(int8_t* output, int8_t* output_golden,
                                      int32_t data_length);
+
+// Poll until writer (only) finishes — for block pipeline
+void wait_dual_versacore_writer();
+
+// Reconfigure and restart only Readers (Writer keeps running) — for block pipeline
+void restart_dual_versacore_readers(
+    int32_t delta_local_a, int32_t* Aslstride, int32_t* Atlbound,
+    int32_t* Atlstride, int32_t set_addr_remap_index_A,
+    int32_t* channel_en_A,
+
+    int32_t delta_local_b0, int32_t* B0slstride, int32_t* B0tlbound,
+    int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
+    int32_t* channel_en_B0,
+
+    int32_t delta_local_b1, int32_t* B1slstride, int32_t* B1tlbound,
+    int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
+    int32_t* channel_en_B1);
