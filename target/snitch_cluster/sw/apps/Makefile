@@ -58,6 +58,9 @@ endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_versacore_dse_cluster.hjson)
 SUBDIRS += snax-versacore-dse-matmul-profile
 endif
+ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_swiglu_cluster.hjson)
+SUBDIRS += snax-dual-versacore-swiglu-test
+endif
 SUBDIRS += snax-multi-cluster-playground
 ifeq ($(CFG_OVERRIDE), cfg/snax_hypercorex_cluster.hjson)
 SUBDIRS += snax-hypercorex/test-csr
