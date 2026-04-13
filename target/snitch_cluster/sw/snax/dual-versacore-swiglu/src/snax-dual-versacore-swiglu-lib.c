@@ -172,3 +172,91 @@ uint32_t check_dual_versacore_result(int8_t* output, int8_t* output_golden,
     }
     return err;
 }
+
+void wait_dual_versacore_writer() {
+    while (csrr_ss(WRITER_BUSY_CSR)) {
+    }
+}
+
+void restart_dual_versacore_readers(
+    int32_t delta_local_a, int32_t* Aslstride, int32_t* Atlbound,
+    int32_t* Atlstride, int32_t set_addr_remap_index_A,
+    int32_t* channel_en_A,
+
+    int32_t delta_local_b0, int32_t* B0slstride, int32_t* B0tlbound,
+    int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
+    int32_t* channel_en_B0,
+
+    int32_t delta_local_b1, int32_t* B1slstride, int32_t* B1tlbound,
+    int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
+    int32_t* channel_en_B1) {
+
+    // ----------------------------------A (Reader 0)----------------------------
+    csrw_ss(BASE_PTR_READER_0_LOW, (uint32_t)(delta_local_a + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_READER_0; i++) {
+        csrw_ss(S_STRIDE_BASE_READER_0 + i, Aslstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_READER_0; i++) {
+        csrw_ss(T_BOUND_BASE_READER_0 + i, Atlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_READER_0; i++) {
+        csrw_ss(T_STRIDE_BASE_READER_0 + i, Atlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_READER_0
+    csrw_ss(ADDR_REMAP_INDEX_READER_0, set_addr_remap_index_A);
+#endif
+#ifdef ENABLED_CHANNEL_READER_0
+    for (int i = 0; i < ENABLED_CHANNEL_READER_0_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_READER_0 + i, channel_en_A[i]);
+    }
+#endif
+
+    // ----------------------------------B0 (Reader 1)----------------------------
+    csrw_ss(BASE_PTR_READER_1_LOW,
+            (uint32_t)(delta_local_b0 + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_READER_1; i++) {
+        csrw_ss(S_STRIDE_BASE_READER_1 + i, B0slstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_READER_1; i++) {
+        csrw_ss(T_BOUND_BASE_READER_1 + i, B0tlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_READER_1; i++) {
+        csrw_ss(T_STRIDE_BASE_READER_1 + i, B0tlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_READER_1
+    csrw_ss(ADDR_REMAP_INDEX_READER_1, set_addr_remap_index_B0);
+#endif
+#ifdef ENABLED_CHANNEL_READER_1
+    for (int i = 0; i < ENABLED_CHANNEL_READER_1_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_READER_1 + i, channel_en_B0[i]);
+    }
+#endif
+
+    // ----------------------------------B1 (Reader 2)----------------------------
+    csrw_ss(BASE_PTR_READER_2_LOW,
+            (uint32_t)(delta_local_b1 + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_READER_2; i++) {
+        csrw_ss(S_STRIDE_BASE_READER_2 + i, B1slstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_READER_2; i++) {
+        csrw_ss(T_BOUND_BASE_READER_2 + i, B1tlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_READER_2; i++) {
+        csrw_ss(T_STRIDE_BASE_READER_2 + i, B1tlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_READER_2
+    csrw_ss(ADDR_REMAP_INDEX_READER_2, set_addr_remap_index_B1);
+#endif
+#ifdef ENABLED_CHANNEL_READER_2
+    for (int i = 0; i < ENABLED_CHANNEL_READER_2_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_READER_2 + i, channel_en_B1[i]);
+    }
+#endif
+
+    // Writer CSRs are NOT reconfigured — Writer keeps running from initial config
+    // Trigger streamer start to restart readers only (writer start is gated by streamer_ready)
+    csrw_ss(STREAMER_START_CSR, 1);
+}
