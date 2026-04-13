@@ -1,0 +1,18 @@
+// Copyright 2025 KU Leuven.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Dual VersaCore SwiGLU test parameters
+// Output stationary only, small workload for quick verification
+
+{
+    array_shape: 0
+    data_type: 0
+    K: 2
+    N: 1
+    M: 20
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}

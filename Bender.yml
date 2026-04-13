@@ -370,6 +370,22 @@ sources:
       # Level 2
       - target/snitch_cluster/generated/snax_versacore/snax_versacore_wrapper.sv
 
+  - target: snax_dual_versacore_swiglu
+    files:
+      # Level 0
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/VersaCore.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/shifter_6stage.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/shifter_2stage.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/elem_adder_32b.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_shell_wrapper.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_reqrspman_ReqRspManager.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_Streamer.sv
+      # Level 1
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_csrman_wrapper.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_streamer_wrapper.sv
+      # Level 2
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_wrapper.sv
+
   - target: snax_gemmX
     files:
       # Level 0
@@ -403,6 +419,13 @@ sources:
       - target/snitch_cluster/generated/snax_versacore_dse_cluster_xdma/snax_versacore_dse_cluster_xdma.sv
       # Level 1
       - target/snitch_cluster/generated/snax_versacore_dse_cluster_xdma/snax_versacore_dse_cluster_xdma_wrapper.sv
+
+  - target: snax_dual_versacore_swiglu_cluster_xdma
+    files:
+      # Level 0
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_cluster_xdma/snax_dual_versacore_swiglu_cluster_xdma.sv
+      # Level 1
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_cluster_xdma/snax_dual_versacore_swiglu_cluster_xdma_wrapper.sv
 
   - target: snax_xdma_cluster_xdma
     files:
@@ -462,6 +485,10 @@ sources:
   - target: snax_versacore_dse_cluster
     files:
       - target/snitch_cluster/generated/snax_versacore_dse_cluster_wrapper.sv
+
+  - target: snax_dual_versacore_swiglu_cluster
+    files:
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_cluster_wrapper.sv
 
   - target: snax_xdma_cluster
     files:
