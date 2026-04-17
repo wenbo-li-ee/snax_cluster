@@ -10,20 +10,40 @@
 
 #pragma once
 
-// Writer-only busy CSR (new streamer RO CSR for block pipeline)
+// Writer-only busy CSRs (streamer RO CSRs for block pipeline)
 #define WRITER_BUSY_CSR STREAMER_WRITER_BUSY_CSR
+#define WRITER1_BUSY_CSR STREAMER_WRITER1_BUSY_CSR
 
-// Accelerator CSR addresses (after streamer CSRs, including new writer_busy)
-#define DUAL_VC_CSR_ADDR_BASE (STREAMER_WRITER_BUSY_CSR + 1)
-#define DUAL_VC_OVERWRITE_ACCUM (DUAL_VC_CSR_ADDR_BASE)
-#define DUAL_VC_ACCUM_BOUND (DUAL_VC_OVERWRITE_ACCUM + 1)
-#define DUAL_VC_OUTPUT_BOUND (DUAL_VC_ACCUM_BOUND + 1)
-#define DUAL_VC_SUBTRACTIONS (DUAL_VC_OUTPUT_BOUND + 1)
-#define DUAL_VC_ARRAY_SHAPE_CFG (DUAL_VC_SUBTRACTIONS + 1)
-#define DUAL_VC_DATA_TYPE_CFG (DUAL_VC_ARRAY_SHAPE_CFG + 1)
+// Accelerator CSR addresses (after streamer CSRs, including both writer_busy)
+#define DUAL_VC_CSR_ADDR_BASE (STREAMER_WRITER1_BUSY_CSR + 1)
+#define DUAL_VC_OVERWRITE_ACCUM (DUAL_VC_CSR_ADDR_BASE)      // [0]
+#define DUAL_VC_ACCUM_BOUND (DUAL_VC_OVERWRITE_ACCUM + 1)    // [1]
+#define DUAL_VC_OUTPUT_BOUND (DUAL_VC_ACCUM_BOUND + 1)       // [2]
+#define DUAL_VC_SUBTRACTIONS (DUAL_VC_OUTPUT_BOUND + 1)       // [3]
+#define DUAL_VC_ARRAY_SHAPE_CFG (DUAL_VC_SUBTRACTIONS + 1)    // [4]
+#define DUAL_VC_DATA_TYPE_CFG (DUAL_VC_ARRAY_SHAPE_CFG + 1)   // [5]
+#define DUAL_VC_MODE (DUAL_VC_DATA_TYPE_CFG + 1)              // [6]
 
-// Start CSR
-#define DUAL_VC_START (DUAL_VC_DATA_TYPE_CFG + 1)
+// Rescale0 parameters (VC0 path)
+#define DUAL_VC_RESCALE0_INPUT_ZP (DUAL_VC_MODE + 1)          // [7]
+#define DUAL_VC_RESCALE0_MULTIPLIER (DUAL_VC_RESCALE0_INPUT_ZP + 1) // [8]
+#define DUAL_VC_RESCALE0_OUTPUT_ZP (DUAL_VC_RESCALE0_MULTIPLIER + 1) // [9]
+#define DUAL_VC_RESCALE0_SHIFT (DUAL_VC_RESCALE0_OUTPUT_ZP + 1) // [10]
+
+// Rescale1 parameters (VC1 path)
+#define DUAL_VC_RESCALE1_INPUT_ZP (DUAL_VC_RESCALE0_SHIFT + 1)  // [11]
+#define DUAL_VC_RESCALE1_MULTIPLIER (DUAL_VC_RESCALE1_INPUT_ZP + 1) // [12]
+#define DUAL_VC_RESCALE1_OUTPUT_ZP (DUAL_VC_RESCALE1_MULTIPLIER + 1) // [13]
+#define DUAL_VC_RESCALE1_SHIFT (DUAL_VC_RESCALE1_OUTPUT_ZP + 1) // [14]
+
+// Rescale_mul parameters (after elem_mul, mode 0 only)
+#define DUAL_VC_RESCALE_MUL_INPUT_ZP (DUAL_VC_RESCALE1_SHIFT + 1) // [15]
+#define DUAL_VC_RESCALE_MUL_MULTIPLIER (DUAL_VC_RESCALE_MUL_INPUT_ZP + 1) // [16]
+#define DUAL_VC_RESCALE_MUL_OUTPUT_ZP (DUAL_VC_RESCALE_MUL_MULTIPLIER + 1) // [17]
+#define DUAL_VC_RESCALE_MUL_SHIFT (DUAL_VC_RESCALE_MUL_OUTPUT_ZP + 1) // [18]
+
+// Start CSR (index 19)
+#define DUAL_VC_START (DUAL_VC_RESCALE_MUL_SHIFT + 1)
 
 // Read-only CSRs
 #define DUAL_VC_BUSY (DUAL_VC_START + 1)
@@ -32,7 +52,7 @@
 // Pack two subtraction values to one CSR
 int32_t gen_dual_vc_subtraction_config(int8_t subtraction_a, int8_t subtraction_b);
 
-// Configure all streamer CSRs (3 readers + 1 writer)
+// Configure all streamer CSRs (3 readers + 2 writers)
 void set_dual_versacore_streamer_csr(
     int32_t delta_local_a, int32_t* Aslstride, int32_t* Atlbound,
     int32_t* Atlstride, int32_t set_addr_remap_index_A,
@@ -46,9 +66,13 @@ void set_dual_versacore_streamer_csr(
     int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
     int32_t* channel_en_B1,
 
-    int32_t delta_local_d, int32_t* Dslstride, int32_t* Dtlbound,
-    int32_t* Dtlstride, int32_t set_addr_remap_index_D,
-    int32_t* channel_en_D);
+    int32_t delta_local_d0, int32_t* D0slstride, int32_t* D0tlbound,
+    int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
+    int32_t* channel_en_D0,
+
+    int32_t delta_local_d1, int32_t* D1slstride, int32_t* D1tlbound,
+    int32_t* D1tlstride, int32_t set_addr_remap_index_D1,
+    int32_t* channel_en_D1);
 
 // Start streamer
 inline void set_dual_versacore_streamer_start() {
@@ -61,13 +85,24 @@ void set_dual_versacore_csr(uint32_t take_in_new_c,
                             uint32_t output_times, uint32_t subtractions,
                             uint32_t array_shape, uint32_t data_type);
 
+// Set mode (0=SwiGLU, 1=GEMM)
+void set_dual_versacore_mode(uint32_t mode);
+
+// Set rescale parameters
+void set_dual_versacore_rescale0(int32_t input_zp, uint32_t multiplier,
+                                 int32_t output_zp, uint32_t shift);
+void set_dual_versacore_rescale1(int32_t input_zp, uint32_t multiplier,
+                                 int32_t output_zp, uint32_t shift);
+void set_dual_versacore_rescale_mul(int32_t input_zp, uint32_t multiplier,
+                                    int32_t output_zp, uint32_t shift);
+
 // Start accelerator
 inline void set_dual_versacore_start() { csrw_ss(DUAL_VC_START, 1); }
 
 // Poll until accelerator (VersaCore) finishes (does NOT wait for streamer)
 void wait_dual_versacore();
 
-// Poll until streamer finishes (call after wait_dual_versacore)
+// Poll until streamer finishes
 void wait_dual_versacore_streamer();
 
 // Poll until both accelerator and streamer finish
@@ -79,23 +114,9 @@ uint32_t read_dual_versacore_perf_counter();
 // Read streamer performance counter
 uint32_t read_dual_versacore_streamer_perf_counter();
 
-// Check result
-uint32_t check_dual_versacore_result(int8_t* output, int8_t* output_golden,
-                                     int32_t data_length);
+// Check result (int16)
+uint32_t check_dual_versacore_result_i16(int16_t* output, int16_t* output_golden,
+                                         int32_t num_elements);
 
-// Poll until writer (only) finishes — for block pipeline
+// Poll until writer (combined) finishes — for block pipeline
 void wait_dual_versacore_writer();
-
-// Reconfigure and restart only Readers (Writer keeps running) — for block pipeline
-void restart_dual_versacore_readers(
-    int32_t delta_local_a, int32_t* Aslstride, int32_t* Atlbound,
-    int32_t* Atlstride, int32_t set_addr_remap_index_A,
-    int32_t* channel_en_A,
-
-    int32_t delta_local_b0, int32_t* B0slstride, int32_t* B0tlbound,
-    int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
-    int32_t* channel_en_B0,
-
-    int32_t delta_local_b1, int32_t* B1slstride, int32_t* B1tlbound,
-    int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
-    int32_t* channel_en_B1);

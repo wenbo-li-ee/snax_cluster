@@ -146,8 +146,8 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
   val csrManager = Module(
     new ReqRspManager(
       numReadWriteReg = csrNumReadWrite,
-      // 3 ready only csr for every streamer (busy, perf_counter, writer_busy)
-      numReadOnlyReg  = 3,
+      // 4 read only csr for every streamer (busy, perf_counter, writer0_busy, writer1_busy)
+      numReadOnlyReg  = 4,
       addrWidth       = param.csrAddrWidth,
       ioDataWidth     = 32,
       regDataWidth    = 32,
@@ -381,6 +381,11 @@ class Streamer(param: StreamerParam) extends Module with RequireAsyncReset {
     .map(_.io.busy)
     .reduceLeftOption(_ || _)
     .getOrElse(false.B)
+  // writer1 busy: individual writer 1 busy signal (0 if only 1 writer exists)
+  csrManager.io.readOnlyReg(3) := {
+    if (writer.length > 1) writer(1).io.busy
+    else false.B
+  }
 
   // store the configuration csr for each data mover when config fire
   val csrCfgReg = RegInit(VecInit(Seq.fill(csrNumReadWrite)(0.U(32.W))))
@@ -815,6 +820,10 @@ object Streamer {
 
     // streamer writer busy csr
     csrMap = csrMap + "#define STREAMER_WRITER_BUSY_CSR " + csrBase + "\n"
+    csrBase = csrBase + 1
+
+    // streamer writer1 busy csr
+    csrMap = csrMap + "#define STREAMER_WRITER1_BUSY_CSR " + csrBase + "\n"
     csrBase = csrBase + 1
 
     val macro_dir      = param.headerFilepath + "/streamer_csr_addr_map.h"

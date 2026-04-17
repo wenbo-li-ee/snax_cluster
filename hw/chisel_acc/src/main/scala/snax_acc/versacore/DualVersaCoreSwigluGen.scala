@@ -16,8 +16,11 @@ import fp_unit._
 // DualVersaCoreSwigluGen: generates all RTL for the dual-VersaCore SwiGLU accelerator
 // - Generates VersaCore.sv (reused from single VersaCore)
 // - Generates snax_dual_versacore_swiglu_shell_wrapper.sv
-// - Copies shifter_6stage.sv, shifter_2stage.sv, elem_adder_32b.sv from resources
+// - Copies SV resource files for post-processing modules
 // - Generates C stationarity header
+//
+// Mode 0 (SwiGLU): VC0→rescale0→shifter6(16b)→ElemMul16b←rescale1←VC1 → rescale_mul → Writer0
+// Mode 1 (GEMM):   VC0→rescale0→Writer0, VC1→rescale1→Writer1
 
 object DualVersaCoreSwigluGen {
   def main(args: Array[String]): Unit = {
@@ -79,7 +82,11 @@ object DualVersaCoreSwigluGen {
     Files.write(outFile, sv_string.getBytes(StandardCharsets.UTF_8))
 
     // Step 2: Copy SV resource files for post-processing modules
-    val resourceFiles = Seq("shifter_6stage.sv", "shifter_2stage.sv", "elem_adder_32b.sv")
+    val resourceFiles = Seq(
+      "shifter_6stage.sv",
+      "rescale_down_32to16.sv",
+      "elem_mul_16b.sv"
+    )
     for (resFile <- resourceFiles) {
       val resPath = s"/snax_acc/versacore/$resFile"
       val is = getClass.getResourceAsStream(resPath)
@@ -104,6 +111,9 @@ object DualVersaCoreSwigluGen {
     val PostprocLanes = cfg.obj.get("snax_dual_versacore_postproc_lanes")
       .map(_.num.toInt).getOrElse(64)
 
+    // DataWidthOut = DataWidthD / 2 (int16 output instead of int32)
+    val DataWidthOut = DataWidthD / 2
+
     val header = s"""// Copyright 2025 KU Leuven.
 // Solderpad Hardware License, Version 0.51, see LICENSE for details.
 // SPDX-License-Identifier: SHL-0.51
@@ -112,16 +122,18 @@ object DualVersaCoreSwigluGen {
 // Do not modify manually.
 //
 // Dual VersaCore SwiGLU shell wrapper
-// Architecture: 2 VersaCores (shared A) + intermediate buffer + 6-stage/2-stage shifters + adder
+// Mode 0 (SwiGLU): VC0->rescale0->shifter6(16b)->ElemMul16b<-rescale1<-VC1 -> rescale_mul -> Writer0
+// Mode 1 (GEMM):   VC0->rescale0->Writer0, VC1->rescale1->Writer1
 """
 
     val wrapperSv = header + s"""
 module snax_dual_versacore_swiglu_shell_wrapper #(
-    parameter int unsigned RegRWCount   = ${params.csrNum},
+    parameter int unsigned RegRWCount   = 20,
     parameter int unsigned RegROCount   = 2,
     parameter int unsigned DataWidthA   = $DataWidthA,
     parameter int unsigned DataWidthB   = $DataWidthB,
     parameter int unsigned DataWidthD   = $DataWidthD,
+    parameter int unsigned DataWidthOut = $DataWidthOut,
     parameter int unsigned PostprocLanes = $PostprocLanes,
     parameter int unsigned RegDataWidth = 32,
     parameter int unsigned RegAddrWidth = 32
@@ -135,10 +147,15 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     //-------------------------------
     // Accelerator ports
     //-------------------------------
-    // acc2stream_0 = output (post-processed result to writer streamer)
-    output logic [DataWidthD-1:0] acc2stream_0_data_o,
+    // acc2stream_0 = output 0 (Writer 0)
+    output logic [DataWidthOut-1:0] acc2stream_0_data_o,
     output logic acc2stream_0_valid_o,
     input logic acc2stream_0_ready_i,
+
+    // acc2stream_1 = output 1 (Writer 1)
+    output logic [DataWidthOut-1:0] acc2stream_1_data_o,
+    output logic acc2stream_1_valid_o,
+    input logic acc2stream_1_ready_i,
 
     // stream2acc_0 = Input A (shared by both VersaCores)
     input logic [DataWidthA-1:0] stream2acc_0_data_i,
@@ -163,6 +180,54 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     output logic                                    csr_reg_set_ready_o,
     output logic [RegROCount-1:0][RegDataWidth-1:0] csr_reg_ro_set_o
 );
+
+    // =========================================================================
+    // CSR extraction
+    // =========================================================================
+    // CSR[0]: OVERWRITE_ACCUM
+    // CSR[1]: ACCUM_BOUND (a_b_input_times_one_output)
+    // CSR[2]: OUTPUT_BOUND (output_times)
+    // CSR[3]: SUBTRACTIONS
+    // CSR[4]: ARRAY_SHAPE_CFG
+    // CSR[5]: DATA_TYPE_CFG
+    // CSR[6]: MODE (0=SwiGLU, 1=GEMM)
+    // CSR[7..10]: RESCALE0 (input_zp, multiplier, output_zp, shift)
+    // CSR[11..14]: RESCALE1 (input_zp, multiplier, output_zp, shift)
+    // CSR[15..18]: RESCALE_MUL (input_zp, multiplier, output_zp, shift)
+    // CSR[19]: START (handled by framework)
+
+    logic mode_sel;
+    assign mode_sel = csr_reg_set_i[6][0];
+
+    // Rescale0 parameters
+    logic signed [31:0] rescale0_input_zp;
+    logic        [31:0] rescale0_multiplier;
+    logic signed [31:0] rescale0_output_zp;
+    logic        [7:0]  rescale0_shift;
+    assign rescale0_input_zp   = csr_reg_set_i[7];
+    assign rescale0_multiplier = csr_reg_set_i[8];
+    assign rescale0_output_zp  = csr_reg_set_i[9];
+    assign rescale0_shift      = csr_reg_set_i[10][7:0];
+
+    // Rescale1 parameters
+    logic signed [31:0] rescale1_input_zp;
+    logic        [31:0] rescale1_multiplier;
+    logic signed [31:0] rescale1_output_zp;
+    logic        [7:0]  rescale1_shift;
+    assign rescale1_input_zp   = csr_reg_set_i[11];
+    assign rescale1_multiplier = csr_reg_set_i[12];
+    assign rescale1_output_zp  = csr_reg_set_i[13];
+    assign rescale1_shift      = csr_reg_set_i[14][7:0];
+
+    // Rescale_mul parameters
+    logic signed [31:0] rescale_mul_input_zp;
+    logic        [31:0] rescale_mul_multiplier;
+    logic signed [31:0] rescale_mul_output_zp;
+    logic        [7:0]  rescale_mul_shift;
+    assign rescale_mul_input_zp   = csr_reg_set_i[15];
+    assign rescale_mul_multiplier = csr_reg_set_i[16];
+    assign rescale_mul_output_zp  = csr_reg_set_i[17];
+    assign rescale_mul_shift      = csr_reg_set_i[18][7:0];
 
     // =========================================================================
     // Internal signals
@@ -194,12 +259,6 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
 
     // =========================================================================
     // Shared A synchronization
-    // One-beat lockstep buffer for A:
-    // - Accept one A beat from streamer
-    // - Feed the same beat to both VersaCores
-    // - Mark beat complete only after each core has consumed it once
-    // This avoids valid/ready combinational cycles and prevents either core
-    // from consuming an A beat multiple times before the other core consumes it.
     // =========================================================================
     logic [DataWidthA-1:0] a_buf_data;
     logic a_buf_valid;
@@ -326,25 +385,22 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
 
     // =========================================================================
     // Dual independent buffers: one per path
-    // Both VersaCores output in lockstep, captured by a joint handshake.
-    // Each path then has its own buffer and chunk counter to feed its shifter
-    // independently. This avoids deadlock from latency mismatch (6 vs 2 stages).
     // =========================================================================
 
     logic both_vc_out_valid;
     assign both_vc_out_valid = vc0_out_d_valid && vc1_out_d_valid;
 
-    // --- Path 0 buffer (feeds 6-stage shifter) ---
+    // --- Path 0 buffer (feeds rescale0) ---
     logic [DataWidthD-1:0] buf0_data;
     logic buf0_valid;
-    logic buf0_out_ready;  // downstream can accept
+    logic buf0_out_ready;
 
-    // --- Path 1 buffer (feeds 2-stage shifter) ---
+    // --- Path 1 buffer (feeds rescale1) ---
     logic [DataWidthD-1:0] buf1_data;
     logic buf1_valid;
-    logic buf1_out_ready;  // downstream can accept
+    logic buf1_out_ready;
 
-    // Joint VersaCore output handshake: both buffers must be free to accept
+    // Joint VersaCore output handshake
     logic buf_can_accept;
     assign buf_can_accept = (!buf0_valid || buf0_out_ready) && (!buf1_valid || buf1_out_ready);
 
@@ -359,12 +415,10 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
             buf0_valid <= 1'b0;
             buf1_valid <= 1'b0;
         end else begin
-            // Buffer 0
             if (!buf0_valid || buf0_out_ready) begin
                 buf0_valid <= buf_fire;
                 if (buf_fire) buf0_data <= vc0_out_d_data;
             end
-            // Buffer 1
             if (!buf1_valid || buf1_out_ready) begin
                 buf1_valid <= buf_fire;
                 if (buf_fire) buf1_data <= vc1_out_d_data;
@@ -379,35 +433,35 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     localparam int unsigned NumChunks = (ElemsPerBeat + PostprocLanes - 1) / PostprocLanes;
 
     // =========================================================================
-    // Path 0: buffer -> chunk serializer -> 6-stage shifter
+    // Path 0: buffer -> chunk serializer -> rescale0
     // =========================================================================
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_0;
     logic chunk_last_0;
     assign chunk_last_0 = (NumChunks <= 1) || (chunk_cnt_0 == NumChunks - 1);
 
-    logic [PostprocLanes-1:0][31:0] shifter0_in_data;
-    logic shifter0_in_valid;
-    logic shifter0_in_ready;
+    logic [PostprocLanes-1:0][31:0] chunk_ser0_data;
+    logic chunk_ser0_valid;
+    logic chunk_ser0_ready;
 
     always_comb begin
         for (int i = 0; i < PostprocLanes; i++) begin
             int idx;
             idx = chunk_cnt_0 * PostprocLanes + i;
             if (idx < ElemsPerBeat)
-                shifter0_in_data[i] = buf0_data[idx*32 +: 32];
+                chunk_ser0_data[i] = buf0_data[idx*32 +: 32];
             else
-                shifter0_in_data[i] = '0;
+                chunk_ser0_data[i] = '0;
         end
     end
 
-    assign shifter0_in_valid = buf0_valid;
-    assign buf0_out_ready = shifter0_in_ready && chunk_last_0;
+    assign chunk_ser0_valid = buf0_valid;
+    assign buf0_out_ready = chunk_ser0_ready && chunk_last_0;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             chunk_cnt_0 <= '0;
         end else begin
-            if (buf0_valid && shifter0_in_ready) begin
+            if (buf0_valid && chunk_ser0_ready) begin
                 if (chunk_last_0)
                     chunk_cnt_0 <= '0;
                 else
@@ -417,35 +471,35 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     end
 
     // =========================================================================
-    // Path 1: buffer -> chunk serializer -> 2-stage shifter
+    // Path 1: buffer -> chunk serializer -> rescale1
     // =========================================================================
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_1;
     logic chunk_last_1;
     assign chunk_last_1 = (NumChunks <= 1) || (chunk_cnt_1 == NumChunks - 1);
 
-    logic [PostprocLanes-1:0][31:0] shifter1_in_data;
-    logic shifter1_in_valid;
-    logic shifter1_in_ready;
+    logic [PostprocLanes-1:0][31:0] chunk_ser1_data;
+    logic chunk_ser1_valid;
+    logic chunk_ser1_ready;
 
     always_comb begin
         for (int i = 0; i < PostprocLanes; i++) begin
             int idx;
             idx = chunk_cnt_1 * PostprocLanes + i;
             if (idx < ElemsPerBeat)
-                shifter1_in_data[i] = buf1_data[idx*32 +: 32];
+                chunk_ser1_data[i] = buf1_data[idx*32 +: 32];
             else
-                shifter1_in_data[i] = '0;
+                chunk_ser1_data[i] = '0;
         end
     end
 
-    assign shifter1_in_valid = buf1_valid;
-    assign buf1_out_ready = shifter1_in_ready && chunk_last_1;
+    assign chunk_ser1_valid = buf1_valid;
+    assign buf1_out_ready = chunk_ser1_ready && chunk_last_1;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             chunk_cnt_1 <= '0;
         end else begin
-            if (buf1_valid && shifter1_in_ready) begin
+            if (buf1_valid && chunk_ser1_ready) begin
                 if (chunk_last_1)
                     chunk_cnt_1 <= '0;
                 else
@@ -455,107 +509,259 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     end
 
     // =========================================================================
-    // Shifter instances
+    // RescaleDown 0 (VC0 path): int32 -> int16
     // =========================================================================
-    logic [PostprocLanes-1:0][31:0] shifter0_out_data;
-    logic shifter0_out_valid, shifter0_out_ready;
+    logic [PostprocLanes-1:0][15:0] rescale0_out_data;
+    logic rescale0_out_valid, rescale0_out_ready;
 
-    logic [PostprocLanes-1:0][31:0] shifter1_out_data;
-    logic shifter1_out_valid, shifter1_out_ready;
+    rescale_down_32to16 #(
+        .NUM_LANES(PostprocLanes)
+    ) u_rescale0 (
+        .clk_i      (clk_i),
+        .rst_ni     (rst_ni),
+        .input_zp   (rescale0_input_zp),
+        .multiplier (rescale0_multiplier),
+        .output_zp  (rescale0_output_zp),
+        .shift      (rescale0_shift),
+        .data_i     (chunk_ser0_data),
+        .valid_i    (chunk_ser0_valid),
+        .ready_o    (chunk_ser0_ready),
+        .data_o     (rescale0_out_data),
+        .valid_o    (rescale0_out_valid),
+        .ready_i    (rescale0_out_ready)
+    );
+
+    // =========================================================================
+    // RescaleDown 1 (VC1 path): int32 -> int16
+    // =========================================================================
+    logic [PostprocLanes-1:0][15:0] rescale1_out_data;
+    logic rescale1_out_valid, rescale1_out_ready;
+
+    rescale_down_32to16 #(
+        .NUM_LANES(PostprocLanes)
+    ) u_rescale1 (
+        .clk_i      (clk_i),
+        .rst_ni     (rst_ni),
+        .input_zp   (rescale1_input_zp),
+        .multiplier (rescale1_multiplier),
+        .output_zp  (rescale1_output_zp),
+        .shift      (rescale1_shift),
+        .data_i     (chunk_ser1_data),
+        .valid_i    (chunk_ser1_valid),
+        .ready_o    (chunk_ser1_ready),
+        .data_o     (rescale1_out_data),
+        .valid_o    (rescale1_out_valid),
+        .ready_i    (rescale1_out_ready)
+    );
+
+    // =========================================================================
+    // Shifter 6-stage (SiLU placeholder, DATA_WIDTH=16, on rescale0 output)
+    // Only used in Mode 0
+    // =========================================================================
+    logic [PostprocLanes-1:0][15:0] shifter6_out_data;
+    logic shifter6_out_valid, shifter6_out_ready;
+
+    // Shifter input: from rescale0 in mode 0, idle in mode 1
+    logic [PostprocLanes-1:0][15:0] shifter6_in_data;
+    logic shifter6_in_valid, shifter6_in_ready;
+
+    assign shifter6_in_data  = rescale0_out_data;
+    assign shifter6_in_valid = rescale0_out_valid && !mode_sel;  // only active in mode 0
 
     shifter_6stage #(
-        .DATA_WIDTH(32),
+        .DATA_WIDTH(16),
         .NUM_LANES(PostprocLanes)
     ) u_shifter_6stage (
         .clk_i   (clk_i),
         .rst_ni  (rst_ni),
-        .data_i  (shifter0_in_data),
-        .valid_i (shifter0_in_valid),
-        .ready_o (shifter0_in_ready),
-        .data_o  (shifter0_out_data),
-        .valid_o (shifter0_out_valid),
-        .ready_i (shifter0_out_ready)
+        .data_i  (shifter6_in_data),
+        .valid_i (shifter6_in_valid),
+        .ready_o (shifter6_in_ready),
+        .data_o  (shifter6_out_data),
+        .valid_o (shifter6_out_valid),
+        .ready_i (shifter6_out_ready)
     );
 
-    shifter_2stage #(
-        .DATA_WIDTH(32),
+    // =========================================================================
+    // Element-wise multiplier (int16 x int16 -> int32)
+    // Only used in Mode 0
+    // =========================================================================
+    logic [PostprocLanes-1:0][31:0] elem_mul_out_data;
+    logic elem_mul_out_valid, elem_mul_out_ready;
+
+    // ElemMul input 1: from rescale1 in mode 0, idle in mode 1
+    logic elem_mul_in1_valid, elem_mul_in1_ready;
+    assign elem_mul_in1_valid = rescale1_out_valid && !mode_sel;
+
+    elem_mul_16b #(
         .NUM_LANES(PostprocLanes)
-    ) u_shifter_2stage (
+    ) u_elem_mul_16b (
         .clk_i   (clk_i),
         .rst_ni  (rst_ni),
-        .data_i  (shifter1_in_data),
-        .valid_i (shifter1_in_valid),
-        .ready_o (shifter1_in_ready),
-        .data_o  (shifter1_out_data),
-        .valid_o (shifter1_out_valid),
-        .ready_i (shifter1_out_ready)
+        .data_i_0(shifter6_out_data),
+        .valid_i_0(shifter6_out_valid),
+        .ready_o_0(shifter6_out_ready),
+        .data_i_1(rescale1_out_data),
+        .valid_i_1(elem_mul_in1_valid),
+        .ready_o_1(elem_mul_in1_ready),
+        .data_o  (elem_mul_out_data),
+        .valid_o (elem_mul_out_valid),
+        .ready_i (elem_mul_out_ready)
     );
 
     // =========================================================================
-    // Element-wise adder
+    // RescaleDown MUL (after elem_mul): int32 -> int16
+    // Only used in Mode 0
     // =========================================================================
-    logic [PostprocLanes-1:0][31:0] adder_out_data;
-    logic adder_out_valid, adder_out_ready;
+    logic [PostprocLanes-1:0][15:0] rescale_mul_out_data;
+    logic rescale_mul_out_valid, rescale_mul_out_ready;
 
-    elem_adder_32b #(
+    rescale_down_32to16 #(
         .NUM_LANES(PostprocLanes)
-    ) u_elem_adder (
-        .clk_i   (clk_i),
-        .rst_ni  (rst_ni),
-        .data_i_0(shifter0_out_data),
-        .valid_i_0(shifter0_out_valid),
-        .ready_o_0(shifter0_out_ready),
-        .data_i_1(shifter1_out_data),
-        .valid_i_1(shifter1_out_valid),
-        .ready_o_1(shifter1_out_ready),
-        .data_o  (adder_out_data),
-        .valid_o (adder_out_valid),
-        .ready_i (adder_out_ready)
+    ) u_rescale_mul (
+        .clk_i      (clk_i),
+        .rst_ni     (rst_ni),
+        .input_zp   (rescale_mul_input_zp),
+        .multiplier (rescale_mul_multiplier),
+        .output_zp  (rescale_mul_output_zp),
+        .shift      (rescale_mul_shift),
+        .data_i     (elem_mul_out_data),
+        .valid_i    (elem_mul_out_valid),
+        .ready_o    (elem_mul_out_ready),
+        .data_o     (rescale_mul_out_data),
+        .valid_o    (rescale_mul_out_valid),
+        .ready_i    (rescale_mul_out_ready)
     );
 
     // =========================================================================
-    // Output serialization: reassemble chunks into DataWidthD-bit output beats
+    // Mode mux: route rescale outputs to out_assemble paths
     // =========================================================================
-    logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] out_chunk_cnt;
-    logic out_chunk_last;
-    assign out_chunk_last = (NumChunks <= 1) || (out_chunk_cnt == NumChunks - 1);
+    // Mode 0: rescale_mul -> out_assemble0, Writer1 idle
+    // Mode 1: rescale0 -> out_assemble0, rescale1 -> out_assemble1
 
-    logic [DataWidthD-1:0] out_assemble;
-    logic out_assemble_valid;
+    // Signals feeding into out_assemble0
+    logic [PostprocLanes-1:0][15:0] oa0_in_data;
+    logic oa0_in_valid, oa0_in_ready;
 
-    // Do not accept new adder chunks while a completed beat is pending on the
-    // output streamer; this prevents overwriting `out_assemble`.
-    assign adder_out_ready = !out_assemble_valid;
+    // Signals feeding into out_assemble1
+    logic [PostprocLanes-1:0][15:0] oa1_in_data;
+    logic oa1_in_valid, oa1_in_ready;
+
+    always_comb begin
+        if (mode_sel) begin
+            // Mode 1 (GEMM): rescale0 -> out0, rescale1 -> out1
+            oa0_in_data  = rescale0_out_data;
+            oa0_in_valid = rescale0_out_valid;
+            rescale0_out_ready = oa0_in_ready;
+
+            oa1_in_data  = rescale1_out_data;
+            oa1_in_valid = rescale1_out_valid;
+            rescale1_out_ready = oa1_in_ready;
+
+            // In mode 1, shifter/elem_mul/rescale_mul stay idle (valid=0 already from gating above)
+            rescale_mul_out_ready = 1'b1;  // Don't backpressure unused rescale_mul
+        end else begin
+            // Mode 0 (SwiGLU): rescale_mul -> both out0 AND out1
+            // Both writers get the same data; Writer1 writes to a dummy address.
+            // Joint handshake: rescale_mul_out_ready only when BOTH assemblies can accept
+            oa0_in_data  = rescale_mul_out_data;
+            oa1_in_data  = rescale_mul_out_data;
+            oa0_in_valid = rescale_mul_out_valid;
+            oa1_in_valid = rescale_mul_out_valid;
+            rescale_mul_out_ready = oa0_in_ready && oa1_in_ready;
+
+            // rescale0 ready is driven by shifter6
+            rescale0_out_ready = shifter6_in_ready;
+            // rescale1 ready is driven by elem_mul
+            rescale1_out_ready = elem_mul_in1_ready;
+        end
+    end
+
+    // =========================================================================
+    // Output assembly 0: reassemble chunks into DataWidthOut-bit beats (int16)
+    // =========================================================================
+    localparam int unsigned ElemsPerBeatOut = DataWidthOut / 16;
+
+    logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] out_chunk_cnt_0;
+    logic out_chunk_last_0;
+    assign out_chunk_last_0 = (NumChunks <= 1) || (out_chunk_cnt_0 == NumChunks - 1);
+
+    logic [DataWidthOut-1:0] out_assemble_0;
+    logic out_assemble_0_valid;
+
+    assign oa0_in_ready = !out_assemble_0_valid;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
-            out_chunk_cnt <= '0;
-            out_assemble_valid <= 1'b0;
+            out_chunk_cnt_0 <= '0;
+            out_assemble_0_valid <= 1'b0;
         end else begin
-            if (adder_out_valid && adder_out_ready) begin
+            if (oa0_in_valid && oa0_in_ready) begin
                 for (int i = 0; i < PostprocLanes; i++) begin
                     int idx;
-                    idx = out_chunk_cnt * PostprocLanes + i;
-                    if (idx < ElemsPerBeat) begin
-                        out_assemble[idx*32 +: 32] <= adder_out_data[i];
+                    idx = out_chunk_cnt_0 * PostprocLanes + i;
+                    if (idx < ElemsPerBeatOut) begin
+                        out_assemble_0[idx*16 +: 16] <= oa0_in_data[i];
                     end
                 end
 
-                if (out_chunk_last) begin
-                    out_chunk_cnt <= '0;
-                    out_assemble_valid <= 1'b1;
+                if (out_chunk_last_0) begin
+                    out_chunk_cnt_0 <= '0;
+                    out_assemble_0_valid <= 1'b1;
                 end else begin
-                    out_chunk_cnt <= out_chunk_cnt + 1;
-                    out_assemble_valid <= 1'b0;
+                    out_chunk_cnt_0 <= out_chunk_cnt_0 + 1;
+                    out_assemble_0_valid <= 1'b0;
                 end
-            end else if (out_assemble_valid && acc2stream_0_ready_i) begin
-                out_assemble_valid <= 1'b0;
+            end else if (out_assemble_0_valid && acc2stream_0_ready_i) begin
+                out_assemble_0_valid <= 1'b0;
             end
         end
     end
 
-    assign acc2stream_0_data_o = out_assemble;
-    assign acc2stream_0_valid_o = out_assemble_valid;
+    assign acc2stream_0_data_o = out_assemble_0;
+    assign acc2stream_0_valid_o = out_assemble_0_valid;
+
+    // =========================================================================
+    // Output assembly 1: reassemble chunks into DataWidthOut-bit beats (int16)
+    // =========================================================================
+    logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] out_chunk_cnt_1;
+    logic out_chunk_last_1;
+    assign out_chunk_last_1 = (NumChunks <= 1) || (out_chunk_cnt_1 == NumChunks - 1);
+
+    logic [DataWidthOut-1:0] out_assemble_1;
+    logic out_assemble_1_valid;
+
+    assign oa1_in_ready = !out_assemble_1_valid;
+
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+            out_chunk_cnt_1 <= '0;
+            out_assemble_1_valid <= 1'b0;
+        end else begin
+            if (oa1_in_valid && oa1_in_ready) begin
+                for (int i = 0; i < PostprocLanes; i++) begin
+                    int idx;
+                    idx = out_chunk_cnt_1 * PostprocLanes + i;
+                    if (idx < ElemsPerBeatOut) begin
+                        out_assemble_1[idx*16 +: 16] <= oa1_in_data[i];
+                    end
+                end
+
+                if (out_chunk_last_1) begin
+                    out_chunk_cnt_1 <= '0;
+                    out_assemble_1_valid <= 1'b1;
+                end else begin
+                    out_chunk_cnt_1 <= out_chunk_cnt_1 + 1;
+                    out_assemble_1_valid <= 1'b0;
+                end
+            end else if (out_assemble_1_valid && acc2stream_1_ready_i) begin
+                out_assemble_1_valid <= 1'b0;
+            end
+        end
+    end
+
+    assign acc2stream_1_data_o = out_assemble_1;
+    assign acc2stream_1_valid_o = out_assemble_1_valid;
 
     // =========================================================================
     // Read-only CSR outputs

@@ -272,7 +272,7 @@ def streamer_csr_num(acc_cfgs):
         + address_remapper_csr_num  # Number of address remapper
         + 1  # Performance counter
         + 1  # Busy register
-        + 1  # Writer busy register
+        + 2  # Two writer busy registers (Writer0 + Writer1)
         + 1  # Start register
     )
 
