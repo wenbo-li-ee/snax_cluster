@@ -26,8 +26,8 @@ object SpatialArrayParamParser {
       cfg(key).arr.map(_.arr.map(_.arr.map(_.num.toInt).toSeq).toSeq).toSeq
 
     require(
-      cfg.obj.get("snax_num_rw_csr").map(_.num.toInt) == Some(7),
-      "snax_num_rw_csr should be 7 for VersaCore"
+      cfg.obj.get("snax_num_rw_csr").map(_.num.toInt).exists(_ >= 7),
+      "snax_num_rw_csr should be >= 7 for VersaCore"
     )
 
     /** Convert input widths to corresponding FP types
