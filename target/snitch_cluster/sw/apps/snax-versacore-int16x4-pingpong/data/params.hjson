@@ -1,7 +1,7 @@
 // Ping-pong (double-buffered) test for int16x4: M=2, K=2, N=2
 {
     array_shape: 0
-    data_type: 1
+    data_type: 0
     K: 2
     N: 2
     M: 2

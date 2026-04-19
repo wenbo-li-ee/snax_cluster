@@ -1,0 +1,16 @@
+// Shape S2 (2,8,16) workload for int16x4
+// array_shape=2 → meshRow=2, tileSize=8, meshCol=16
+// M=1 → 2 input token rows (M * meshRow = 1 * 2 = 2)
+// K=2, N=2 → same weight tile counts as gran-test
+
+{
+    array_shape: 2
+    data_type: 0
+    K: 2
+    N: 2
+    M: 1
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}

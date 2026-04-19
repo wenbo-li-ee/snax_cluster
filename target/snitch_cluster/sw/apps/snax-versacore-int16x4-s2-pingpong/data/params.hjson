@@ -1,0 +1,21 @@
+// Shape S2 (2,8,16) workload for int16x4 — ping-pong (B double-buffering)
+// array_shape=2 → meshRow=2, tileSize=8, meshCol=16
+// M=1 → 2 input token rows; K=2, N=2 → same as batch test
+// Ping-pong: N_chunk=1, num_chunks=2
+
+{
+    array_shape: 2
+    data_type: 0
+    K: 2
+    N: 2
+    M: 1
+    K1: 2
+    N1: 2
+    M1: 1
+    N_chunk: 1
+    N1_chunk: 1
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}
