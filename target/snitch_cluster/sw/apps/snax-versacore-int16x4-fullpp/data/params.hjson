@@ -1,0 +1,12 @@
+// Full-size ping-pong test for int16x4: M=16, K=16, N=16
+{
+    array_shape: 0
+    data_type: 1
+    K: 16
+    N: 16
+    M: 16
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}
