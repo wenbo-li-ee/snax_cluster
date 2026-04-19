@@ -1,0 +1,14 @@
+// Sanity test for int16x4 on shape S0 (8,8,4)
+// One tile: M=1, K=1, N=1 → A[8x8], W[8x4], V[8x4]
+
+{
+    array_shape: 0
+    data_type: 1
+    K: 1
+    N: 1
+    M: 1
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}

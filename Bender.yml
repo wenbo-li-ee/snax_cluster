@@ -427,6 +427,13 @@ sources:
       # Level 1
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu_cluster_xdma/snax_dual_versacore_swiglu_cluster_xdma_wrapper.sv
 
+  - target: snax_dual_versacore_int16x4_cluster_xdma
+    files:
+      # Level 0
+      - target/snitch_cluster/generated/snax_dual_versacore_int16x4_cluster_xdma/snax_dual_versacore_int16x4_cluster_xdma.sv
+      # Level 1
+      - target/snitch_cluster/generated/snax_dual_versacore_int16x4_cluster_xdma/snax_dual_versacore_int16x4_cluster_xdma_wrapper.sv
+
   - target: snax_xdma_cluster_xdma
     files:
       # Level 0
@@ -489,6 +496,10 @@ sources:
   - target: snax_dual_versacore_swiglu_cluster
     files:
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu_cluster_wrapper.sv
+
+  - target: snax_dual_versacore_int16x4_cluster
+    files:
+      - target/snitch_cluster/generated/snax_dual_versacore_int16x4_cluster_wrapper.sv
 
   - target: snax_xdma_cluster
     files:
