@@ -1,0 +1,36 @@
+/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-s2-pingpong/build/snax-versacore-int16x4-s2-pingpong.elf: \
+  src/snax-versacore-int16x4-s2-pingpong.c data/data.h \
+  ../../snax/dual-versacore-swiglu/include/snax-dual-versacore-swiglu-lib.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/src/snrt.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/../common/snitch_cluster_defs.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/../common/snitch_cluster_addrmap.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/../common/snitch_cluster_cfg.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/../common/snitch_cluster_peripheral.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/../common/snitch_cluster_memory.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/alloc_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/cls_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/riscv_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/../../deps/riscv-opcodes/encoding.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/start_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/sync_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/team_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/alloc.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/cls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/cluster_interrupts.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/../../deps/riscv-opcodes/encoding.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/csr.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/dma.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/dump.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/omp/eu.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/api/omp/eu_decls.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/perf_cnt.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/printf.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/../../deps/printf/printf.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/riscv.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/../common/snitch_cluster_global_interrupts.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/sync.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/math/include/math.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/math/include/features.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/math/include/bits/alltypes.h \
+  /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/snRuntime/src/team.h \
+  ../../snax/dual-versacore-swiglu/include/streamer_csr_addr_map.h

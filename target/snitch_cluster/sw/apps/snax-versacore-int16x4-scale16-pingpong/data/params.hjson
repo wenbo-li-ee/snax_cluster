@@ -1,0 +1,24 @@
+// Scaled 1/16 workload for int16x4 shape S0 (8,8,4)
+// Mode 0: A[8,128] @ W[128,88], V[128,88] → SwiGLU → Output0[8,88]
+// Mode 1: A'=Output0[8,88] @ W2_left[88,64], W2_right[88,64]
+// Ping-pong: B tile double-buffering along N dimension
+
+{
+    array_shape: 0
+    data_type: 0
+    // Mode 0 tile counts
+    K: 16
+    N: 22
+    M: 1
+    // Mode 1 tile counts
+    K1: 11
+    N1: 16
+    M1: 1
+    // Ping-pong chunk sizes (N dimension)
+    N_chunk: 11
+    N1_chunk: 8
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}

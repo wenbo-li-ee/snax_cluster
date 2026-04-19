@@ -1,7 +1,7 @@
 // Full-size batch test for int16x4: M=16, K=16, N=16
 {
     array_shape: 0
-    data_type: 1
+    data_type: 0
     K: 16
     N: 16
     M: 16

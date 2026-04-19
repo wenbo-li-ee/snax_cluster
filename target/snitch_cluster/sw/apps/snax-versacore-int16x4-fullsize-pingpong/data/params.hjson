@@ -1,0 +1,22 @@
+// Full-size workload for int16x4 shape S0 (8,8,4) — ping-pong
+// Mode 0: A[8,2048] @ W[2048,1408], V[2048,1408] → SwiGLU → Output0[8,1408]
+// Mode 1: A'=Output0[8,1408] @ W2_left[1408,1024], W2_right[1408,1024]
+// B tile double-buffering along N dimension
+
+{
+    array_shape: 0
+    data_type: 0
+    K: 256
+    N: 352
+    M: 1
+    K1: 176
+    N1: 256
+    M1: 1
+    // Smaller N_chunk to fit 2x B buffers in TCDM
+    N_chunk: 88
+    N1_chunk: 64
+    channel_en_C: 0
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}

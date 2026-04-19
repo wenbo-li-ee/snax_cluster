@@ -3,7 +3,7 @@
 
 {
     array_shape: 0
-    data_type: 1
+    data_type: 0
     K: 1
     N: 1
     M: 1
