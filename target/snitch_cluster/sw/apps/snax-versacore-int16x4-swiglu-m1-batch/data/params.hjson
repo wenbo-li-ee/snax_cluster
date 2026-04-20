@@ -1,0 +1,12 @@
+// SwiGLU workload: M=1, K=8, N=8, chained Mode 0 -> Mode 1
+// K1, N1, M1 are auto-computed by datagen.py
+{
+    array_shape: 2
+    data_type: 0
+    K: 8
+    N: 8
+    M: 1
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}
