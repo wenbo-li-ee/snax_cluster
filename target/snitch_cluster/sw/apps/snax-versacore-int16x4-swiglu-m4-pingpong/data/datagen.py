@@ -105,11 +105,24 @@ def emit_dual_versacore_data(**kwargs):
     M = kwargs["M"]
     K = kwargs["K"]
     N = kwargs["N"]
-    M1 = kwargs["M1"]
-    K1 = kwargs["K1"]
-    N1 = kwargs["N1"]
     N_chunk = kwargs["N_chunk"]
     N1_chunk = kwargs["N1_chunk"]
+
+    # Hardware parameters needed for auto-computing Mode 1 dimensions
+    snax_acc_cfg_tmp = kwargs["snax_dual_versacore_int16x4_core_template"]["snax_acc_cfg"][0]
+    array_shape_tmp = kwargs["array_shape"]
+    data_type_tmp = kwargs["data_type"]
+    meshCol_tmp = snax_acc_cfg_tmp["snax_versacore_spatial_unrolling"][data_type_tmp][array_shape_tmp][2]
+    tileSize_tmp = snax_acc_cfg_tmp["snax_versacore_spatial_unrolling"][data_type_tmp][array_shape_tmp][1]
+
+    # Auto-compute Mode 1 dimensions for chained SwiGLU
+    M1 = M
+    K1 = N * meshCol_tmp // tileSize_tmp
+    N1 = K * tileSize_tmp // meshCol_tmp
+    assert K1 * tileSize_tmp == N * meshCol_tmp, \
+        f"K1 constraint failed: K1={K1}, N*meshCol={N*meshCol_tmp}, tileSize={tileSize_tmp}"
+    assert N1 * meshCol_tmp == K * tileSize_tmp, \
+        f"N1 constraint failed: N1={N1}, K*tileSize={K*tileSize_tmp}, meshCol={meshCol_tmp}"
 
     assert N % N_chunk == 0, f"N={N} not divisible by N_chunk={N_chunk}"
     assert N1 % N1_chunk == 0, f"N1={N1} not divisible by N1_chunk={N1_chunk}"
@@ -275,7 +288,7 @@ def emit_dual_versacore_data(**kwargs):
     Dtlbound1 = N_chunk
     Dtlstride1 = out_elem_bits * meshRow * meshCol // 8
     Dtlbound2 = M
-    Dtlstride2 = N_chunk * out_elem_bits * meshRow * meshCol // 8
+    Dtlstride2 = N * out_elem_bits * meshRow * meshCol // 8
 
     assert Dtlstride1 % (bankWidth // 8 * granularity_c_d) == 0, \
         f"Dtlstride1={Dtlstride1} not aligned to {bankWidth // 8 * granularity_c_d}"
@@ -290,7 +303,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "Dtlstride3", 0)]
 
     # D output: per-chunk offset stride
-    d_chunk_bytes = M * N_chunk * meshRow * meshCol * out_elem_bits // 8
+    d_chunk_bytes = N_chunk * meshRow * meshCol * out_elem_bits // 8
     data_str += [format_scalar_definition("int32_t", "d_chunk_bytes", d_chunk_bytes)]
 
     D_channels_per_writer = 8
@@ -405,7 +418,7 @@ def emit_dual_versacore_data(**kwargs):
     M1_Dtlbound1 = N1_chunk
     M1_Dtlstride1 = out_elem_bits * meshRow * meshCol // 8
     M1_Dtlbound2 = M1
-    M1_Dtlstride2 = N1_chunk * out_elem_bits * meshRow * meshCol // 8
+    M1_Dtlstride2 = N1 * out_elem_bits * meshRow * meshCol // 8
 
     data_str += [format_scalar_definition("int32_t", "M1_Dtlbound0", M1_Dtlbound0)]
     data_str += [format_scalar_definition("int32_t", "M1_Dtlstride0", M1_Dtlstride0)]
@@ -416,7 +429,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "M1_Dtlbound3", 1)]
     data_str += [format_scalar_definition("int32_t", "M1_Dtlstride3", 0)]
 
-    m1_d_chunk_bytes = M1 * N1_chunk * meshRow * meshCol * out_elem_bits // 8
+    m1_d_chunk_bytes = N1_chunk * meshRow * meshCol * out_elem_bits // 8
     data_str += [format_scalar_definition("int32_t", "m1_d_chunk_bytes", m1_d_chunk_bytes)]
 
     # ===================== Mode 1 memory offsets ============================
