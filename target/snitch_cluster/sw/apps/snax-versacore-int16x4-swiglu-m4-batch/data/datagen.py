@@ -41,9 +41,16 @@ def rescale_down_32to16(arr_int32, input_zp, mult, output_zp, shift):
     return np.clip(out, -32768, 32767).astype(np.int16)
 
 
-def arithmetic_right_shift_int16(arr_int16, n):
-    """SiLU placeholder: arithmetic right shift by n on int16."""
-    return (arr_int16.astype(np.int32) >> n).clip(-32768, 32767).astype(np.int16)
+import sys as _sys
+_sys.path.insert(0, '/esat/studscratch/r1015498/Thesis/original_snax/silu/pkg')
+from silu_out16_balanced_golden import silu_out16_balanced_eval_q
+
+
+def apply_silu_vectorized(arr_int16):
+    """Golden model for silu_multilane: apply silu_out16_balanced element-wise."""
+    flat = arr_int16.flatten()
+    result = np.array([silu_out16_balanced_eval_q(int(x)) for x in flat], dtype=np.int16)
+    return result.reshape(arr_int16.shape)
 
 
 def block_gemm_int16x4(M, K, N, meshRow, tileSize, meshCol, A_flat, B_flat,
@@ -602,7 +609,7 @@ def emit_dual_versacore_data(**kwargs):
 
     vc0_int16 = rescale_down_32to16(vc0_int32, rescale_input_zp, rescale_multiplier,
                                      rescale_output_zp, rescale_shift)
-    vc0_silu = arithmetic_right_shift_int16(vc0_int16, 2)
+    vc0_silu = apply_silu_vectorized(vc0_int16)
     vc1_int16 = rescale_down_32to16(vc1_int32, rescale_input_zp, rescale_multiplier,
                                      rescale_output_zp, rescale_shift)
     mul_int32 = vc0_silu.astype(np.int32) * vc1_int16.astype(np.int32)

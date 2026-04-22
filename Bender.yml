@@ -342,7 +342,12 @@ sources:
     files:
       # Level 0
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/VersaCore.sv
-      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/shifter_6stage.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/silu_out16_balanced_pkg.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/partition_detector.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/param_selector.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/horner_stage.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/silu_top.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/silu_multilane.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/rescale_down_32to16.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/elem_mul_16b.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_shell_wrapper.sv

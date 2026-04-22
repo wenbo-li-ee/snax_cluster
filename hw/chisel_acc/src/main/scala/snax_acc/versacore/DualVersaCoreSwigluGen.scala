@@ -19,7 +19,7 @@ import fp_unit._
 // - Copies SV resource files for post-processing modules
 // - Generates C stationarity header
 //
-// Mode 0 (SwiGLU): VC0→rescale0→shifter6(16b)→ElemMul16b←rescale1←VC1 → rescale_mul → Writer0
+// Mode 0 (SwiGLU): VC0→rescale0→silu_multilane(16b)→ElemMul16b←rescale1←VC1 → rescale_mul → Writer0
 // Mode 1 (GEMM):   VC0→rescale0→Writer0, VC1→rescale1→Writer1
 
 object DualVersaCoreSwigluGen {
@@ -83,7 +83,12 @@ object DualVersaCoreSwigluGen {
 
     // Step 2: Copy SV resource files for post-processing modules
     val resourceFiles = Seq(
-      "shifter_6stage.sv",
+      "silu_out16_balanced_pkg.sv",
+      "silu_multilane.sv",
+      "silu_top.sv",
+      "partition_detector.sv",
+      "param_selector.sv",
+      "horner_stage.sv",
       "rescale_down_32to16.sv",
       "elem_mul_16b.sv"
     )
@@ -122,7 +127,7 @@ object DualVersaCoreSwigluGen {
 // Do not modify manually.
 //
 // Dual VersaCore SwiGLU shell wrapper
-// Mode 0 (SwiGLU): VC0->rescale0->shifter6(16b)->ElemMul16b<-rescale1<-VC1 -> rescale_mul -> Writer0
+// Mode 0 (SwiGLU): VC0->rescale0->silu_multilane(16b)->ElemMul16b<-rescale1<-VC1 -> rescale_mul -> Writer0
 // Mode 1 (GEMM):   VC0->rescale0->Writer0, VC1->rescale1->Writer1
 """
 
@@ -555,31 +560,30 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     );
 
     // =========================================================================
-    // Shifter 6-stage (SiLU placeholder, DATA_WIDTH=16, on rescale0 output)
+    // Real SiLU (balanced Q16.11, on rescale0 output)
     // Only used in Mode 0
     // =========================================================================
-    logic [PostprocLanes-1:0][15:0] shifter6_out_data;
-    logic shifter6_out_valid, shifter6_out_ready;
+    logic [PostprocLanes-1:0][15:0] silu_out_data;
+    logic silu_out_valid, silu_out_ready;
 
-    // Shifter input: from rescale0 in mode 0, idle in mode 1
-    logic [PostprocLanes-1:0][15:0] shifter6_in_data;
-    logic shifter6_in_valid, shifter6_in_ready;
+    // SiLU input: from rescale0 in mode 0, idle in mode 1
+    logic [PostprocLanes-1:0][15:0] silu_in_data;
+    logic silu_in_valid, silu_in_ready;
 
-    assign shifter6_in_data  = rescale0_out_data;
-    assign shifter6_in_valid = rescale0_out_valid && !mode_sel;  // only active in mode 0
+    assign silu_in_data  = rescale0_out_data;
+    assign silu_in_valid = rescale0_out_valid && !mode_sel;  // only active in mode 0
 
-    shifter_6stage #(
-        .DATA_WIDTH(16),
+    silu_multilane #(
         .NUM_LANES(PostprocLanes)
-    ) u_shifter_6stage (
+    ) u_silu_multilane (
         .clk_i   (clk_i),
         .rst_ni  (rst_ni),
-        .data_i  (shifter6_in_data),
-        .valid_i (shifter6_in_valid),
-        .ready_o (shifter6_in_ready),
-        .data_o  (shifter6_out_data),
-        .valid_o (shifter6_out_valid),
-        .ready_i (shifter6_out_ready)
+        .data_i  (silu_in_data),
+        .valid_i (silu_in_valid),
+        .ready_o (silu_in_ready),
+        .data_o  (silu_out_data),
+        .valid_o (silu_out_valid),
+        .ready_i (silu_out_ready)
     );
 
     // =========================================================================
@@ -598,9 +602,9 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     ) u_elem_mul_16b (
         .clk_i   (clk_i),
         .rst_ni  (rst_ni),
-        .data_i_0(shifter6_out_data),
-        .valid_i_0(shifter6_out_valid),
-        .ready_o_0(shifter6_out_ready),
+        .data_i_0(silu_out_data),
+        .valid_i_0(silu_out_valid),
+        .ready_o_0(silu_out_ready),
         .data_i_1(rescale1_out_data),
         .valid_i_1(elem_mul_in1_valid),
         .ready_o_1(elem_mul_in1_ready),
@@ -658,7 +662,7 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
             oa1_in_valid = rescale1_out_valid;
             rescale1_out_ready = oa1_in_ready;
 
-            // In mode 1, shifter/elem_mul/rescale_mul stay idle (valid=0 already from gating above)
+            // In mode 1, silu/elem_mul/rescale_mul stay idle (valid=0 already from gating above)
             rescale_mul_out_ready = 1'b1;  // Don't backpressure unused rescale_mul
         end else begin
             // Mode 0 (SwiGLU): rescale_mul -> both out0 AND out1
@@ -670,8 +674,8 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
             oa1_in_valid = rescale_mul_out_valid;
             rescale_mul_out_ready = oa0_in_ready && oa1_in_ready;
 
-            // rescale0 ready is driven by shifter6
-            rescale0_out_ready = shifter6_in_ready;
+            // rescale0 ready is driven by SiLU
+            rescale0_out_ready = silu_in_ready;
             // rescale1 ready is driven by elem_mul
             rescale1_out_ready = elem_mul_in1_ready;
         end
