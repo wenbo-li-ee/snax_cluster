@@ -65,6 +65,10 @@ SUBDIRS += snax-versacore-int16x4-scale16-batch
 SUBDIRS += snax-versacore-int16x4-scale16-pingpong
 SUBDIRS += snax-versacore-int16x4-fullsize-batch
 SUBDIRS += snax-versacore-int16x4-fullsize-pingpong
+SUBDIRS += snax-versacore-int16x4-swiglu-m1-batch
+SUBDIRS += snax-versacore-int16x4-swiglu-m1-pingpong
+SUBDIRS += snax-versacore-int16x4-swiglu-m4-batch
+SUBDIRS += snax-versacore-int16x4-swiglu-m4-pingpong
 endif
 SUBDIRS += snax-multi-cluster-playground
 ifeq ($(CFG_OVERRIDE), cfg/snax_hypercorex_cluster.hjson)
