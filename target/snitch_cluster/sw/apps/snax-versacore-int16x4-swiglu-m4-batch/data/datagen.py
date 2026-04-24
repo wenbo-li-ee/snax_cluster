@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 # Data generator for dual VersaCore int16x4 scaled 1/16 batch test
-# Mode 0 (SwiGLU): A[8,128] @ W[128,88], V[128,88] → Output0[8,88]
-# Mode 1 (GEMM): A'=Output0[8,88] @ W2_left[88,64], W2_right[88,64]
-# Mode 1 A input = Mode 0 output (no separate A1 data)
+# Mode 0 (SwiGLU): A[M,K] @ W[K,N], V[K,N] → Output0[M,N] (SwiGLU activation)
+# Mode 1 (GEMM): A'=compact(Output0) @ W2_left[N,N1], W2_right[N,N1]
+# Mode 1 A input = compacted Mode 0 D0 output (SW strips per-tile padding; see C app compact loop)
 
 import numpy as np
 import argparse
@@ -297,9 +297,14 @@ def emit_dual_versacore_data(**kwargs):
     Dtlbound0 = 1
     Dtlstride0 = d_spatial_bound_0 * (bankWidth // 8)
     Dtlbound1 = N
-    Dtlstride1 = out_elem_bits * meshRow * meshCol // 8
+    fixed_d_beat_bytes = writer_num_channel * (bankWidth // 8)
+    fixed_d_beat_elems = fixed_d_beat_bytes * 8 // out_elem_bits
+    logical_d_tile_elems = meshRow * meshCol
+    assert logical_d_tile_elems <= fixed_d_beat_elems, \
+        f"logical D tile {logical_d_tile_elems} exceeds fixed beat {fixed_d_beat_elems}"
+    Dtlstride1 = fixed_d_beat_bytes
     Dtlbound2 = M
-    Dtlstride2 = N * out_elem_bits * meshRow * meshCol // 8
+    Dtlstride2 = N * fixed_d_beat_bytes
 
     assert Dtlstride1 % (bankWidth // 8 * granularity_c_d) == 0, \
         f"Dtlstride1={Dtlstride1} not aligned to {bankWidth // 8 * granularity_c_d}"
@@ -315,7 +320,7 @@ def emit_dual_versacore_data(**kwargs):
 
     assert Dtlstride1 % (bankWidth // 8) == 0, \
         f"Dtlstride1={Dtlstride1} must be a multiple of one 64-bit channel"
-    D_channels_per_writer = Dtlstride1 // (bankWidth // 8)
+    D_channels_per_writer = writer_num_channel
     assert 0 < D_channels_per_writer <= writer_num_channel, \
         f"D writer channels {D_channels_per_writer} exceed template max {writer_num_channel}"
     D_enabled_channel_CSR_num = int(math.ceil(writer_num_channel / 32))
@@ -329,9 +334,11 @@ def emit_dual_versacore_data(**kwargs):
     ]
 
     mode0_output_elems = M * N * meshRow * meshCol
+    mode0_output_elems_padded = M * N * fixed_d_beat_elems
     mode0_d_data_length = mode0_output_elems * out_elem_bits // 8
     data_str += [format_scalar_definition("int32_t", "mode0_d_data_length", mode0_d_data_length)]
     data_str += [format_scalar_definition("int32_t", "mode0_output_elems", mode0_output_elems)]
+    data_str += [format_scalar_definition("int32_t", "mode0_output_elems_padded", mode0_output_elems_padded)]
 
     # ===================== Base addresses ====================================
     b_channel_footprint = channel_en_B0_bits * (bankWidth // 8)
@@ -365,7 +372,8 @@ def emit_dual_versacore_data(**kwargs):
     delta_local_d0 = delta_local_b1 + b_alloc
     delta_local_d0 = align_wide_addr(delta_local_d0, granularity_c_d * bankWidth // 8)
 
-    d_alloc = max(mode0_d_data_length, d_access_range)
+    mode0_d_padded_data_length = mode0_output_elems_padded * out_elem_bits // 8
+    d_alloc = max(mode0_d_padded_data_length, d_access_range)
     delta_local_d1_mode0 = delta_local_d0 + d_alloc
     delta_local_d1_mode0 = align_wide_addr(delta_local_d1_mode0, granularity_c_d * bankWidth // 8)
 
@@ -376,109 +384,12 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "delta_local_d1_mode0", delta_local_d1_mode0)]
 
     # ===================== Mode 1 streamer params ============================
-    # Mode 1 A = Mode 0 output (at delta_local_d0)
-    # Mode 0 output is [M*meshRow, N*meshCol] int16 = [8, 88] int16
-    # In tile layout: [M, N, meshRow, meshCol] written contiguously
-    # Mode 1 reads this as A with shape [M1, K1, meshRow, tileSize]
-    # where K1*tileSize = N*meshCol = 88 → K1 = 88/8 = 11
-    # Mode 1 A tile stride = meshRow * tileSize * 2 = 8*8*2 = 128 bytes
-    # But: Mode 0 output is laid out as N output tiles, each meshRow*meshCol*2 bytes
-    # The output tiles are contiguous: tile[0] at offset 0, tile[1] at Dtlstride1, etc.
-    # For Mode 1, we need A tiles contiguous, which matches since Dtlstride1 = meshRow*meshCol*2 = 64
-    # and Mode 1 Atlstride0 = meshRow*tileSize*2 = 128 bytes
-    # Wait: meshRow*meshCol = 8*4 = 32 elements per output tile = 64 bytes
-    # Mode 1 needs A tiles of meshRow*tileSize = 8*8 = 64 elements = 128 bytes
-    # So 2 Mode 0 output tiles = 1 Mode 1 A tile (since tileSize/meshCol = 8/4 = 2)
-    # The A reader stride for K dimension = 128 bytes (reads 128 bytes per A tile)
-    # Mode 0 output is flat [8, N*meshCol] = [8, 88] in row-major, so consecutive
-    # columns are consecutive in memory. The A reader reads [meshRow, tileSize] = [8,8]
-    # sub-blocks with stride = tileSize*2 = 16 bytes between elements in same column.
-
-    # Actually, let me reconsider the layout.
-    # Mode 0 writer writes output as [M, N, meshRow, meshCol] tiles.
-    # Each tile is meshRow*meshCol elements = 8*4 = 32 int16 = 64 bytes.
-    # Tiles are written at stride Dtlstride1 = meshRow*meshCol*2 = 64 bytes.
-    # So output memory is: tile(0,0) at d0+0, tile(0,1) at d0+64, ..., tile(0,21) at d0+21*64
-    # That's contiguous: [8, 88] row-major is 8*88*2 = 1408 bytes total.
-    # But tiles are [meshRow, meshCol] = [8,4] layout within each tile.
-    # So memory for tile(m,n): row r, col c → element at offset (r*meshCol + c)*2
-    # Across tiles: tile(m,n) starts at n*meshRow*meshCol*2 + m*N*meshRow*meshCol*2
-
-    # For Mode 1, the A reader expects [M1, K1, meshRow, tileSize] layout.
-    # Each A tile = [meshRow, tileSize] = [8, 8] = 64 elements = 128 bytes.
-    # The A reader spatial stride = bankWidth/8 = 8 bytes (between channels).
-    # A reader reads meshRow*tileSize*a_len/bankWidth = 8*8*16/64 = 16 channels.
-    # Each channel reads 8 bytes = 4 int16 elements.
-    # So channel 0 reads addr+0..7, channel 1 reads addr+8..15, etc.
-
-    # The Mode 0 output is laid out as tiles of [8,4], but Mode 1 needs tiles of [8,8].
-    # These layouts DON'T match tile-for-tile. However, if Mode 0 output is written
-    # flat row-major (which it IS with contiguous tiles), then:
-    # Row 0: cols 0-3 (tile 0), cols 4-7 (tile 1), ... cols 84-87 (tile 21)
-    # = 88 int16 = 176 bytes per row
-    # Mode 1 A tile [8,8] starting at col offset k*8:
-    # Row r reads 8 consecutive int16 starting at r*88*2 + k*8*2
-
-    # This is NOT how the tiled A reader works. The A reader expects the data in
-    # tile layout [K1, meshRow, tileSize], NOT in row-major matrix layout.
-
-    # Hmm, but the A reader just uses temporal strides. Let's think about what
-    # temporal stride pattern achieves reading [8,8] sub-tiles from a flat [8,88] matrix.
-    # We need: A reader temporal stride for K = (jump to next K tile) = tileSize * 2 = 16 bytes
-    #   because consecutive K tiles are at columns k*tileSize apart, and each column is 2 bytes
-    #   But wait - the A data in TCDM from Mode 0 output is [M*meshRow, N*meshCol] = [8, 88]
-    #   with row stride = N*meshCol*2 = 88*2 = 176 bytes
-    #   The A reader spatial channels read consecutive addresses, so channel i reads
-    #   base + i*8 bytes. With 16 channels, that's 128 bytes = 1 A tile [8,8].
-    #   Channel 0 reads elements [0..3], channel 1 reads [4..7], channel 2 reads [8..11]...
-    #   That covers cols 0..63 if reading 128 bytes contiguously.
-    #   But we want [8,8] = rows 0-7, cols 0-7. Row-major means row 0 has cols 0..87,
-    #   row 1 starts 176 bytes later. So a contiguous 128-byte read gets row 0 cols 0..63,
-    #   NOT a [8,8] tile.
-
-    # So the flat row-major layout from Mode 0 writer does NOT match Mode 1 A reader
-    # which expects tile layout. We need to set up the A reader strides to handle
-    # the row-major output.
-
-    # Actually, rethinking: the MODE 0 WRITER writes in tile layout [M, N, meshRow, meshCol].
-    # Within each tile, elements are laid out as the spatial channels write them.
-    # Writer D0 has 8 channels at spatial stride 8 bytes = 64 bytes per tile write.
-    # So a [8,4] output tile occupies 64 bytes contiguously, and tiles are at stride 64.
-    # This is effectively: meshRow groups of meshCol elements, where each group spans
-    # channels. With 8 channels each writing 8 bytes (4 int16), we get:
-    # ch0 → addr+0..7 (elements [row0,col0]..[row0,col3])
-    # ch1 → addr+8..15 (elements [row1,col0]..[row1,col3])
-    # ...
-    # ch7 → addr+56..63 (elements [row7,col0]..[row7,col3])
-    # So within a tile: row r, col c → offset (r*8 + c*2) ? No...
-    # Actually with spatial stride 8: ch_i at addr + i*8
-    # Each channel carries meshCol*out_elem_bits/64 = 4*16/64 = 1 word = 8 bytes = 4 int16
-    # So ch_i carries row i's data: 4 consecutive int16 for row i.
-    # Within ch_i's 8 bytes: elements [row_i, col_0], [row_i, col_1], [row_i, col_2], [row_i, col_3]
-
-    # Multiple tiles are contiguous: tile (m=0,n=0) at D0+0, tile (m=0,n=1) at D0+64, etc.
-    # So the full [8,88] output in memory is:
-    # tile(0,0): rows 0-7, cols 0-3 (64B at offset 0)
-    # tile(0,1): rows 0-7, cols 4-7 (64B at offset 64)
-    # ...
-    # tile(0,21): rows 0-7, cols 84-87 (64B at offset 21*64=1344)
-    # Total: 22*64 = 1408 bytes
-
-    # For Mode 1 A reader (16 channels, [8,8] tiles):
-    # tile(k=0): rows 0-7, cols 0-7 → needs data from output tiles (0,0) and (0,1)
-    # = 128 bytes from offset 0..127 → this IS contiguous because tile(0,0) is 0-63
-    # and tile(0,1) is 64-127.
-    # tile(k=1): rows 0-7, cols 8-15 → output tiles (0,2) and (0,3)
-    # = 128 bytes from offset 128..255 → also contiguous!
-
-    # So A tiles for Mode 1 are contiguous 128-byte blocks starting from delta_local_d0.
-    # K stride = 128 bytes, N stride = 0 (broadcast), M stride = K1*128.
-
-    # Verify: meshCol(Mode0) = 4, tileSize = 8, so each Mode 1 A tile spans
-    # tileSize/meshCol = 2 Mode 0 output tiles. They are contiguous so stride = 128 works!
-
-    # N_mode0 = N * meshCol = 22 * 4 = 88 columns in Mode 0 output
-    # K1 = N_mode0 / tileSize = 88 / 8 = 11 ✓
+    # Mode 1 A = compact Mode 0 D0 output (at delta_local_a1).
+    # The SW compact loop copies the real int16 elements (meshRow*meshCol per tile)
+    # from the padded Mode 0 D0 buffer into delta_local_a1, producing a flat
+    # [M, N, meshRow, meshCol] int16 array identical to mode0_out (no padding).
+    # This is read by Mode 1 A reader as [M1, K1, meshRow, tileSize] (K1=1 for
+    # rebalanced S2: K1 = N*meshCol/tileSize = 8*4/32 = 1).
 
     M1_Atlbound0 = K1
     M1_Atlstride0 = int(a_len * tileSize * meshRow // 8)  # 16*8*8/8 = 128
@@ -522,9 +433,9 @@ def emit_dual_versacore_data(**kwargs):
     M1_Dtlbound0 = 1
     M1_Dtlstride0 = d_spatial_bound_0 * (bankWidth // 8)
     M1_Dtlbound1 = N1
-    M1_Dtlstride1 = out_elem_bits * meshRow * meshCol // 8
+    M1_Dtlstride1 = fixed_d_beat_bytes
     M1_Dtlbound2 = M1
-    M1_Dtlstride2 = N1 * out_elem_bits * meshRow * meshCol // 8
+    M1_Dtlstride2 = N1 * fixed_d_beat_bytes
 
     data_str += [format_scalar_definition("int32_t", "M1_Dtlbound0", M1_Dtlbound0)]
     data_str += [format_scalar_definition("int32_t", "M1_Dtlstride0", M1_Dtlstride0)]
@@ -536,7 +447,6 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "M1_Dtlstride3", 0)]
 
     # ===================== Mode 1 memory offsets ============================
-    # Mode 1 A = Mode 0 output at delta_local_d0 (no separate A1 data!)
     w2l_data_length = N1 * K1 * b_tile_padded
     w2r_data_length = w2l_data_length
 
@@ -553,8 +463,16 @@ def emit_dual_versacore_data(**kwargs):
         + max(0, (N1 - 1) * M1_Dtlstride1) + max(0, (M1 - 1) * M1_Dtlstride2)
     m1_d_access_range = m1_d_max_temporal + d_channel_footprint
 
-    # W2 tiles placed after Mode 0 D1 dummy output
-    delta_local_w2l = delta_local_d1_mode0 + d_alloc
+    a1_data_length = M * N * meshRow * meshCol * a_len // 8
+    a1_alloc = max(a1_data_length, m1_a_access_range)
+
+    # Mode 1 A1 compact buffer: SW core strips the 48-byte padding from each
+    # Mode 0 D0 tile (keeping only the meshRow*meshCol real int16 values).
+    delta_local_a1 = delta_local_d1_mode0 + d_alloc
+    delta_local_a1 = align_wide_addr(delta_local_a1, granularity_a * bankWidth // 8)
+
+    # W2 tiles placed after Mode 1 A1.
+    delta_local_w2l = delta_local_a1 + a1_alloc
     delta_local_w2l = align_wide_addr(delta_local_w2l, granularity_b * bankWidth // 8)
 
     w2_alloc = max(w2l_data_length, m1_b_access_range)
@@ -562,8 +480,10 @@ def emit_dual_versacore_data(**kwargs):
     delta_local_w2r = align_wide_addr(delta_local_w2r, granularity_b * bankWidth // 8)
 
     mode1_output_elems = M1 * N1 * meshRow * meshCol
+    mode1_output_elems_padded = M1 * N1 * fixed_d_beat_elems
     mode1_d_data_length = mode1_output_elems * out_elem_bits // 8
-    m1_d_alloc = max(mode1_d_data_length, m1_d_access_range)
+    mode1_d_padded_data_length = mode1_output_elems_padded * out_elem_bits // 8
+    m1_d_alloc = max(mode1_d_padded_data_length, m1_d_access_range)
 
     delta_local_mode1_d0 = delta_local_w2r + w2_alloc
     delta_local_mode1_d0 = align_wide_addr(delta_local_mode1_d0, granularity_c_d * bankWidth // 8)
@@ -571,6 +491,8 @@ def emit_dual_versacore_data(**kwargs):
     delta_local_mode1_d1 = delta_local_mode1_d0 + m1_d_alloc
     delta_local_mode1_d1 = align_wide_addr(delta_local_mode1_d1, granularity_c_d * bankWidth // 8)
 
+    data_str += [format_scalar_definition("int32_t", "a1_data_length", a1_data_length)]
+    data_str += [format_scalar_definition("int32_t", "delta_local_a1", delta_local_a1)]
     data_str += [format_scalar_definition("int32_t", "w2l_data_length", w2l_data_length)]
     data_str += [format_scalar_definition("int32_t", "w2r_data_length", w2r_data_length)]
     data_str += [format_scalar_definition("int32_t", "delta_local_w2l", delta_local_w2l)]
@@ -578,6 +500,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "delta_local_mode1_d0", delta_local_mode1_d0)]
     data_str += [format_scalar_definition("int32_t", "delta_local_mode1_d1", delta_local_mode1_d1)]
     data_str += [format_scalar_definition("int32_t", "mode1_output_elems", mode1_output_elems)]
+    data_str += [format_scalar_definition("int32_t", "mode1_output_elems_padded", mode1_output_elems_padded)]
 
     # ===================== Test data generation ==============================
     subtraction_a = 0
@@ -625,25 +548,15 @@ def emit_dual_versacore_data(**kwargs):
                                      rescale_output_zp, rescale_shift)
 
     data_str += [format_vector_definition("int16_t", "mode0_golden", mode0_out)]
+    mode0_golden_padded = np.zeros(mode0_output_elems_padded, dtype=np.int16)
+    mode0_flat = mode0_out.reshape(M, N, logical_d_tile_elems)
+    mode0_padded_view = mode0_golden_padded.reshape(M, N, fixed_d_beat_elems)
+    mode0_padded_view[:, :, :logical_d_tile_elems] = mode0_flat
+    data_str += [format_vector_definition("int16_t", "mode0_golden_padded", mode0_golden_padded)]
 
     # ===================== Mode 1 (GEMM) ===================================
-    # Mode 1 A input = Mode 0 output (mode0_out, shape [M*N*meshRow*meshCol] flat)
-    # In tile layout for Mode 1: [M1, K1, meshRow, tileSize]
-    # Mode 0 output is [M, N, meshRow, meshCol] in tile layout
-    # Since M=1, this is [N, meshRow, meshCol] = [22, 8, 4]
-    # Reshaped for Mode 1: [K1, meshRow, tileSize] where K1=11, tileSize=8
-    # Each Mode 1 K tile = 2 Mode 0 N tiles (since tileSize/meshCol = 8/4 = 2)
-    # The data IS contiguous in memory, so the reshape works.
-
-    # Mode 1 A input = Mode 0 output read contiguously from TCDM.
-    # Mode 0 output is [M, N, meshRow, meshCol] tiles written contiguously.
-    # The Mode 1 A reader reads 128-byte blocks (16 channels × 8 bytes).
-    # Two consecutive [8,4] output tiles (128 bytes) become one [8,8] A tile.
-    # The hardware interprets contiguous bytes directly: ch0→row0_left,
-    # ch1→row0_right, ch2→row1_left, etc. So a simple reshape of the flat
-    # output to [M1, K1, meshRow, tileSize] matches the hardware layout.
-    assert K1 * tileSize == N * meshCol, \
-        f"Chaining constraint: K1*tileSize={K1*tileSize} != N*meshCol={N*meshCol}"
+    # Mode 1 A = compact(mode0_out): same flat [M*N*meshRow*meshCol] int16 array,
+    # matching the SW compact loop output in the C app.
     mode1_A_flat = mode0_out.reshape(-1)
 
     # Generate W2 (int4) for Mode 1
@@ -661,7 +574,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_vector_definition("uint8_t", "W2_left", W2_left_packed)]
     data_str += [format_vector_definition("uint8_t", "W2_right", W2_right_packed)]
 
-    # Mode 1 golden: mode0_out (as A) @ W2 → int32 → rescale → int16
+    # Mode 1 golden: compact(mode0_out) @ W2 -> int32 -> rescale -> int16
     golden_d0_int32 = block_gemm_int16x4(
         M1, K1, N1, meshRow, tileSize, meshCol,
         mode1_A_flat, W2_left_int4, subtraction_a, subtraction_b
@@ -678,6 +591,16 @@ def emit_dual_versacore_data(**kwargs):
 
     data_str += [format_vector_definition("int16_t", "mode1_golden_d0", mode1_golden_d0)]
     data_str += [format_vector_definition("int16_t", "mode1_golden_d1", mode1_golden_d1)]
+    mode1_golden_d0_padded = np.zeros(mode1_output_elems_padded, dtype=np.int16)
+    mode1_golden_d1_padded = np.zeros(mode1_output_elems_padded, dtype=np.int16)
+    mode1_d0_flat = mode1_golden_d0.reshape(M1, N1, logical_d_tile_elems)
+    mode1_d1_flat = mode1_golden_d1.reshape(M1, N1, logical_d_tile_elems)
+    mode1_d0_padded_view = mode1_golden_d0_padded.reshape(M1, N1, fixed_d_beat_elems)
+    mode1_d1_padded_view = mode1_golden_d1_padded.reshape(M1, N1, fixed_d_beat_elems)
+    mode1_d0_padded_view[:, :, :logical_d_tile_elems] = mode1_d0_flat
+    mode1_d1_padded_view[:, :, :logical_d_tile_elems] = mode1_d1_flat
+    data_str += [format_vector_definition("int16_t", "mode1_golden_d0_padded", mode1_golden_d0_padded)]
+    data_str += [format_vector_definition("int16_t", "mode1_golden_d1_padded", mode1_golden_d1_padded)]
 
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_A", 0)]
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_B0", 0)]

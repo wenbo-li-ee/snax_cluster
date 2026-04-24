@@ -1,7 +1,7 @@
 // Int16x4 scaled 1/16 batch test
-// Mode 0 (SwiGLU): A[8,128] @ W[128,88], V[128,88] → Output0[8,88]
-// Mode 1 (GEMM): A'=Output0 @ W2_left[88,64], W2_right[88,64]
-// Mode 1 A input = Mode 0 output buffer (no separate A1 data)
+// Mode 0 (SwiGLU): A[M,K] @ W[K,N], V[K,N] → Output0[M,N] (SwiGLU activation)
+// Mode 1 (GEMM): A'=compact(Output0) @ W2_left[N,N1], W2_right[N,N1]
+// Mode 1 A input = compact Mode 0 D0 output (SW strips per-tile padding into local_a1)
 
 #include "data.h"
 #include "snax-dual-versacore-swiglu-lib.h"
@@ -12,6 +12,7 @@ int main() {
     int16_t *local_a;
     uint8_t *local_b0, *local_b1;
     int16_t *local_d0, *local_d1_mode0;
+    int16_t *local_a1;
     uint8_t *local_w2l, *local_w2r;
     int16_t *local_mode1_d0, *local_mode1_d1;
 
@@ -20,12 +21,13 @@ int main() {
     local_b1 = (uint8_t *)(snrt_l1_next() + delta_local_b1);
     local_d0 = (int16_t *)(snrt_l1_next() + delta_local_d0);
     local_d1_mode0 = (int16_t *)(snrt_l1_next() + delta_local_d1_mode0);
+    local_a1 = (int16_t *)(snrt_l1_next() + delta_local_a1);
     local_w2l = (uint8_t *)(snrt_l1_next() + delta_local_w2l);
     local_w2r = (uint8_t *)(snrt_l1_next() + delta_local_w2r);
     local_mode1_d0 = (int16_t *)(snrt_l1_next() + delta_local_mode1_d0);
     local_mode1_d1 = (int16_t *)(snrt_l1_next() + delta_local_mode1_d1);
 
-    // DMA: load all inputs
+    // DMA: load all inputs (A1 is filled by SW compact loop after Mode 0, not DMA)
     if (snrt_is_dm_core()) {
         snrt_dma_start_1d(local_a, A, a_data_length);
         snrt_dma_start_1d(local_b0, W, b0_data_length);
@@ -98,7 +100,7 @@ int main() {
         uint32_t m0_end = snrt_mcycle();
 
         err += check_dual_versacore_result_i16(
-            local_d0, (int16_t *)mode0_golden, mode0_output_elems);
+            local_d0, (int16_t *)mode0_golden_padded, mode0_output_elems_padded);
 
         int32_t cycles_m0 = read_dual_versacore_perf_counter();
         int32_t str_cycles_m0 = read_dual_versacore_streamer_perf_counter();
@@ -106,8 +108,24 @@ int main() {
         printf("  M0 Cycles: accel=%d, streamer=%d, wall=%u\n",
                cycles_m0, str_cycles_m0, m0_end - m0_start);
 
+        // Compact Mode 0 D0 output for Mode 1 A input.
+        // Each D0 tile is mode0_output_elems_padded/(M*N) int16 (fixed 64-byte beat)
+        // but only the first mode0_output_elems/(M*N) int16 are real SwiGLU values.
+        // Strip the padding so Mode 1 A reader sees a dense [M,N,meshRow,meshCol] buffer.
+        {
+            int tile_padded = (int)(mode0_output_elems_padded / (M * N));
+            int tile_real   = (int)(mode0_output_elems / (M * N));
+            for (int idx = 0; idx < (int)(M * N); idx++) {
+                int16_t *src = local_d0 + (int32_t)idx * tile_padded;
+                int16_t *dst = local_a1 + (int32_t)idx * tile_real;
+                for (int i = 0; i < tile_real; i++) {
+                    dst[i] = src[i];
+                }
+            }
+        }
+
         // ============================================================
-        // Mode 1 (GEMM) — A input = Mode 0 output at delta_local_d0
+        // Mode 1 (GEMM) — chained: compact Mode 0 output as A1 input
         // ============================================================
         int32_t M1_Aslstride_arr[] = {Aslstride0};
         int32_t M1_Atlbound_arr[]  = {M1_Atlbound0, M1_Atlbound1, M1_Atlbound2,
@@ -139,11 +157,10 @@ int main() {
         int32_t M1_D1tlstride_arr[] = {M1_Dtlstride0, M1_Dtlstride1,
                                        M1_Dtlstride2, M1_Dtlstride3};
 
-        // KEY: Mode 1 A base = Mode 0 D0 output address
         uint32_t m1_start = snrt_mcycle();
 
         set_dual_versacore_streamer_csr(
-            delta_local_d0, M1_Aslstride_arr, M1_Atlbound_arr, M1_Atlstride_arr,
+            delta_local_a1, M1_Aslstride_arr, M1_Atlbound_arr, M1_Atlstride_arr,
             set_addr_remap_index_A, channel_en_A,
             delta_local_w2l, M1_B0slstride_arr, M1_B0tlbound_arr, M1_B0tlstride_arr,
             set_addr_remap_index_B0, channel_en_B0,
@@ -172,9 +189,9 @@ int main() {
         uint32_t m1_end = snrt_mcycle();
 
         int err_d0 = check_dual_versacore_result_i16(
-            local_mode1_d0, (int16_t *)mode1_golden_d0, mode1_output_elems);
+            local_mode1_d0, (int16_t *)mode1_golden_d0_padded, mode1_output_elems_padded);
         int err_d1 = check_dual_versacore_result_i16(
-            local_mode1_d1, (int16_t *)mode1_golden_d1, mode1_output_elems);
+            local_mode1_d1, (int16_t *)mode1_golden_d1_padded, mode1_output_elems_padded);
         err += err_d0 + err_d1;
 
         int32_t cycles_m1 = read_dual_versacore_perf_counter();
