@@ -163,6 +163,10 @@ def emit_dual_versacore_data(**kwargs):
     a_array_width = snax_acc_cfg["snax_versacore_array_input_a_width"]
     b_array_width = snax_acc_cfg["snax_versacore_array_input_b_width"]
     snax_versacore_serial_c_d_width = snax_acc_cfg["snax_versacore_serial_c_d_width"]
+    streamer_cfg_ref = snax_acc_cfg["snax_streamer_cfg"]["$ref"].split("/")[-1]
+    writer_params = kwargs[streamer_cfg_ref]["data_writer_params"]
+    writer_num_channel = writer_params["num_channel"][0]
+    writer_spatial_bound_0 = writer_params["spatial_bounds"][0][0]
 
     bankWidth = 64
     out_elem_bits = 16
@@ -286,7 +290,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "b1_data_length", b1_data_length)]
 
     # ===================== D Writer settings ====================
-    d_spatial_bound_0 = 8
+    d_spatial_bound_0 = writer_spatial_bound_0
     data_str += [format_scalar_definition("int32_t", "D0slstride0", bankWidth // 8)]
     data_str += [format_scalar_definition("int32_t", "D1slstride0", bankWidth // 8)]
 
@@ -309,8 +313,12 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "Dtlbound3", 1)]
     data_str += [format_scalar_definition("int32_t", "Dtlstride3", 0)]
 
-    D_channels_per_writer = 8
-    D_enabled_channel_CSR_num = int(math.ceil(D_channels_per_writer / 32))
+    assert Dtlstride1 % (bankWidth // 8) == 0, \
+        f"Dtlstride1={Dtlstride1} must be a multiple of one 64-bit channel"
+    D_channels_per_writer = Dtlstride1 // (bankWidth // 8)
+    assert 0 < D_channels_per_writer <= writer_num_channel, \
+        f"D writer channels {D_channels_per_writer} exceed template max {writer_num_channel}"
+    D_enabled_channel_CSR_num = int(math.ceil(writer_num_channel / 32))
     channel_en_D0 = gen_channel_enable_CSR([0] * D_enabled_channel_CSR_num, D_channels_per_writer)
     channel_en_D1 = gen_channel_enable_CSR([0] * D_enabled_channel_CSR_num, D_channels_per_writer)
     data_str += [
