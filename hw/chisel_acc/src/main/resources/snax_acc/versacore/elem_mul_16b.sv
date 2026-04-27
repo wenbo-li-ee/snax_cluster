@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: SHL-0.51
 //
 // Element-wise 16-bit multiplier with NUM_LANES outputs
-// Two input ports (int16) with joint valid/ready handshake
+// Two input ports (int16) with independent 1-deep input buffering
 // Output: int32 (int16 x int16 -> int32)
 // 1-cycle registered output
 // Based on elem_adder_32b.sv structure
@@ -30,24 +30,44 @@ module elem_mul_16b #(
     input  logic                         ready_i
 );
 
-    // Joint handshake: fire only when both inputs valid and output can accept
-    logic both_valid;
+    logic [NUM_LANES-1:0][15:0] fifo0_data, fifo1_data;
+    logic fifo0_valid, fifo1_valid;
     logic out_can_accept;
     logic fire;
 
-    assign both_valid    = valid_i_0 && valid_i_1;
     assign out_can_accept = !valid_o || ready_i;
-    assign fire          = both_valid && out_can_accept;
+    assign fire          = fifo0_valid && fifo1_valid && out_can_accept;
 
-    // Backpressure: each input ready only when both paths valid and output can accept
-    assign ready_o_0 = valid_i_1 && out_can_accept;
-    assign ready_o_1 = valid_i_0 && out_can_accept;
+    // Each input can be accepted independently. If this stage fires, the buffer
+    // can also be refilled in the same cycle.
+    assign ready_o_0 = !fifo0_valid || fire;
+    assign ready_o_1 = !fifo1_valid || fire;
+
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+            fifo0_valid <= 1'b0;
+            fifo1_valid <= 1'b0;
+        end else begin
+            if (ready_o_0) begin
+                fifo0_valid <= valid_i_0;
+                if (valid_i_0) begin
+                    fifo0_data <= data_i_0;
+                end
+            end
+            if (ready_o_1) begin
+                fifo1_valid <= valid_i_1;
+                if (valid_i_1) begin
+                    fifo1_data <= data_i_1;
+                end
+            end
+        end
+    end
 
     // Combinational multiplication (signed int16 x signed int16 -> signed int32)
     logic [NUM_LANES-1:0][31:0] product;
     generate
         for (genvar l = 0; l < NUM_LANES; l++) begin : gen_mul
-            assign product[l] = $signed(data_i_0[l]) * $signed(data_i_1[l]);
+            assign product[l] = $signed(fifo0_data[l]) * $signed(fifo1_data[l]);
         end
     endgenerate
 

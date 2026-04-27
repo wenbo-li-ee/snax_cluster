@@ -228,6 +228,6 @@ uint32_t check_dual_versacore_result_i16(int16_t* output, int16_t* output_golden
 }
 
 void wait_dual_versacore_writer() {
-    while (csrr_ss(WRITER_BUSY_CSR)) {
+    while (csrr_ss(WRITER_BUSY_CSR) || csrr_ss(WRITER1_BUSY_CSR)) {
     }
 }

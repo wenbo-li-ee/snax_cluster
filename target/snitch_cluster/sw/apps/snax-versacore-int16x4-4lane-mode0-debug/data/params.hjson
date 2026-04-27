@@ -1,0 +1,14 @@
+// Focused Mode 0-only 4-lane writer/postproc debug workload.
+// This intentionally keeps the original requested M=1, K=8, N=1 shape and
+// skips the chained Mode1 path whose legality forced the previous N=8 workaround.
+{
+    mode0_only: true
+    array_shape: 0
+    data_type: 0
+    K: 8
+    N: 1
+    M: 1
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}
