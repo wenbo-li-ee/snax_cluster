@@ -1,0 +1,15 @@
+// SwiGLU workload: M=1, K=8, N=8, all 3 shapes (change array_shape: 0, 1, or 2)
+// Note: N=8 is minimum for all shapes to satisfy Mode1 K1 integrality:
+//   S0 (tileSize=8, meshCol=4): K1 = N*4/8 = 4 ≥ 1
+//   S1 (tileSize=16, meshCol=4): K1 = N*4/16 = 2 ≥ 1
+//   S2 (tileSize=32, meshCol=4): K1 = N*4/32 = 1 ≥ 1
+{
+    array_shape: 0
+    data_type: 0
+    K: 8
+    N: 8
+    M: 1
+    stationary: 0
+    transposed_A: 0
+    transposed_B: 0
+}

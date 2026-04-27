@@ -118,5 +118,5 @@ uint32_t read_dual_versacore_streamer_perf_counter();
 uint32_t check_dual_versacore_result_i16(int16_t* output, int16_t* output_golden,
                                          int32_t num_elements);
 
-// Poll until writer (combined) finishes — for block pipeline
+// Poll until both streamer writers finish.
 void wait_dual_versacore_writer();

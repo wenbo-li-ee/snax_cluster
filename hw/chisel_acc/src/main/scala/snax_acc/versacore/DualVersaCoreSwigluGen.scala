@@ -116,8 +116,10 @@ object DualVersaCoreSwigluGen {
     val PostprocLanes = cfg.obj.get("snax_dual_versacore_postproc_lanes")
       .map(_.num.toInt).getOrElse(64)
 
-    // DataWidthOut = DataWidthD / 2 (int16 output instead of int32)
-    val DataWidthOut = DataWidthD / 2
+    // Writer-facing output width is the post-process chunk width.
+    // The old DataWidthD / 2 formula only worked when PostprocLanes happened to
+    // cover a whole int16 tile in one beat.
+    val DataWidthOut = PostprocLanes * 16
 
     val header = s"""// Copyright 2025 KU Leuven.
 // Solderpad Hardware License, Version 0.51, see LICENSE for details.
@@ -686,9 +688,11 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     // =========================================================================
     localparam int unsigned ElemsPerBeatOut = DataWidthOut / 16;
 
-    logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] out_chunk_cnt_0;
+    localparam int unsigned OutChunks = (ElemsPerBeatOut + PostprocLanes - 1) / PostprocLanes;
+
+    logic [$$clog2(OutChunks > 1 ? OutChunks : 2)-1:0] out_chunk_cnt_0;
     logic out_chunk_last_0;
-    assign out_chunk_last_0 = (NumChunks <= 1) || (out_chunk_cnt_0 == NumChunks - 1);
+    assign out_chunk_last_0 = (OutChunks <= 1) || (out_chunk_cnt_0 == OutChunks - 1);
 
     logic [DataWidthOut-1:0] out_assemble_0;
     logic out_assemble_0_valid;
@@ -728,9 +732,9 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     // =========================================================================
     // Output assembly 1: reassemble chunks into DataWidthOut-bit beats (int16)
     // =========================================================================
-    logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] out_chunk_cnt_1;
+    logic [$$clog2(OutChunks > 1 ? OutChunks : 2)-1:0] out_chunk_cnt_1;
     logic out_chunk_last_1;
-    assign out_chunk_last_1 = (NumChunks <= 1) || (out_chunk_cnt_1 == NumChunks - 1);
+    assign out_chunk_last_1 = (OutChunks <= 1) || (out_chunk_cnt_1 == OutChunks - 1);
 
     logic [DataWidthOut-1:0] out_assemble_1;
     logic out_assemble_1_valid;
