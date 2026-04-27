@@ -2,8 +2,8 @@
 
 # Data generator for dual VersaCore int16x4 scaled 1/16 batch test
 # Mode 0 (SwiGLU): A[M,K] @ W[K,N], V[K,N] → Output0[M,N] (SwiGLU activation)
-# Mode 1 (GEMM): A'=compact(Output0) @ W2_left[N,N1], W2_right[N,N1]
-# Mode 1 A input = compacted Mode 0 D0 output (SW strips per-tile padding; see C app compact loop)
+# Mode 1 (GEMM): A'=Mode 0 D0 output @ W2_left[N,N1], W2_right[N,N1]
+# Mode 1 A input reads the Mode 0 D0 buffer directly.
 
 import numpy as np
 import argparse
@@ -407,12 +407,10 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "delta_local_d1_mode0", delta_local_d1_mode0)]
 
     # ===================== Mode 1 streamer params ============================
-    # Mode 1 A = compact Mode 0 D0 output (at delta_local_a1).
-    # The SW compact loop copies the real int16 elements (meshRow*meshCol per tile)
-    # from the padded Mode 0 D0 buffer into delta_local_a1, producing a flat
-    # [M, N, meshRow, meshCol] int16 array identical to mode0_out (no padding).
-    # This is read by Mode 1 A reader as [M1, K1, meshRow, tileSize] (K1=1 for
-    # rebalanced S2: K1 = N*meshCol/tileSize = 8*4/32 = 1).
+    # Mode 1 A reads Mode 0 D0 output directly. For the current 4-lane contract,
+    # Mode 0 D0 is already a dense flat [M, N, meshRow, meshCol] int16 array
+    # with no within-tile padding, and Mode 1 interprets that same storage as
+    # [M1, K1, meshRow, tileSize].
 
     M1_Atlbound0 = K1
     M1_Atlstride0 = int(a_len * tileSize * meshRow // 8)  # 16*8*8/8 = 128
@@ -489,8 +487,9 @@ def emit_dual_versacore_data(**kwargs):
     a1_data_length = M * N * meshRow * meshCol * a_len // 8
     a1_alloc = max(a1_data_length, m1_a_access_range)
 
-    # Mode 1 A1 compact buffer: SW core strips the 48-byte padding from each
-    # Mode 0 D0 tile (keeping only the meshRow*meshCol real int16 values).
+    # Compatibility padding kept unused by the direct-read C app. Leaving this
+    # allocation in place preserves the following W2/D buffer addresses while
+    # validating the direct Mode0-D0-to-Mode1-A path.
     delta_local_a1 = delta_local_d1_mode0 + d_alloc
     delta_local_a1 = align_wide_addr(delta_local_a1, granularity_a * bankWidth // 8)
 
@@ -582,6 +581,10 @@ def emit_dual_versacore_data(**kwargs):
     # Golden padded = same as golden (no extra zeros needed).
     mode0_golden_padded = mode0_out.copy()
     data_str += [format_vector_definition("int16_t", "mode0_golden_padded", mode0_golden_padded)]
+    # In Mode 0, the dual-VersaCore SwiGLU shell routes the same postprocessed
+    # rescale_mul stream to both writer outputs, so D1 must match D0.
+    mode0_d1_golden_padded = mode0_out.copy()
+    data_str += [format_vector_definition("int16_t", "mode0_d1_golden_padded", mode0_d1_golden_padded)]
 
     if mode0_only:
         data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_A", 0)]
@@ -592,8 +595,8 @@ def emit_dual_versacore_data(**kwargs):
         return "\n\n".join(data_str)
 
     # ===================== Mode 1 (GEMM) ===================================
-    # Mode 1 A = compact(mode0_out): same flat [M*N*meshRow*meshCol] int16 array,
-    # matching the SW compact loop output in the C app.
+    # Mode 1 A = direct Mode 0 D0 output: same flat [M*N*meshRow*meshCol]
+    # int16 array.
     mode1_A_flat = mode0_out.reshape(-1)
 
     # Generate W2 (int4) for Mode 1
@@ -611,7 +614,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_vector_definition("uint8_t", "W2_left", W2_left_packed)]
     data_str += [format_vector_definition("uint8_t", "W2_right", W2_right_packed)]
 
-    # Mode 1 golden: compact(mode0_out) @ W2 -> int32 -> rescale -> int16
+    # Mode 1 golden: direct Mode 0 D0 flat layout @ W2 -> int32 -> rescale -> int16
     golden_d0_int32 = block_gemm_int16x4(
         M1, K1, N1, meshRow, tileSize, meshCol,
         mode1_A_flat, W2_left_int4, subtraction_a, subtraction_b
