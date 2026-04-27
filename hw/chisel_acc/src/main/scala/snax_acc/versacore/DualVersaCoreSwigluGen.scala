@@ -439,12 +439,23 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     localparam int unsigned ElemsPerBeat = DataWidthD / 32;
     localparam int unsigned NumChunks = (ElemsPerBeat + PostprocLanes - 1) / PostprocLanes;
 
+    function automatic logic [$$clog2(NumChunks + 1)-1:0]
+        active_num_chunks(input logic [RegDataWidth-1:0] array_shape_cfg);
+        case (array_shape_cfg)
+            32'd0: active_num_chunks = 8;  // meshRow=8, meshCol=4
+            32'd1: active_num_chunks = 4;  // meshRow=4, meshCol=4
+            32'd2: active_num_chunks = 2;  // meshRow=2, meshCol=4
+            default: active_num_chunks = NumChunks;
+        endcase
+    endfunction
+
     // =========================================================================
     // Path 0: buffer -> chunk serializer -> rescale0
     // =========================================================================
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_0;
     logic chunk_last_0;
-    assign chunk_last_0 = (NumChunks <= 1) || (chunk_cnt_0 == NumChunks - 1);
+    assign chunk_last_0 = (NumChunks <= 1) ||
+                          (chunk_cnt_0 == active_num_chunks(csr_reg_set_i[4]) - 1);
 
     logic [PostprocLanes-1:0][31:0] chunk_ser0_data;
     logic chunk_ser0_valid;
@@ -482,7 +493,8 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     // =========================================================================
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_1;
     logic chunk_last_1;
-    assign chunk_last_1 = (NumChunks <= 1) || (chunk_cnt_1 == NumChunks - 1);
+    assign chunk_last_1 = (NumChunks <= 1) ||
+                          (chunk_cnt_1 == active_num_chunks(csr_reg_set_i[4]) - 1);
 
     logic [PostprocLanes-1:0][31:0] chunk_ser1_data;
     logic chunk_ser1_valid;
