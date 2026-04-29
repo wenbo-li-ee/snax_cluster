@@ -78,6 +78,9 @@ SUBDIRS += snax-versacore-int16x4-swiglu-m1-pingpong
 SUBDIRS += snax-versacore-int16x4-swiglu-m4-batch
 SUBDIRS += snax-versacore-int16x4-swiglu-m4-pingpong
 endif
+ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_int16x4_multidim_spatial.hjson)
+SUBDIRS += snax-versacore-int16x4-multishape-batch
+endif
 SUBDIRS += snax-multi-cluster-playground
 ifeq ($(CFG_OVERRIDE), cfg/snax_hypercorex_cluster.hjson)
 SUBDIRS += snax-hypercorex/test-csr

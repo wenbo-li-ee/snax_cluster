@@ -1,0 +1,6 @@
+// Small fixed physical S5 dataflow workload. Runtime CSR config selects S0/S1/S2.
+{
+    M_tiles: 1
+    K_tiles: 64
+    N_tiles: 8
+}
