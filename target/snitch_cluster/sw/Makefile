@@ -39,6 +39,9 @@ endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_int16x4_rebalanced_cluster.hjson)
 SUBDIRS += snax/dual-versacore-swiglu
 endif
+ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_int16x4_multidim_spatial.hjson)
+SUBDIRS += snax/dual-versacore-swiglu
+endif
 ifeq (${CFG_OVERRIDE}, cfg/snax_alu_cluster.hjson)
 SUBDIRS += snax/snax-alu
 endif
