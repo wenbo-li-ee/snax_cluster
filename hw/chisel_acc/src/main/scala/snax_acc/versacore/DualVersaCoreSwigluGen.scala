@@ -120,6 +120,12 @@ object DualVersaCoreSwigluGen {
     // The old DataWidthD / 2 formula only worked when PostprocLanes happened to
     // cover a whole int16 tile in one beat.
     val DataWidthOut = PostprocLanes * 16
+    val activeChunkCases = params.arrayDim.head.zipWithIndex.map { case (dim, idx) =>
+      val meshRow = dim(0)
+      val meshCol = dim(2)
+      val chunks  = (meshRow * meshCol + PostprocLanes - 1) / PostprocLanes
+      s"            32'd$idx: active_num_chunks = $chunks;  // meshRow=$meshRow, meshCol=$meshCol"
+    }.mkString("\n")
 
     val header = s"""// Copyright 2025 KU Leuven.
 // Solderpad Hardware License, Version 0.51, see LICENSE for details.
@@ -442,9 +448,7 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     function automatic logic [$$clog2(NumChunks + 1)-1:0]
         active_num_chunks(input logic [RegDataWidth-1:0] array_shape_cfg);
         case (array_shape_cfg)
-            32'd0: active_num_chunks = 8;  // meshRow=8, meshCol=4
-            32'd1: active_num_chunks = 4;  // meshRow=4, meshCol=4
-            32'd2: active_num_chunks = 2;  // meshRow=2, meshCol=4
+$activeChunkCases
             default: active_num_chunks = NumChunks;
         endcase
     endfunction
