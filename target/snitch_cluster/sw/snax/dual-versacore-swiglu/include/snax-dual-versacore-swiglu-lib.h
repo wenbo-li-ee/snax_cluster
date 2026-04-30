@@ -42,11 +42,11 @@
 #define DUAL_VC_RESCALE_MUL_OUTPUT_ZP (DUAL_VC_RESCALE_MUL_MULTIPLIER + 1) // [17]
 #define DUAL_VC_RESCALE_MUL_SHIFT (DUAL_VC_RESCALE_MUL_OUTPUT_ZP + 1) // [18]
 
-// Start CSR (index 19)
-#define DUAL_VC_START (DUAL_VC_RESCALE_MUL_SHIFT + 1)
-
-// Read-only CSRs
-#define DUAL_VC_BUSY (DUAL_VC_START + 1)
+// Read-only CSRs follow all accelerator RW CSRs in the generated CSR manager.
+#define DUAL_VC_NUM_RW_CSR 23
+// ReqRspManager emits csr_reg_set_valid when the last RW CSR is written with bit0=1.
+#define DUAL_VC_START (DUAL_VC_CSR_ADDR_BASE + DUAL_VC_NUM_RW_CSR - 1)
+#define DUAL_VC_BUSY (DUAL_VC_CSR_ADDR_BASE + DUAL_VC_NUM_RW_CSR)
 #define DUAL_VC_PERFORMANCE_COUNTER (DUAL_VC_BUSY + 1)
 
 // Pack two subtraction values to one CSR
