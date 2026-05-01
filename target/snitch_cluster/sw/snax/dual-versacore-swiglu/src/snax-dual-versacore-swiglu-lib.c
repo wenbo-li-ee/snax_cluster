@@ -15,25 +15,25 @@ int32_t gen_dual_vc_subtraction_config(int8_t subtraction_a,
 }
 
 void set_dual_versacore_streamer_csr(
-    int32_t delta_local_a, int32_t* Aslstride, int32_t* Atlbound,
-    int32_t* Atlstride, int32_t set_addr_remap_index_A,
-    int32_t* channel_en_A,
+    int32_t delta_local_a, const int32_t* Aslstride, const int32_t* Atlbound,
+    const int32_t* Atlstride, int32_t set_addr_remap_index_A,
+    const int32_t* channel_en_A,
 
-    int32_t delta_local_b0, int32_t* B0slstride, int32_t* B0tlbound,
-    int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
-    int32_t* channel_en_B0,
+    int32_t delta_local_b0, const int32_t* B0slstride, const int32_t* B0tlbound,
+    const int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
+    const int32_t* channel_en_B0,
 
-    int32_t delta_local_b1, int32_t* B1slstride, int32_t* B1tlbound,
-    int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
-    int32_t* channel_en_B1,
+    int32_t delta_local_b1, const int32_t* B1slstride, const int32_t* B1tlbound,
+    const int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
+    const int32_t* channel_en_B1,
 
-    int32_t delta_local_d0, int32_t* D0slstride, int32_t* D0tlbound,
-    int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
-    int32_t* channel_en_D0,
+    int32_t delta_local_d0, const int32_t* D0slstride, const int32_t* D0tlbound,
+    const int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
+    const int32_t* channel_en_D0,
 
-    int32_t delta_local_d1, int32_t* D1slstride, int32_t* D1tlbound,
-    int32_t* D1tlstride, int32_t set_addr_remap_index_D1,
-    int32_t* channel_en_D1) {
+    int32_t delta_local_d1, const int32_t* D1slstride, const int32_t* D1tlbound,
+    const int32_t* D1tlstride, int32_t set_addr_remap_index_D1,
+    const int32_t* channel_en_D1) {
 
     // ----------------------------------A (Reader 0)----------------------------
     csrw_ss(BASE_PTR_READER_0_LOW, (uint32_t)(delta_local_a + snrt_l1_next()));
@@ -145,6 +145,122 @@ void set_dual_versacore_streamer_csr(
 #endif
 }
 
+void set_dual_versacore_streamer_csr_d0_only(
+    int32_t delta_local_a, const int32_t* Aslstride, const int32_t* Atlbound,
+    const int32_t* Atlstride, int32_t set_addr_remap_index_A,
+    const int32_t* channel_en_A,
+
+    int32_t delta_local_b0, const int32_t* B0slstride, const int32_t* B0tlbound,
+    const int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
+    const int32_t* channel_en_B0,
+
+    int32_t delta_local_b1, const int32_t* B1slstride, const int32_t* B1tlbound,
+    const int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
+    const int32_t* channel_en_B1,
+
+    int32_t delta_local_d0, const int32_t* D0slstride, const int32_t* D0tlbound,
+    const int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
+    const int32_t* channel_en_D0) {
+
+    // ----------------------------------A (Reader 0)----------------------------
+    csrw_ss(BASE_PTR_READER_0_LOW, (uint32_t)(delta_local_a + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_READER_0; i++) {
+        csrw_ss(S_STRIDE_BASE_READER_0 + i, Aslstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_READER_0; i++) {
+        csrw_ss(T_BOUND_BASE_READER_0 + i, Atlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_READER_0; i++) {
+        csrw_ss(T_STRIDE_BASE_READER_0 + i, Atlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_READER_0
+    csrw_ss(ADDR_REMAP_INDEX_READER_0, set_addr_remap_index_A);
+#endif
+#ifdef ENABLED_CHANNEL_READER_0
+    for (int i = 0; i < ENABLED_CHANNEL_READER_0_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_READER_0 + i, channel_en_A[i]);
+    }
+#endif
+
+    // ----------------------------------B0 (Reader 1)----------------------------
+    csrw_ss(BASE_PTR_READER_1_LOW,
+            (uint32_t)(delta_local_b0 + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_READER_1; i++) {
+        csrw_ss(S_STRIDE_BASE_READER_1 + i, B0slstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_READER_1; i++) {
+        csrw_ss(T_BOUND_BASE_READER_1 + i, B0tlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_READER_1; i++) {
+        csrw_ss(T_STRIDE_BASE_READER_1 + i, B0tlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_READER_1
+    csrw_ss(ADDR_REMAP_INDEX_READER_1, set_addr_remap_index_B0);
+#endif
+#ifdef ENABLED_CHANNEL_READER_1
+    for (int i = 0; i < ENABLED_CHANNEL_READER_1_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_READER_1 + i, channel_en_B0[i]);
+    }
+#endif
+
+    // ----------------------------------B1 (Reader 2)----------------------------
+    csrw_ss(BASE_PTR_READER_2_LOW,
+            (uint32_t)(delta_local_b1 + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_READER_2; i++) {
+        csrw_ss(S_STRIDE_BASE_READER_2 + i, B1slstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_READER_2; i++) {
+        csrw_ss(T_BOUND_BASE_READER_2 + i, B1tlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_READER_2; i++) {
+        csrw_ss(T_STRIDE_BASE_READER_2 + i, B1tlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_READER_2
+    csrw_ss(ADDR_REMAP_INDEX_READER_2, set_addr_remap_index_B1);
+#endif
+#ifdef ENABLED_CHANNEL_READER_2
+    for (int i = 0; i < ENABLED_CHANNEL_READER_2_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_READER_2 + i, channel_en_B1[i]);
+    }
+#endif
+
+    // ----------------------------------D0 (Writer 0)----------------------------
+    csrw_ss(BASE_PTR_WRITER_0_LOW,
+            (uint32_t)(delta_local_d0 + snrt_l1_next()));
+
+    for (int i = 0; i < S_STRIDE_NUM_WRITER_0; i++) {
+        csrw_ss(S_STRIDE_BASE_WRITER_0 + i, D0slstride[i]);
+    }
+    for (int i = 0; i < T_BOUND_NUM_WRITER_0; i++) {
+        csrw_ss(T_BOUND_BASE_WRITER_0 + i, D0tlbound[i]);
+    }
+    for (int i = 0; i < T_STRIDE_NUM_WRITER_0; i++) {
+        csrw_ss(T_STRIDE_BASE_WRITER_0 + i, D0tlstride[i]);
+    }
+#ifdef ADDR_REMAP_INDEX_WRITER_0
+    csrw_ss(ADDR_REMAP_INDEX_WRITER_0, set_addr_remap_index_D0);
+#endif
+#ifdef ENABLED_CHANNEL_WRITER_0
+    for (int i = 0; i < ENABLED_CHANNEL_WRITER_0_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_WRITER_0 + i, channel_en_D0[i]);
+    }
+#endif
+
+    // Writer1 may still hold active state from a previous Mode1 run. Clear its
+    // loop bounds and channel mask so Mode0 remains a single-writer transfer.
+    for (int i = 0; i < T_BOUND_NUM_WRITER_1; i++) {
+        csrw_ss(T_BOUND_BASE_WRITER_1 + i, 0);
+    }
+#ifdef ENABLED_CHANNEL_WRITER_1
+    for (int i = 0; i < ENABLED_CHANNEL_WRITER_1_CSR_NUM; i++) {
+        csrw_ss(ENABLED_CHANNEL_WRITER_1 + i, 0);
+    }
+#endif
+}
+
 void set_dual_versacore_csr(uint32_t take_in_new_c,
                             uint32_t a_b_input_times_one_output,
                             uint32_t output_times, uint32_t subtractions,
@@ -214,7 +330,7 @@ uint32_t read_dual_versacore_perf_counter() {
     return perf_counter;
 }
 
-uint32_t check_dual_versacore_result_i16(int16_t* output, int16_t* output_golden,
+uint32_t check_dual_versacore_result_i16(const int16_t* output, const int16_t* output_golden,
                                          int32_t num_elements) {
     uint32_t err = 0;
     for (int i = 0; i < num_elements; i++) {

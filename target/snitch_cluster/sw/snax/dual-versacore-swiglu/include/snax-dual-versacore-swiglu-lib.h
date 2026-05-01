@@ -54,25 +54,44 @@ int32_t gen_dual_vc_subtraction_config(int8_t subtraction_a, int8_t subtraction_
 
 // Configure all streamer CSRs (3 readers + 2 writers)
 void set_dual_versacore_streamer_csr(
-    int32_t delta_local_a, int32_t* Aslstride, int32_t* Atlbound,
-    int32_t* Atlstride, int32_t set_addr_remap_index_A,
-    int32_t* channel_en_A,
+    int32_t delta_local_a, const int32_t* Aslstride, const int32_t* Atlbound,
+    const int32_t* Atlstride, int32_t set_addr_remap_index_A,
+    const int32_t* channel_en_A,
 
-    int32_t delta_local_b0, int32_t* B0slstride, int32_t* B0tlbound,
-    int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
-    int32_t* channel_en_B0,
+    int32_t delta_local_b0, const int32_t* B0slstride, const int32_t* B0tlbound,
+    const int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
+    const int32_t* channel_en_B0,
 
-    int32_t delta_local_b1, int32_t* B1slstride, int32_t* B1tlbound,
-    int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
-    int32_t* channel_en_B1,
+    int32_t delta_local_b1, const int32_t* B1slstride, const int32_t* B1tlbound,
+    const int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
+    const int32_t* channel_en_B1,
 
-    int32_t delta_local_d0, int32_t* D0slstride, int32_t* D0tlbound,
-    int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
-    int32_t* channel_en_D0,
+    int32_t delta_local_d0, const int32_t* D0slstride, const int32_t* D0tlbound,
+    const int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
+    const int32_t* channel_en_D0,
 
-    int32_t delta_local_d1, int32_t* D1slstride, int32_t* D1tlbound,
-    int32_t* D1tlstride, int32_t set_addr_remap_index_D1,
-    int32_t* channel_en_D1);
+    int32_t delta_local_d1, const int32_t* D1slstride, const int32_t* D1tlbound,
+    const int32_t* D1tlstride, int32_t set_addr_remap_index_D1,
+    const int32_t* channel_en_D1);
+
+// Configure 3 readers + Writer0, and explicitly idle Writer1.
+// Use for Mode0 single-writer flows.
+void set_dual_versacore_streamer_csr_d0_only(
+    int32_t delta_local_a, const int32_t* Aslstride, const int32_t* Atlbound,
+    const int32_t* Atlstride, int32_t set_addr_remap_index_A,
+    const int32_t* channel_en_A,
+
+    int32_t delta_local_b0, const int32_t* B0slstride, const int32_t* B0tlbound,
+    const int32_t* B0tlstride, int32_t set_addr_remap_index_B0,
+    const int32_t* channel_en_B0,
+
+    int32_t delta_local_b1, const int32_t* B1slstride, const int32_t* B1tlbound,
+    const int32_t* B1tlstride, int32_t set_addr_remap_index_B1,
+    const int32_t* channel_en_B1,
+
+    int32_t delta_local_d0, const int32_t* D0slstride, const int32_t* D0tlbound,
+    const int32_t* D0tlstride, int32_t set_addr_remap_index_D0,
+    const int32_t* channel_en_D0);
 
 // Start streamer
 inline void set_dual_versacore_streamer_start() {
@@ -115,7 +134,7 @@ uint32_t read_dual_versacore_perf_counter();
 uint32_t read_dual_versacore_streamer_perf_counter();
 
 // Check result (int16)
-uint32_t check_dual_versacore_result_i16(int16_t* output, int16_t* output_golden,
+uint32_t check_dual_versacore_result_i16(const int16_t* output, const int16_t* output_golden,
                                          int32_t num_elements);
 
 // Poll until both streamer writers finish.

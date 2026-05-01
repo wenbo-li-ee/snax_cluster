@@ -83,6 +83,7 @@ SUBDIRS += snax-versacore-int16x4-multishape-batch
 endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_int16x4_multidim_spatial_16x2.hjson)
 SUBDIRS += snax-versacore-int16x4-multishape-16x2
+SUBDIRS += snax-versacore-int16x4-multishape-16x2-mode0-single-writer
 endif
 SUBDIRS += snax-multi-cluster-playground
 ifeq ($(CFG_OVERRIDE), cfg/snax_hypercorex_cluster.hjson)

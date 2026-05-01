@@ -683,14 +683,13 @@ $activeChunkCases
             // In mode 1, silu/elem_mul/rescale_mul stay idle (valid=0 already from gating above)
             rescale_mul_out_ready = 1'b1;  // Don't backpressure unused rescale_mul
         end else begin
-            // Mode 0 (SwiGLU): rescale_mul -> both out0 AND out1
-            // Both writers get the same data; Writer1 writes to a dummy address.
-            // Joint handshake: rescale_mul_out_ready only when BOTH assemblies can accept
+            // Mode 0 (SwiGLU): rescale_mul -> out0 only, Writer1 idle.
             oa0_in_data  = rescale_mul_out_data;
-            oa1_in_data  = rescale_mul_out_data;
             oa0_in_valid = rescale_mul_out_valid;
-            oa1_in_valid = rescale_mul_out_valid;
-            rescale_mul_out_ready = oa0_in_ready && oa1_in_ready;
+            rescale_mul_out_ready = oa0_in_ready;
+
+            oa1_in_data  = '0;
+            oa1_in_valid = 1'b0;
 
             // rescale0 ready is driven by SiLU
             rescale0_out_ready = silu_in_ready;
