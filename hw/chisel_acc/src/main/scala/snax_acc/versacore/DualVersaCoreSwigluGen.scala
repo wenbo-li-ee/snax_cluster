@@ -265,13 +265,15 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     logic vc1_ctrl_ready;
     logic vc1_busy;
     logic [31:0] vc1_perf_counter;
+    logic ctrl_valid_to_vc;
+    logic ctrl_accept;
 
     // Tie off C inputs (no partial sum accumulation)
     logic [${params.serialInputCDataWidth}-1:0] tied_c_data;
     assign tied_c_data = '0;
 
     // =========================================================================
-    // Shared A synchronization
+    // Shared A synchronization with VC-local B pairing
     // =========================================================================
     logic [DataWidthA-1:0] a_buf_data;
     logic a_buf_valid;
@@ -279,14 +281,28 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     logic a_buf_sent_1;
     logic a_fire_0;
     logic a_fire_1;
+    logic a_sent_0_next;
+    logic a_sent_1_next;
+    logic a_buf_done;
+    logic a_load_next;
 
-    assign stream2acc_0_ready_o = !a_buf_valid;
+    assign vc0_in_a_valid = a_buf_valid && !a_buf_sent_0 && stream2acc_1_valid_i;
+    assign vc1_in_a_valid = a_buf_valid && !a_buf_sent_1 && stream2acc_2_valid_i;
 
-    assign vc0_in_a_valid = a_buf_valid && !a_buf_sent_0;
-    assign vc1_in_a_valid = a_buf_valid && !a_buf_sent_1;
+    assign vc0_in_b_valid = vc0_in_a_valid;
+    assign vc1_in_b_valid = vc1_in_a_valid;
 
-    assign a_fire_0 = vc0_in_a_valid && vc0_in_a_ready;
-    assign a_fire_1 = vc1_in_a_valid && vc1_in_a_ready;
+    assign stream2acc_1_ready_o = vc0_in_b_ready && vc0_in_a_ready && vc0_in_a_valid;
+    assign stream2acc_2_ready_o = vc1_in_b_ready && vc1_in_a_ready && vc1_in_a_valid;
+
+    assign a_fire_0 = vc0_in_a_valid && vc0_in_a_ready && stream2acc_1_valid_i && vc0_in_b_ready;
+    assign a_fire_1 = vc1_in_a_valid && vc1_in_a_ready && stream2acc_2_valid_i && vc1_in_b_ready;
+    assign a_sent_0_next = a_buf_sent_0 || a_fire_0;
+    assign a_sent_1_next = a_buf_sent_1 || a_fire_1;
+    assign a_buf_done = a_buf_valid && a_sent_0_next && a_sent_1_next;
+
+    assign stream2acc_0_ready_o = !a_buf_valid || a_buf_done;
+    assign a_load_next = stream2acc_0_valid_i && stream2acc_0_ready_o;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -294,35 +310,26 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
             a_buf_sent_0 <= 1'b0;
             a_buf_sent_1 <= 1'b0;
         end else begin
-            if (!a_buf_valid) begin
-                if (stream2acc_0_valid_i) begin
-                    a_buf_valid <= 1'b1;
-                    a_buf_data <= stream2acc_0_data_i;
-                    a_buf_sent_0 <= 1'b0;
-                    a_buf_sent_1 <= 1'b0;
-                end
+            if (a_load_next) begin
+                a_buf_valid <= 1'b1;
+                a_buf_data <= stream2acc_0_data_i;
+                a_buf_sent_0 <= 1'b0;
+                a_buf_sent_1 <= 1'b0;
+            end else if (a_buf_done) begin
+                a_buf_valid <= 1'b0;
+                a_buf_sent_0 <= 1'b0;
+                a_buf_sent_1 <= 1'b0;
             end else begin
-                if (a_fire_0) a_buf_sent_0 <= 1'b1;
-                if (a_fire_1) a_buf_sent_1 <= 1'b1;
-
-                if ((a_buf_sent_0 || a_fire_0) && (a_buf_sent_1 || a_fire_1)) begin
-                    a_buf_valid <= 1'b0;
-                end
+                a_buf_sent_0 <= a_sent_0_next;
+                a_buf_sent_1 <= a_sent_1_next;
             end
         end
     end
 
-    // B0 -> VersaCore 0, B1 -> VersaCore 1
-    assign stream2acc_1_ready_o = vc0_in_b_ready;
-    assign vc0_in_b_valid = stream2acc_1_valid_i;
-
-    assign stream2acc_2_ready_o = vc1_in_b_ready;
-    assign vc1_in_b_valid = stream2acc_2_valid_i;
-
     // CSR control synchronization: both VersaCores must be ready
-    logic ctrl_valid_to_vc;
     assign csr_reg_set_ready_o = vc0_ctrl_ready && vc1_ctrl_ready;
     assign ctrl_valid_to_vc = csr_reg_set_valid_i;
+    assign ctrl_accept = ctrl_valid_to_vc && csr_reg_set_ready_o;
 
     // =========================================================================
     // VersaCore 0
@@ -610,9 +617,9 @@ $activeChunkCases
     // =========================================================================
     logic [PostprocLanes-1:0][31:0] elem_mul_out_data;
     logic elem_mul_out_valid, elem_mul_out_ready;
+    logic elem_mul_in1_valid, elem_mul_in1_ready;
 
     // ElemMul input 1: from rescale1 in mode 0, idle in mode 1
-    logic elem_mul_in1_valid, elem_mul_in1_ready;
     assign elem_mul_in1_valid = rescale1_out_valid && !mode_sel;
 
     elem_mul_16b #(
@@ -669,6 +676,18 @@ $activeChunkCases
     logic [PostprocLanes-1:0][15:0] oa1_in_data;
     logic oa1_in_valid, oa1_in_ready;
 
+    logic [RegDataWidth-1:0] output_quota_beats;
+    logic [RegDataWidth-1:0] out_emit_count_0;
+    logic [RegDataWidth-1:0] out_emit_count_1;
+    logic out_emit_open_0;
+    logic out_emit_open_1;
+    logic mode0_quota_closed;
+
+    assign output_quota_beats = csr_reg_set_i[2] * active_num_chunks(csr_reg_set_i[4]);
+    assign out_emit_open_0 = out_emit_count_0 < output_quota_beats;
+    assign out_emit_open_1 = out_emit_count_1 < output_quota_beats;
+    assign mode0_quota_closed = !mode_sel && !out_emit_open_0 && !out_emit_open_1;
+
     always_comb begin
         if (mode_sel) begin
             // Mode 1 (GEMM): rescale0 -> out0, rescale1 -> out1
@@ -688,9 +707,15 @@ $activeChunkCases
             // Joint handshake: rescale_mul_out_ready only when BOTH assemblies can accept
             oa0_in_data  = rescale_mul_out_data;
             oa1_in_data  = rescale_mul_out_data;
-            oa0_in_valid = rescale_mul_out_valid;
-            oa1_in_valid = rescale_mul_out_valid;
-            rescale_mul_out_ready = oa0_in_ready && oa1_in_ready;
+            if (mode0_quota_closed) begin
+                oa0_in_valid = 1'b0;
+                oa1_in_valid = 1'b0;
+                rescale_mul_out_ready = 1'b1;
+            end else begin
+                oa0_in_valid = rescale_mul_out_valid;
+                oa1_in_valid = rescale_mul_out_valid;
+                rescale_mul_out_ready = oa0_in_ready && oa1_in_ready;
+            end
 
             // rescale0 ready is driven by SiLU
             rescale0_out_ready = silu_in_ready;
@@ -705,6 +730,74 @@ $activeChunkCases
     localparam int unsigned ElemsPerBeatOut = DataWidthOut / 16;
 
     localparam int unsigned OutChunks = (ElemsPerBeatOut + PostprocLanes - 1) / PostprocLanes;
+    logic out_assemble_0_drain_ready;
+    logic out_assemble_1_drain_ready;
+    logic [DataWidthOut-1:0] mode0_direct_data;
+    logic mode0_direct_valid;
+    logic mode0_direct_sent_0;
+    logic mode0_direct_sent_1;
+    logic mode0_direct_fire_0;
+    logic mode0_direct_fire_1;
+    logic mode0_direct_done;
+    logic mode0_direct_ready;
+    logic mode0_direct_load;
+
+    assign out_assemble_0_drain_ready = out_emit_open_0 ? acc2stream_0_ready_i : 1'b1;
+    assign out_assemble_1_drain_ready = out_emit_open_1 ? acc2stream_1_ready_i : 1'b1;
+
+    assign mode0_direct_fire_0 = mode0_direct_valid && !mode0_direct_sent_0 &&
+                                 out_emit_open_0 && acc2stream_0_ready_i;
+    assign mode0_direct_fire_1 = mode0_direct_valid && !mode0_direct_sent_1 &&
+                                 out_emit_open_1 && acc2stream_1_ready_i;
+    assign mode0_direct_done = mode0_direct_valid &&
+                               (mode0_direct_sent_0 || mode0_direct_fire_0) &&
+                               (mode0_direct_sent_1 || mode0_direct_fire_1);
+    assign mode0_direct_ready = !mode0_direct_valid || mode0_direct_done;
+    assign mode0_direct_load = !mode_sel && (OutChunks <= 1) &&
+                               oa0_in_valid && oa0_in_ready;
+
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+            out_emit_count_0 <= '0;
+            out_emit_count_1 <= '0;
+            mode0_direct_valid <= 1'b0;
+            mode0_direct_sent_0 <= 1'b0;
+            mode0_direct_sent_1 <= 1'b0;
+        end else if (ctrl_accept) begin
+            out_emit_count_0 <= '0;
+            out_emit_count_1 <= '0;
+            mode0_direct_valid <= 1'b0;
+            mode0_direct_sent_0 <= 1'b0;
+            mode0_direct_sent_1 <= 1'b0;
+        end else begin
+            if (acc2stream_0_valid_o && out_emit_open_0 && acc2stream_0_ready_i) begin
+                out_emit_count_0 <= out_emit_count_0 + 1;
+            end
+            if (acc2stream_1_valid_o && out_emit_open_1 && acc2stream_1_ready_i) begin
+                out_emit_count_1 <= out_emit_count_1 + 1;
+            end
+
+            if (mode0_direct_load) begin
+                mode0_direct_valid <= 1'b1;
+                mode0_direct_sent_0 <= 1'b0;
+                mode0_direct_sent_1 <= 1'b0;
+                for (int i = 0; i < PostprocLanes; i++) begin
+                    int idx;
+                    idx = i;
+                    if (idx < ElemsPerBeatOut) begin
+                        mode0_direct_data[idx*16 +: 16] <= oa0_in_data[i];
+                    end
+                end
+            end else if (mode0_direct_done) begin
+                mode0_direct_valid <= 1'b0;
+                mode0_direct_sent_0 <= 1'b0;
+                mode0_direct_sent_1 <= 1'b0;
+            end else if (mode0_direct_valid) begin
+                if (mode0_direct_fire_0) mode0_direct_sent_0 <= 1'b1;
+                if (mode0_direct_fire_1) mode0_direct_sent_1 <= 1'b1;
+            end
+        end
+    end
 
     logic [$$clog2(OutChunks > 1 ? OutChunks : 2)-1:0] out_chunk_cnt_0;
     logic out_chunk_last_0;
@@ -713,7 +806,9 @@ $activeChunkCases
     logic [DataWidthOut-1:0] out_assemble_0;
     logic out_assemble_0_valid;
 
-    assign oa0_in_ready = !out_assemble_0_valid;
+    assign oa0_in_ready = (!mode_sel && (OutChunks <= 1)) ? mode0_direct_ready :
+                           ((OutChunks <= 1) ? out_assemble_0_drain_ready :
+                           (!out_assemble_0_valid || out_assemble_0_drain_ready));
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -736,14 +831,17 @@ $activeChunkCases
                     out_chunk_cnt_0 <= out_chunk_cnt_0 + 1;
                     out_assemble_0_valid <= 1'b0;
                 end
-            end else if (out_assemble_0_valid && acc2stream_0_ready_i) begin
+            end else if (out_assemble_0_valid && out_assemble_0_drain_ready) begin
                 out_assemble_0_valid <= 1'b0;
             end
         end
     end
 
-    assign acc2stream_0_data_o = out_assemble_0;
-    assign acc2stream_0_valid_o = out_assemble_0_valid;
+    assign acc2stream_0_data_o = (!mode_sel && (OutChunks <= 1)) ? mode0_direct_data :
+                                 ((OutChunks <= 1) ? oa0_in_data : out_assemble_0);
+    assign acc2stream_0_valid_o = (!mode_sel && (OutChunks <= 1)) ?
+                                  (mode0_direct_valid && !mode0_direct_sent_0 && out_emit_open_0) :
+                                  (((OutChunks <= 1) ? oa0_in_valid : out_assemble_0_valid) && out_emit_open_0);
 
     // =========================================================================
     // Output assembly 1: reassemble chunks into DataWidthOut-bit beats (int16)
@@ -755,7 +853,9 @@ $activeChunkCases
     logic [DataWidthOut-1:0] out_assemble_1;
     logic out_assemble_1_valid;
 
-    assign oa1_in_ready = !out_assemble_1_valid;
+    assign oa1_in_ready = (!mode_sel && (OutChunks <= 1)) ? mode0_direct_ready :
+                           ((OutChunks <= 1) ? out_assemble_1_drain_ready :
+                           (!out_assemble_1_valid || out_assemble_1_drain_ready));
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -778,14 +878,17 @@ $activeChunkCases
                     out_chunk_cnt_1 <= out_chunk_cnt_1 + 1;
                     out_assemble_1_valid <= 1'b0;
                 end
-            end else if (out_assemble_1_valid && acc2stream_1_ready_i) begin
+            end else if (out_assemble_1_valid && out_assemble_1_drain_ready) begin
                 out_assemble_1_valid <= 1'b0;
             end
         end
     end
 
-    assign acc2stream_1_data_o = out_assemble_1;
-    assign acc2stream_1_valid_o = out_assemble_1_valid;
+    assign acc2stream_1_data_o = (!mode_sel && (OutChunks <= 1)) ? mode0_direct_data :
+                                 ((OutChunks <= 1) ? oa1_in_data : out_assemble_1);
+    assign acc2stream_1_valid_o = (!mode_sel && (OutChunks <= 1)) ?
+                                  (mode0_direct_valid && !mode0_direct_sent_1 && out_emit_open_1) :
+                                  (((OutChunks <= 1) ? oa1_in_valid : out_assemble_1_valid) && out_emit_open_1);
 
     // =========================================================================
     // Read-only CSR outputs

@@ -36,7 +36,6 @@ module silu_multilane #(
 
     // Output interface
     assign ready_o        = !stage_valid[0] || stage_ready[0];
-    assign valid_o        = stage_valid[2];
     assign stage_ready[2] = ready_i;
 
     // Ready propagation (backward)
@@ -68,6 +67,7 @@ module silu_multilane #(
     // data_o is taken from silu_top output (stage 2 result)
     // -----------------------------------------------------------------------
     logic [NUM_LANES-1:0][15:0] silu_y_out;
+    logic [NUM_LANES-1:0]       silu_valid_out;
 
     genvar l;
     generate
@@ -82,11 +82,12 @@ module silu_multilane #(
                 .ce2        (ce[2]),
                 .y_out      (silu_y_out[l]),
                 .seg_idx_out(),
-                .valid_out  ()
+                .valid_out  (silu_valid_out[l])
             );
         end
     endgenerate
 
     assign data_o = silu_y_out;
+    assign valid_o = silu_valid_out[0];
 
 endmodule
