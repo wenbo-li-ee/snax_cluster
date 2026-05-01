@@ -279,14 +279,18 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     logic a_buf_sent_1;
     logic a_fire_0;
     logic a_fire_1;
-
-    assign stream2acc_0_ready_o = !a_buf_valid;
+    logic a_buf_done;
 
     assign vc0_in_a_valid = a_buf_valid && !a_buf_sent_0;
     assign vc1_in_a_valid = a_buf_valid && !a_buf_sent_1;
 
     assign a_fire_0 = vc0_in_a_valid && vc0_in_a_ready;
     assign a_fire_1 = vc1_in_a_valid && vc1_in_a_ready;
+    assign a_buf_done = a_buf_valid &&
+                        (a_buf_sent_0 || a_fire_0) &&
+                        (a_buf_sent_1 || a_fire_1);
+
+    assign stream2acc_0_ready_o = !a_buf_valid || a_buf_done;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -294,20 +298,20 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
             a_buf_sent_0 <= 1'b0;
             a_buf_sent_1 <= 1'b0;
         end else begin
-            if (!a_buf_valid) begin
+            if (!a_buf_valid || a_buf_done) begin
                 if (stream2acc_0_valid_i) begin
                     a_buf_valid <= 1'b1;
                     a_buf_data <= stream2acc_0_data_i;
+                    a_buf_sent_0 <= 1'b0;
+                    a_buf_sent_1 <= 1'b0;
+                end else begin
+                    a_buf_valid <= 1'b0;
                     a_buf_sent_0 <= 1'b0;
                     a_buf_sent_1 <= 1'b0;
                 end
             end else begin
                 if (a_fire_0) a_buf_sent_0 <= 1'b1;
                 if (a_fire_1) a_buf_sent_1 <= 1'b1;
-
-                if ((a_buf_sent_0 || a_fire_0) && (a_buf_sent_1 || a_fire_1)) begin
-                    a_buf_valid <= 1'b0;
-                end
             end
         end
     end
