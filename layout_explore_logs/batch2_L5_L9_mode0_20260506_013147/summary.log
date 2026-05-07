@@ -1,0 +1,46 @@
+L5 a32_b1_bank32 staging dataset: bytes=4415504 A_stride=4128 B0_bank=0 B1_bank=32 D0_bank=0
+L5 S0 Mode0 D0: PASS, Error: 0
+L5 S0 Mode0 Cycles: accel=90161, streamer=90185, wall=100704
+L5 S1 Mode0 D0: PASS, Error: 0
+L5 S1 Mode0 Cycles: accel=45106, streamer=45130, wall=55302
+L5 S2 Mode0 D0: PASS, Error: 0
+L5 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=32816
+L5 a32_b1_bank32 total checks: 3, total error: 0
+=== STATUS L5 MODE0: 0 ===
+L6 a32_b0_bank16_b1_bank48 staging dataset: bytes=4416528 A_stride=4128 B0_bank=16 B1_bank=48 D0_bank=0
+L6 S0 Mode0 D0: PASS, Error: 0
+L6 S0 Mode0 Cycles: accel=90162, streamer=90186, wall=100708
+L6 S1 Mode0 D0: PASS, Error: 0
+L6 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55198
+L6 S2 Mode0 D0: PASS, Error: 0
+L6 S2 Mode0 Cycles: accel=22548, streamer=22572, wall=32506
+L6 a32_b0_bank16_b1_bank48 total checks: 3, total error: 0
+=== STATUS L6 MODE0: 0 ===
+L7 a32_d0_bank32 staging dataset: bytes=4415504 A_stride=4128 B0_bank=0 B1_bank=0 D0_bank=32
+L7 S0 Mode0 D0: PASS, Error: 0
+L7 S0 Mode0 Cycles: accel=90164, streamer=90188, wall=100723
+L7 S1 Mode0 D0: PASS, Error: 0
+L7 S1 Mode0 Cycles: accel=45088, streamer=45112, wall=55323
+L7 S2 Mode0 D0: PASS, Error: 0
+L7 S2 Mode0 Cycles: accel=25124, streamer=25148, wall=35118
+L7 a32_d0_bank32 total checks: 3, total error: 0
+=== STATUS L7 MODE0: 0 ===
+L8 a32_b1_bank32_d0_bank48 staging dataset: bytes=4416528 A_stride=4128 B0_bank=0 B1_bank=32 D0_bank=48
+L8 S0 Mode0 D0: PASS, Error: 0
+L8 S0 Mode0 Cycles: accel=90161, streamer=90185, wall=100699
+L8 S1 Mode0 D0: PASS, Error: 0
+L8 S1 Mode0 Cycles: accel=45085, streamer=45109, wall=55204
+L8 S2 Mode0 D0: PASS, Error: 0
+L8 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=32617
+L8 a32_b1_bank32_d0_bank48 total checks: 3, total error: 0
+=== STATUS L8 MODE0: 0 ===
+L9 a32_b0_bank16_b1_bank32_d0_bank48 staging dataset: bytes=4417552 A_stride=4128 B0_bank=16 B1_bank=32 D0_bank=48
+L9 S0 Mode0 D0: PASS, Error: 0
+L9 S0 Mode0 Cycles: accel=90162, streamer=90186, wall=100700
+L9 S1 Mode0 D0: PASS, Error: 0
+L9 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55203
+L9 S2 Mode0 D0: PASS, Error: 0
+L9 S2 Mode0 Cycles: accel=22548, streamer=22572, wall=32596
+L9 a32_b0_bank16_b1_bank32_d0_bank48 total checks: 3, total error: 0
+=== STATUS L9 MODE0: 0 ===
+=== BATCH L5-L9 DONE ===

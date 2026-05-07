@@ -1,0 +1,57 @@
+K8 8x4 Mode1 per-token layout exploration: layouts=50 shapes=3
+L0 baseline_tight_a_1024_align staging dataset: bytes=4413456 A_stride=4096 B0_bank=0 B1_bank=0 D0_bank=0
+L0 baseline_tight_a_1024_align dataset ready
+L0 S0 start
+L0 S0 Mode0 configure streamer
+L0 S0 Mode0 configure core
+L0 S0 Mode0 start
+L0 S0 Mode0 wait accel
+L0 S0 Mode0 wait writer
+L0 S0 Mode0 D0: PASS, Error: 0
+L0 S0 Mode0 Cycles: accel=111600, streamer=111624, wall=122105
+L0 S0 Mode1 configure streamer
+L0 S0 Mode1 configure core
+L0 S0 Mode1 start
+L0 S0 Mode1 wait accel
+L0 S0 Mode1 wait writer
+L0 S0 Mode1 D0: PASS, Error: 0
+L0 S0 Mode1 D1: PASS, Error: 0
+L0 S0 Mode1 Cycles: accel=54921, streamer=54939, wall=65426
+L0 S1 start
+L0 S1 Mode0 configure streamer
+L0 S1 Mode0 configure core
+L0 S1 Mode0 start
+L0 S1 Mode0 wait accel
+L0 S1 Mode0 wait writer
+L0 S1 Mode0 D0: PASS, Error: 0
+L0 S1 Mode0 Cycles: accel=45285, streamer=45309, wall=55501
+L0 S1 Mode1 configure streamer
+L0 S1 Mode1 configure core
+L0 S1 Mode1 start
+L0 S1 Mode1 wait accel
+L0 S1 Mode1 wait writer
+L0 S1 Mode1 D0: PASS, Error: 0
+L0 S1 Mode1 D1: PASS, Error: 0
+L0 S1 Mode1 Cycles: accel=24429, streamer=24447, wall=34820
+L0 S2 start
+L0 S2 Mode0 configure streamer
+L0 S2 Mode0 configure core
+L0 S2 Mode0 start
+L0 S2 Mode0 wait accel
+L0 S2 Mode0 wait writer
+L0 S2 Mode0 D0: PASS, Error: 0
+L0 S2 Mode0 Cycles: accel=27580, streamer=27604, wall=37699
+L0 S2 Mode1 configure streamer
+L0 S2 Mode1 configure core
+L0 S2 Mode1 start
+L0 S2 Mode1 wait accel
+L0 S2 Mode1 wait writer
+L0 S2 Mode1 D0: PASS, Error: 0
+L0 S2 Mode1 D1: PASS, Error: 0
+L0 S2 Mode1 Cycles: accel=11288, streamer=11306, wall=21592
+L0 baseline_tight_a_1024_align total checks: 9, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

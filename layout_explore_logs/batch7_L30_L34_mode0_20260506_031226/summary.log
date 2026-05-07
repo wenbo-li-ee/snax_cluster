@@ -1,0 +1,46 @@
+L30 a8_b1_bank34 staging dataset: bytes=4415504 A_stride=4104 B0_bank=0 B1_bank=34 D0_bank=0
+L30 S0 Mode0 D0: PASS, Error: 0
+L30 S0 Mode0 Cycles: accel=98201, streamer=98225, wall=109030
+L30 S1 Mode0 D0: PASS, Error: 0
+L30 S1 Mode0 Cycles: accel=45088, streamer=45112, wall=55517
+L30 S2 Mode0 D0: PASS, Error: 0
+L30 S2 Mode0 Cycles: accel=22556, streamer=22580, wall=32814
+L30 a8_b1_bank34 total checks: 3, total error: 0
+=== STATUS L30 MODE0: 0 ===
+L31 a16_b1_bank34 staging dataset: bytes=4415504 A_stride=4112 B0_bank=0 B1_bank=34 D0_bank=0
+L31 S0 Mode0 D0: PASS, Error: 0
+L31 S0 Mode0 Cycles: accel=90165, streamer=90189, wall=100918
+L31 S1 Mode0 D0: PASS, Error: 0
+L31 S1 Mode0 Cycles: accel=45087, streamer=45111, wall=55520
+L31 S2 Mode0 D0: PASS, Error: 0
+L31 S2 Mode0 Cycles: accel=22550, streamer=22574, wall=32821
+L31 a16_b1_bank34 total checks: 3, total error: 0
+=== STATUS L31 MODE0: 0 ===
+L32 a24_b1_bank34 staging dataset: bytes=4415504 A_stride=4120 B0_bank=0 B1_bank=34 D0_bank=0
+L32 S0 Mode0 D0: PASS, Error: 0
+L32 S0 Mode0 Cycles: accel=90163, streamer=90187, wall=100917
+L32 S1 Mode0 D0: PASS, Error: 0
+L32 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55508
+L32 S2 Mode0 D0: PASS, Error: 0
+L32 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=32813
+L32 a24_b1_bank34 total checks: 3, total error: 0
+=== STATUS L32 MODE0: 0 ===
+L33 a40_b1_bank34 staging dataset: bytes=4415504 A_stride=4136 B0_bank=0 B1_bank=34 D0_bank=0
+L33 S0 Mode0 D0: PASS, Error: 0
+L33 S0 Mode0 Cycles: accel=90163, streamer=90187, wall=100920
+L33 S1 Mode0 D0: PASS, Error: 0
+L33 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55416
+L33 S2 Mode0 D0: PASS, Error: 0
+L33 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=32813
+L33 a40_b1_bank34 total checks: 3, total error: 0
+=== STATUS L33 MODE0: 0 ===
+L34 a48_b1_bank34 staging dataset: bytes=4415504 A_stride=4144 B0_bank=0 B1_bank=34 D0_bank=0
+L34 S0 Mode0 D0: PASS, Error: 0
+L34 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100906
+L34 S1 Mode0 D0: PASS, Error: 0
+L34 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55611
+L34 S2 Mode0 D0: PASS, Error: 0
+L34 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=32813
+L34 a48_b1_bank34 total checks: 3, total error: 0
+=== STATUS L34 MODE0: 0 ===
+=== BATCH L30-L34 DONE ===

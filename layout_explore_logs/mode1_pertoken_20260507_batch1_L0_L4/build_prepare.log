@@ -1,0 +1,6 @@
+make: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken-layout-explore'
+rm -f /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken-layout-explore/data/data.h
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken-layout-explore/build
+rm: cannot remove '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken-layout-explore/build': Directory not empty
+make: *** [../common.mk:76: clean] Error 1
+make: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken-layout-explore'

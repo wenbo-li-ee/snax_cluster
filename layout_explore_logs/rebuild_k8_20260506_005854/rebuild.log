@@ -1,0 +1,3 @@
+=== SNAXGEN BENDER TARGETS ===
+=== RTL GEN ===
+make: *** No rule to make target 'rtl-gen'.  Stop.

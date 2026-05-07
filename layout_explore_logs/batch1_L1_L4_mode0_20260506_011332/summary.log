@@ -1,0 +1,37 @@
+L1 a_pad_32b_bank_inc4 staging dataset: bytes=4414480 A_stride=4128 B0_bank=0 B1_bank=0
+L1 S0 Mode0 D0: PASS, Error: 0
+L1 S0 Mode0 Cycles: accel=90164, streamer=90188, wall=100712
+L1 S1 Mode0 D0: PASS, Error: 0
+L1 S1 Mode0 Cycles: accel=45088, streamer=45112, wall=55222
+L1 S2 Mode0 D0: PASS, Error: 0
+L1 S2 Mode0 Cycles: accel=25126, streamer=25150, wall=35115
+L1 a_pad_32b_bank_inc4 total checks: 3, total error: 0
+=== STATUS L1 MODE0: 0 ===
+L2 a_pad_64b_bank_inc8 staging dataset: bytes=4414480 A_stride=4160 B0_bank=0 B1_bank=0
+L2 S0 Mode0 D0: PASS, Error: 0
+L2 S0 Mode0 Cycles: accel=90164, streamer=90188, wall=100699
+L2 S1 Mode0 D0: PASS, Error: 0
+L2 S1 Mode0 Cycles: accel=45088, streamer=45112, wall=55199
+L2 S2 Mode0 D0: PASS, Error: 0
+L2 S2 Mode0 Cycles: accel=25125, streamer=25149, wall=35095
+L2 a_pad_64b_bank_inc8 total checks: 3, total error: 0
+=== STATUS L2 MODE0: 0 ===
+L3 a_pad_72b_bank_inc9 staging dataset: bytes=4414480 A_stride=4168 B0_bank=0 B1_bank=0
+L3 S0 Mode0 D0: PASS, Error: 0
+L3 S0 Mode0 Cycles: accel=90165, streamer=90189, wall=100703
+L3 S1 Mode0 D0: PASS, Error: 0
+L3 S1 Mode0 Cycles: accel=45088, streamer=45112, wall=55199
+L3 S2 Mode0 D0: PASS, Error: 0
+L3 S2 Mode0 Cycles: accel=25125, streamer=25149, wall=35096
+L3 a_pad_72b_bank_inc9 total checks: 3, total error: 0
+=== STATUS L3 MODE0: 0 ===
+L4 a_pad_88b_bank_inc11 staging dataset: bytes=4414480 A_stride=4184 B0_bank=0 B1_bank=0
+L4 S0 Mode0 D0: PASS, Error: 0
+L4 S0 Mode0 Cycles: accel=90163, streamer=90187, wall=100717
+L4 S1 Mode0 D0: PASS, Error: 0
+L4 S1 Mode0 Cycles: accel=45088, streamer=45112, wall=55317
+L4 S2 Mode0 D0: PASS, Error: 0
+L4 S2 Mode0 Cycles: accel=25125, streamer=25149, wall=35119
+L4 a_pad_88b_bank_inc11 total checks: 3, total error: 0
+=== STATUS L4 MODE0: 0 ===
+=== BATCH L1-L4 DONE ===

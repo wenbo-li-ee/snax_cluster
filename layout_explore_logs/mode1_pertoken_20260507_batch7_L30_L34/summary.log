@@ -1,0 +1,125 @@
+L30 shape-split results
+L30 S0 exit 0
+L30 a48_b1_bank52_w2_16_48 staging dataset: bytes=4417552 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=0
+L30 S0 Mode0 D0: PASS, Error: 0
+L30 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100803
+L30 S0 Mode1 D0: PASS, Error: 0
+L30 S0 Mode1 D1: PASS, Error: 0
+L30 S0 Mode1 Cycles: accel=47897, streamer=47915, wall=58803
+L30 a48_b1_bank52_w2_16_48 total checks: 3, total error: 0
+L30 S1 exit 0
+L30 a48_b1_bank52_w2_16_48 staging dataset: bytes=4417552 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=0
+L30 S1 Mode0 D0: PASS, Error: 0
+L30 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55819
+L30 S1 Mode1 D0: PASS, Error: 0
+L30 S1 Mode1 D1: PASS, Error: 0
+L30 S1 Mode1 Cycles: accel=24400, streamer=24418, wall=35321
+L30 a48_b1_bank52_w2_16_48 total checks: 3, total error: 0
+L30 S2 exit 0
+L30 a48_b1_bank52_w2_16_48 staging dataset: bytes=4417552 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=0
+L30 S2 Mode0 D0: PASS, Error: 0
+L30 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=33314
+L30 S2 Mode1 D0: PASS, Error: 0
+L30 S2 Mode1 D1: PASS, Error: 0
+L30 S2 Mode1 Cycles: accel=11293, streamer=11311, wall=22130
+L30 a48_b1_bank52_w2_16_48 total checks: 3, total error: 0
+L31 shape-split results
+L31 S0 exit 0
+L31 a56_b1_bank28_w2_16_48 staging dataset: bytes=4417552 A_stride=4152 B0_bank=0 B1_bank=28 D0_bank=0
+L31 S0 Mode0 D0: PASS, Error: 0
+L31 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100812
+L31 S0 Mode1 D0: PASS, Error: 0
+L31 S0 Mode1 D1: PASS, Error: 0
+L31 S0 Mode1 Cycles: accel=47905, streamer=47923, wall=58815
+L31 a56_b1_bank28_w2_16_48 total checks: 3, total error: 0
+L31 S1 exit 0
+L31 a56_b1_bank28_w2_16_48 staging dataset: bytes=4417552 A_stride=4152 B0_bank=0 B1_bank=28 D0_bank=0
+L31 S1 Mode0 D0: PASS, Error: 0
+L31 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55808
+L31 S1 Mode1 D0: PASS, Error: 0
+L31 S1 Mode1 D1: PASS, Error: 0
+L31 S1 Mode1 Cycles: accel=24400, streamer=24418, wall=35321
+L31 a56_b1_bank28_w2_16_48 total checks: 3, total error: 0
+L31 S2 exit 0
+L31 a56_b1_bank28_w2_16_48 staging dataset: bytes=4417552 A_stride=4152 B0_bank=0 B1_bank=28 D0_bank=0
+L31 S2 Mode0 D0: PASS, Error: 0
+L31 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=33316
+L31 S2 Mode1 D0: PASS, Error: 0
+L31 S2 Mode1 D1: PASS, Error: 0
+L31 S2 Mode1 Cycles: accel=11293, streamer=11311, wall=22219
+L31 a56_b1_bank28_w2_16_48 total checks: 3, total error: 0
+L32 shape-split results
+L32 S0 exit 0
+L32 a48_b1_bank52_m1d0_32_m1d1_48 staging dataset: bytes=4416128 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=0
+L32 S0 Mode0 D0: PASS, Error: 0
+L32 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100809
+L32 S0 Mode1 D0: PASS, Error: 0
+L32 S0 Mode1 D1: PASS, Error: 0
+L32 S0 Mode1 Cycles: accel=54868, streamer=54886, wall=65723
+L32 a48_b1_bank52_m1d0_32_m1d1_48 total checks: 3, total error: 0
+L32 S1 exit 0
+L32 a48_b1_bank52_m1d0_32_m1d1_48 staging dataset: bytes=4416128 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=0
+L32 S1 Mode0 D0: PASS, Error: 0
+L32 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55818
+L32 S1 Mode1 D0: PASS, Error: 0
+L32 S1 Mode1 D1: PASS, Error: 0
+L32 S1 Mode1 Cycles: accel=24460, streamer=24491, wall=35306
+L32 a48_b1_bank52_m1d0_32_m1d1_48 total checks: 3, total error: 0
+L32 S2 exit 0
+L32 a48_b1_bank52_m1d0_32_m1d1_48 staging dataset: bytes=4416128 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=0
+L32 S2 Mode0 D0: PASS, Error: 0
+L32 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=33318
+L32 S2 Mode1 D0: PASS, Error: 0
+L32 S2 Mode1 D1: PASS, Error: 0
+L32 S2 Mode1 Cycles: accel=11293, streamer=11324, wall=22199
+L32 a48_b1_bank52_m1d0_32_m1d1_48 total checks: 3, total error: 0
+L33 shape-split results
+L33 S0 exit 0
+L33 a56_b1_bank28_m1d0_32_m1d1_48 staging dataset: bytes=4416128 A_stride=4152 B0_bank=0 B1_bank=28 D0_bank=0
+L33 S0 Mode0 D0: PASS, Error: 0
+L33 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100818
+L33 S0 Mode1 D0: PASS, Error: 0
+L33 S0 Mode1 D1: PASS, Error: 0
+L33 S0 Mode1 Cycles: accel=54868, streamer=54886, wall=65711
+L33 a56_b1_bank28_m1d0_32_m1d1_48 total checks: 3, total error: 0
+L33 S1 exit 0
+L33 a56_b1_bank28_m1d0_32_m1d1_48 staging dataset: bytes=4416128 A_stride=4152 B0_bank=0 B1_bank=28 D0_bank=0
+L33 S1 Mode0 D0: PASS, Error: 0
+L33 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55815
+L33 S1 Mode1 D0: PASS, Error: 0
+L33 S1 Mode1 D1: PASS, Error: 0
+L33 S1 Mode1 Cycles: accel=24460, streamer=24491, wall=35306
+L33 a56_b1_bank28_m1d0_32_m1d1_48 total checks: 3, total error: 0
+L33 S2 exit 0
+L33 a56_b1_bank28_m1d0_32_m1d1_48 staging dataset: bytes=4416128 A_stride=4152 B0_bank=0 B1_bank=28 D0_bank=0
+L33 S2 Mode0 D0: PASS, Error: 0
+L33 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=33326
+L33 S2 Mode1 D0: PASS, Error: 0
+L33 S2 Mode1 D1: PASS, Error: 0
+L33 S2 Mode1 Cycles: accel=11303, streamer=11321, wall=22215
+L33 a56_b1_bank28_m1d0_32_m1d1_48 total checks: 3, total error: 0
+L34 shape-split results
+L34 S0 exit 0
+L34 a48_b1_bank52_d0_32_w2_16_48 staging dataset: bytes=4418576 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=32
+L34 S0 Mode0 D0: PASS, Error: 0
+L34 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100813
+L34 S0 Mode1 D0: PASS, Error: 0
+L34 S0 Mode1 D1: PASS, Error: 0
+L34 S0 Mode1 Cycles: accel=47898, streamer=47916, wall=58813
+L34 a48_b1_bank52_d0_32_w2_16_48 total checks: 3, total error: 0
+L34 S1 exit 0
+L34 a48_b1_bank52_d0_32_w2_16_48 staging dataset: bytes=4418576 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=32
+L34 S1 Mode0 D0: PASS, Error: 0
+L34 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55806
+L34 S1 Mode1 D0: PASS, Error: 0
+L34 S1 Mode1 D1: PASS, Error: 0
+L34 S1 Mode1 Cycles: accel=24249, streamer=24267, wall=35114
+L34 a48_b1_bank52_d0_32_w2_16_48 total checks: 3, total error: 0
+L34 S2 exit 0
+L34 a48_b1_bank52_d0_32_w2_16_48 staging dataset: bytes=4418576 A_stride=4144 B0_bank=0 B1_bank=52 D0_bank=32
+L34 S2 Mode0 D0: PASS, Error: 0
+L34 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=33318
+L34 S2 Mode1 D0: PASS, Error: 0
+L34 S2 Mode1 D1: PASS, Error: 0
+L34 S2 Mode1 Cycles: accel=11289, streamer=11307, wall=22229
+L34 a48_b1_bank52_d0_32_w2_16_48 total checks: 3, total error: 0

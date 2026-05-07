@@ -90,6 +90,10 @@ SUBDIRS += snax-versacore-int16x4-multishape-16x2-layout-explore
 endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_int16x4_multidim_spatial_k8_8x4_4lane.hjson)
 SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-mode0-single-writer
+SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken
+SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-l27-mode1-pertoken
+SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-layout-explore
+SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-mode1-pertoken-layout-explore
 endif
 SUBDIRS += snax-multi-cluster-playground
 ifeq ($(CFG_OVERRIDE), cfg/snax_hypercorex_cluster.hjson)

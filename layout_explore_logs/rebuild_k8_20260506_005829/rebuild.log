@@ -1,0 +1,11 @@
+=== SNAXGEN BENDER TARGETS ===
+Traceback (most recent call last):
+  File "/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/util/snaxgen/snaxgen.py", line 815, in <module>
+    main()
+  File "/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/util/snaxgen/snaxgen.py", line 386, in main
+    cfg = get_config(args.cfg_path)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/util/snaxgen/snaxgen.py", line 25, in get_config
+    with open(cfg_path, "r") as jsonf:
+         ^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'cfg/snax_dual_versacore_int16x4_multidim_spatial_k8_8x4_4lane.hjson'

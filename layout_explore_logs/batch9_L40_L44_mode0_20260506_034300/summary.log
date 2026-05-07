@@ -1,0 +1,4 @@
+L40 a28_b1_bank34 staging dataset: bytes=4415504 A_stride=4124 B0_bank=0 B1_bank=34 D0_bank=0
+=== STATUS L40 MODE0: 0 ===
+L41 a36_b1_bank34 staging dataset: bytes=4415504 A_stride=4132 B0_bank=0 B1_bank=34 D0_bank=0
+=== STATUS L41 MODE0: 255 ===

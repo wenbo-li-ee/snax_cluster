@@ -1,0 +1,25 @@
+K8 8x4 Mode1 per-token layout exploration: layouts=50 shapes=3
+L37 a64_b1_bank34 staging dataset: bytes=4415504 A_stride=4160 B0_bank=0 B1_bank=34 D0_bank=0
+L37 a64_b1_bank34 dataset ready
+L37 S1 start
+L37 S1 Mode0 configure streamer
+L37 S1 Mode0 configure core
+L37 S1 Mode0 start
+L37 S1 Mode0 wait accel
+L37 S1 Mode0 wait writer
+L37 S1 Mode0 D0: PASS, Error: 0
+L37 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55815
+L37 S1 Mode1 configure streamer
+L37 S1 Mode1 configure core
+L37 S1 Mode1 start
+L37 S1 Mode1 wait accel
+L37 S1 Mode1 wait writer
+L37 S1 Mode1 D0: PASS, Error: 0
+L37 S1 Mode1 D1: PASS, Error: 0
+L37 S1 Mode1 Cycles: accel=24462, streamer=24493, wall=35309
+L37 a64_b1_bank34 total checks: 3, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm
