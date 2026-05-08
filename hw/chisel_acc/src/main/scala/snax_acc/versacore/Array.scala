@@ -121,7 +121,7 @@ class SpatialArray(params: SpatialArrayParam) extends Module with RequireAsyncRe
 
   // Synchronize and pipeline in_c to match the multiplier + register stage latency
   val in_c_after_pipe = Wire(Decoupled(chiselTypeOf(io.array_data.in_c.bits)))
-  in_c_before_pipe -|> in_c_after_pipe
+  in_c_before_pipe -||> in_c_after_pipe
 
   val inputC = params.arrayDim.zipWithIndex.map { case (dims, dataTypeIdx) =>
     dims.map(dim => {
@@ -208,16 +208,16 @@ class SpatialArray(params: SpatialArrayParam) extends Module with RequireAsyncRe
     val output_bits  = VecInit(muls.map(_.io.out.bits))
     val output_valid = muls.map(_.io.out.valid).reduce(_ && _)
 
-    // create a Decoupled output for the multipliers' results, which will be connected to the adder tree input through a pipeline register (-|>)
+    // create a Decoupled output for the multipliers' results, which will be connected to the adder tree input through a full-bandwidth cut
     val muls_out_data =
       Wire(Decoupled(Vec(params.multiplierNum(dataTypeIdx), UInt(params.inputTypeC(dataTypeIdx).width.W))))
     muls_out_data.bits  := output_bits
     muls_out_data.valid := output_valid
-    // The multipliers' ready signal comes from the pipeline register (-|>).
+    // The multipliers' ready signal comes from the full-bandwidth cut.
     muls.foreach(_.io.out.ready := muls_out_data.ready)
 
-    // Use the -|> operator to insert a pipeline register
-    muls_out_data -|> tree.io.in
+    // Use a full-bandwidth cut so the array can issue one wave per cycle.
+    muls_out_data -||> tree.io.in
   }
 
   // adder tree runtime configuration
