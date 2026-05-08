@@ -1,0 +1,21 @@
+S0 exit 0
+L15 l15_contiguous_2048_per_token staging dataset: bytes=4416768 A_stride=4128 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048
+L15 S0 Mode0 D0: PASS, Error: 0
+L15 S0 Mode0 Cycles: accel=90117, streamer=90141, wall=100716
+L15 S0 Mode1 D contiguous: PASS, Error: 0
+L15 S0 Mode1 Cycles: accel=47311, streamer=47330, wall=58124
+L15 l15_contiguous_2048_per_token total checks: 2, total error: 0
+S1 exit 0
+L15 l15_contiguous_2048_per_token staging dataset: bytes=4416768 A_stride=4128 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048
+L15 S1 Mode0 D0: PASS, Error: 0
+L15 S1 Mode0 Cycles: accel=45086, streamer=45110, wall=55710
+L15 S1 Mode1 D contiguous: PASS, Error: 0
+L15 S1 Mode1 Cycles: accel=23465, streamer=23484, wall=34306
+L15 l15_contiguous_2048_per_token total checks: 2, total error: 0
+S2 exit 0
+L15 l15_contiguous_2048_per_token staging dataset: bytes=4416768 A_stride=4128 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048
+L15 S2 Mode0 D0: PASS, Error: 0
+L15 S2 Mode0 Cycles: accel=22549, streamer=22573, wall=33110
+L15 S2 Mode1 D contiguous: PASS, Error: 0
+L15 S2 Mode1 Cycles: accel=11312, streamer=11331, wall=22123
+L15 l15_contiguous_2048_per_token total checks: 2, total error: 0
