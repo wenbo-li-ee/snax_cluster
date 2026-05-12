@@ -218,6 +218,7 @@ static int stage_layout(const layout_cfg_t *layout) {
     }
 
     if (snrt_is_dm_core()) {
+        uint32_t dma_start = snrt_mcycle();
         snrt_dma_start_1d(local_a, layout->a_data, layout->a_data_length);
         snrt_dma_start_1d(local_b0, layout->w_data, layout->b_data_length);
         snrt_dma_start_1d(local_b1, layout->v_data, layout->b_data_length);
@@ -226,6 +227,9 @@ static int stage_layout(const layout_cfg_t *layout) {
         snrt_dma_start_1d(local_w2r, layout->w2_right_data,
                           layout->w2_data_length);
         snrt_dma_wait_all();
+        uint32_t dma_end = snrt_mcycle();
+        printf("L%d %s DMA staging cycles: %u\n", layout->layout_id,
+               layout->name, dma_end - dma_start);
     }
 
     snrt_cluster_hw_barrier();

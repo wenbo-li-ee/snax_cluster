@@ -1,0 +1,12 @@
+// Small MoE-style K=8 8x4 workload.
+// Runtime CSR config selects S0/S1/S2.
+// A has 8 input tokens with hidden dimension 1024.
+// Mode0 experts use W/V dimensions 1024 x 128.
+// Mode1 down projection is split into two matrices, each 128 x 512.
+{
+    M_total: 8
+    K0_total: 1024
+    N0_total: 128
+    K1_total: 128
+    N1_total: 512
+}
