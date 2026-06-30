@@ -24,7 +24,7 @@
         ]
         boot_addr: 4096
         cluster_base_addr: 268435456
-        cluster_base_offset: 4194304
+        cluster_base_offset: 16777216
         cluster_base_hartid: 0
         addr_width: 48
         data_width: 64
