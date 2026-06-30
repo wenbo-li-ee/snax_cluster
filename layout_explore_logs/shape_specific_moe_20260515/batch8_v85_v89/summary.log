@@ -1,0 +1,80 @@
+## V85 rc=0
+L85 v85_shapeA_32_0_64_s0linear_s1panel16 staging dataset: bytes=268032 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2112]
+L85 S0 Mode0 D0: PASS, Error: 0
+L85 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39682
+L85 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L85 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206728
+L85 S1 Mode0 D0: PASS, Error: 0
+L85 S1 Mode0 Cycles: accel=2061, streamer=2086, wall=36407
+L85 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L85 S1 Mode1 Cycles: accel=1107, streamer=1127, wall=108192
+L85 S2 Mode0 D0: PASS, Error: 0
+L85 S2 Mode0 Cycles: accel=1033, streamer=1058, wall=18407
+L85 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L85 S2 Mode1 Cycles: accel=543, streamer=563, wall=61950
+L85 v85_shapeA_32_0_64_s0linear_s1panel16 total checks: 6, total error: 0
+
+## V86 rc=0
+L86 v86_shapeA_32_0_96_s0linear_s1panel16 staging dataset: bytes=268288 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2144]
+L86 S0 Mode0 D0: PASS, Error: 0
+L86 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39586
+L86 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L86 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206723
+L86 S1 Mode0 D0: PASS, Error: 0
+L86 S1 Mode0 Cycles: accel=2061, streamer=2086, wall=36504
+L86 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L86 S1 Mode1 Cycles: accel=1107, streamer=1127, wall=108291
+L86 S2 Mode0 D0: PASS, Error: 0
+L86 S2 Mode0 Cycles: accel=1033, streamer=1058, wall=18293
+L86 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L86 S2 Mode1 Cycles: accel=536, streamer=556, wall=62746
+L86 v86_shapeA_32_0_96_s0linear_s1panel16 total checks: 6, total error: 0
+
+## V87 rc=0
+L87 v87_shapeA_32_0_112_s0linear_s1panel16 staging dataset: bytes=269440 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2160]
+L87 S0 Mode0 D0: PASS, Error: 0
+L87 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39586
+L87 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L87 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206723
+L87 S1 Mode0 D0: PASS, Error: 0
+L87 S1 Mode0 Cycles: accel=2061, streamer=2086, wall=36504
+L87 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L87 S1 Mode1 Cycles: accel=1107, streamer=1127, wall=108291
+L87 S2 Mode0 D0: PASS, Error: 0
+L87 S2 Mode0 Cycles: accel=1033, streamer=1058, wall=18488
+L87 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L87 S2 Mode1 Cycles: accel=538, streamer=558, wall=63099
+L87 v87_shapeA_32_0_112_s0linear_s1panel16 total checks: 6, total error: 0
+
+## V88 rc=0
+L88 v88_shapeA_32_16_80_s0linear_s1panel16 staging dataset: bytes=268160 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2064,2128]
+L88 S0 Mode0 D0: PASS, Error: 0
+L88 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39696
+L88 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L88 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206818
+L88 S1 Mode0 D0: PASS, Error: 0
+L88 S1 Mode0 Cycles: accel=2056, streamer=2081, wall=36579
+L88 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L88 S1 Mode1 Cycles: accel=1117, streamer=1137, wall=108997
+L88 S2 Mode0 D0: PASS, Error: 0
+L88 S2 Mode0 Cycles: accel=1034, streamer=1059, wall=18295
+L88 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L88 S2 Mode1 Cycles: accel=535, streamer=555, wall=62402
+L88 v88_shapeA_32_16_80_s0linear_s1panel16 total checks: 6, total error: 0
+
+## V89 rc=0
+L89 v89_shapeA_64_0_80_s0linear_s1panel16 staging dataset: bytes=269184 A_stride=2112 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2112 shape_A_strides=[2112,2048,2128]
+L89 S0 Mode0 D0: PASS, Error: 0
+L89 S0 Mode0 Cycles: accel=4116, streamer=4141, wall=39696
+L89 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L89 S0 Mode1 Cycles: accel=2224, streamer=2245, wall=209739
+L89 S1 Mode0 D0: PASS, Error: 0
+L89 S1 Mode0 Cycles: accel=2062, streamer=2087, wall=36402
+L89 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L89 S1 Mode1 Cycles: accel=1107, streamer=1127, wall=108192
+L89 S2 Mode0 D0: PASS, Error: 0
+L89 S2 Mode0 Cycles: accel=1035, streamer=1060, wall=18395
+L89 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L89 S2 Mode1 Cycles: accel=535, streamer=555, wall=62393
+L89 v89_shapeA_64_0_80_s0linear_s1panel16 total checks: 6, total error: 0
+

@@ -1,0 +1,14 @@
+L3 v03_pad56_b1bank52 staging dataset: bytes=235200 A_stride=2104 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2104
+L3 S0 Mode0 D0: PASS, Error: 0
+L3 S0 Mode0 Cycles: accel=4105, streamer=4131, wall=39402
+L3 S0 Mode1 D padded-contiguous: FAIL, Error: 840
+L3 S0 Mode1 Cycles: accel=2201, streamer=2221, wall=300189
+L3 S1 Mode0 D0: PASS, Error: 0
+L3 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25110
+L3 S1 Mode1 D padded-contiguous: FAIL, Error: 188
+L3 S1 Mode1 Cycles: accel=1113, streamer=1133, wall=199885
+L3 S2 Mode0 D0: PASS, Error: 0
+L3 S2 Mode0 Cycles: accel=1034, streamer=1060, wall=18099
+L3 S2 Mode1 D padded-contiguous: FAIL, Error: 58
+L3 S2 Mode1 Cycles: accel=538, streamer=558, wall=151489
+L3 v03_pad56_b1bank52 total checks: 6, total error: 1086

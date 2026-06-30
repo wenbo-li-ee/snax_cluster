@@ -1,0 +1,65 @@
+L3 v03_pad56_b1bank52 staging dataset: bytes=235200 A_stride=2104 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2104
+L3 S0 Mode0 D0: PASS, Error: 0
+L3 S0 Mode0 Cycles: accel=4105, streamer=4131, wall=39402
+Unequals. output[2080] = 0, golden[2080] = 10240
+Unequals. output[2081] = 0, golden[2081] = 10240
+Unequals. output[2082] = 0, golden[2082] = 10240
+Unequals. output[2083] = 0, golden[2083] = 10240
+Unequals. output[2084] = 0, golden[2084] = 10240
+Unequals. output[2085] = 0, golden[2085] = 10240
+Unequals. output[2086] = 0, golden[2086] = 10240
+Unequals. output[2087] = 0, golden[2087] = 10240
+Unequals. output[2088] = 0, golden[2088] = 10240
+Unequals. output[2089] = 0, golden[2089] = 10240
+Unequals. output[2090] = 0, golden[2090] = 10240
+Unequals. output[2091] = 0, golden[2091] = 10240
+Unequals. output[2092] = 0, golden[2092] = 10240
+Unequals. output[2093] = 0, golden[2093] = 10240
+Unequals. output[2094] = 0, golden[2094] = 10240
+Unequals. output[2095] = 0, golden[2095] = 10240
+Mismatch print capped at 16 of 840 errors
+L3 S0 Mode1 D padded-contiguous: FAIL, Error: 840
+L3 S0 Mode1 Cycles: accel=2201, streamer=2221, wall=300189
+L3 S1 Mode0 D0: PASS, Error: 0
+L3 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25110
+Unequals. output[2080] = 0, golden[2080] = 10240
+Unequals. output[2081] = 0, golden[2081] = 10240
+Unequals. output[2082] = 0, golden[2082] = 10240
+Unequals. output[2083] = 0, golden[2083] = 10240
+Unequals. output[2084] = 0, golden[2084] = 10240
+Unequals. output[2085] = 0, golden[2085] = 10240
+Unequals. output[2086] = 0, golden[2086] = 10240
+Unequals. output[2087] = 0, golden[2087] = 10240
+Unequals. output[2088] = 0, golden[2088] = 10240
+Unequals. output[2089] = 0, golden[2089] = 10240
+Unequals. output[2090] = 0, golden[2090] = 10240
+Unequals. output[2091] = 0, golden[2091] = 10240
+Unequals. output[2092] = 0, golden[2092] = 10240
+Unequals. output[2093] = 0, golden[2093] = 10240
+Unequals. output[2094] = 0, golden[2094] = 10240
+Unequals. output[2095] = 0, golden[2095] = 10240
+Mismatch print capped at 16 of 188 errors
+L3 S1 Mode1 D padded-contiguous: FAIL, Error: 188
+L3 S1 Mode1 Cycles: accel=1113, streamer=1133, wall=199885
+L3 S2 Mode0 D0: PASS, Error: 0
+L3 S2 Mode0 Cycles: accel=1034, streamer=1060, wall=18099
+Unequals. output[1040] = 0, golden[1040] = -1920
+Unequals. output[1041] = 0, golden[1041] = -1920
+Unequals. output[1042] = 0, golden[1042] = -1920
+Unequals. output[1043] = 0, golden[1043] = -1920
+Unequals. output[1044] = 0, golden[1044] = -1920
+Unequals. output[1045] = 0, golden[1045] = -1920
+Unequals. output[1046] = 0, golden[1046] = -1920
+Unequals. output[1047] = 0, golden[1047] = -1920
+Unequals. output[1048] = 0, golden[1048] = -1920
+Unequals. output[1049] = 0, golden[1049] = -1920
+Unequals. output[1050] = 0, golden[1050] = -1920
+Unequals. output[1051] = 0, golden[1051] = -1920
+Unequals. output[1552] = -1920, golden[1552] = -3840
+Unequals. output[1553] = -1920, golden[1553] = -3840
+Unequals. output[1554] = -1920, golden[1554] = -3840
+Unequals. output[1555] = -1920, golden[1555] = -3840
+Mismatch print capped at 16 of 58 errors
+L3 S2 Mode1 D padded-contiguous: FAIL, Error: 58
+L3 S2 Mode1 Cycles: accel=538, streamer=558, wall=151489
+L3 v03_pad56_b1bank52 total checks: 6, total error: 1086

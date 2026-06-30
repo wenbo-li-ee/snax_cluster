@@ -1,0 +1,49 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=50 shapes=3
+L30 v30_pad08_b1bank52 DMA staging cycles: 3524
+L30 v30_pad08_b1bank52 staging dataset: bytes=234816 A_stride=2056 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2056
+L30 v30_pad08_b1bank52 dataset ready
+L30 S0 start
+L30 S0 Mode0 configure streamer
+L30 S0 Mode0 configure core
+L30 S0 Mode0 start
+L30 S0 Mode0 D0: PASS, Error: 0
+L30 S0 Mode0 Cycles: accel=4178, streamer=4204, wall=39704
+L30 S0 Mode0 mcycle start-finish: accel=4185, streamer=4220
+L30 S0 Mode1 configure streamer
+L30 S0 Mode1 configure core
+L30 S0 Mode1 start
+L30 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L30 S0 Mode1 Cycles: accel=2221, streamer=2241, wall=204684
+L30 S0 Mode1 mcycle start-finish: accel=2225, streamer=2260
+L30 S1 start
+L30 S1 Mode0 configure streamer
+L30 S1 Mode0 configure core
+L30 S1 Mode0 start
+L30 S1 Mode0 D0: PASS, Error: 0
+L30 S1 Mode0 Cycles: accel=2060, streamer=2086, wall=25396
+L30 S1 Mode0 mcycle start-finish: accel=2067, streamer=2102
+L30 S1 Mode1 configure streamer
+L30 S1 Mode1 configure core
+L30 S1 Mode1 start
+L30 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L30 S1 Mode1 Cycles: accel=1118, streamer=1138, wall=108598
+L30 S1 Mode1 mcycle start-finish: accel=1121, streamer=1156
+L30 S2 start
+L30 S2 Mode0 configure streamer
+L30 S2 Mode0 configure core
+L30 S2 Mode0 start
+L30 S2 Mode0 D0: PASS, Error: 0
+L30 S2 Mode0 Cycles: accel=1034, streamer=1060, wall=18401
+L30 S2 Mode0 mcycle start-finish: accel=1041, streamer=1065
+L30 S2 Mode1 configure streamer
+L30 S2 Mode1 configure core
+L30 S2 Mode1 start
+L30 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L30 S2 Mode1 Cycles: accel=545, streamer=565, wall=60791
+L30 S2 Mode1 mcycle start-finish: accel=552, streamer=571
+L30 v30_pad08_b1bank52 total checks: 6, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

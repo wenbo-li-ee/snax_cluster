@@ -1,0 +1,80 @@
+## V05 rc=0
+L5 v05_pad08_b1bank34 staging dataset: bytes=234816 A_stride=2056 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2056
+L5 S0 Mode0 D0: PASS, Error: 0
+L5 S0 Mode0 Cycles: accel=4178, streamer=4204, wall=39499
+L5 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L5 S0 Mode1 Cycles: accel=2214, streamer=2246, wall=204399
+L5 S1 Mode0 D0: PASS, Error: 0
+L5 S1 Mode0 Cycles: accel=2060, streamer=2086, wall=25192
+L5 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L5 S1 Mode1 Cycles: accel=1117, streamer=1138, wall=108505
+L5 S2 Mode0 D0: PASS, Error: 0
+L5 S2 Mode0 Cycles: accel=1034, streamer=1060, wall=18305
+L5 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L5 S2 Mode1 Cycles: accel=538, streamer=570, wall=60589
+L5 v05_pad08_b1bank34 total checks: 6, total error: 0
+
+## V06 rc=0
+L6 v06_pad24_b1bank34 staging dataset: bytes=234944 A_stride=2072 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2072
+L6 S0 Mode0 D0: PASS, Error: 0
+L6 S0 Mode0 Cycles: accel=4104, streamer=4130, wall=39407
+L6 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L6 S0 Mode1 Cycles: accel=2216, streamer=2236, wall=205880
+L6 S1 Mode0 D0: PASS, Error: 0
+L6 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25210
+L6 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L6 S1 Mode1 Cycles: accel=1120, streamer=1140, wall=109100
+L6 S2 Mode0 D0: PASS, Error: 0
+L6 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18212
+L6 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L6 S2 Mode1 Cycles: accel=552, streamer=572, wall=60901
+L6 v06_pad24_b1bank34 total checks: 6, total error: 0
+
+## V07 rc=0
+L7 v07_pad40_b1bank34 staging dataset: bytes=235072 A_stride=2088 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2088
+L7 S0 Mode0 D0: PASS, Error: 0
+L7 S0 Mode0 Cycles: accel=4105, streamer=4131, wall=39407
+L7 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L7 S0 Mode1 Cycles: accel=2195, streamer=2215, wall=207289
+L7 S1 Mode0 D0: PASS, Error: 0
+L7 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25105
+L7 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L7 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109899
+L7 S2 Mode0 D0: PASS, Error: 0
+L7 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18212
+L7 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L7 S2 Mode1 Cycles: accel=569, streamer=590, wall=61302
+L7 v07_pad40_b1bank34 total checks: 6, total error: 0
+
+## V08 rc=0
+L8 v08_pad48_b1bank34 staging dataset: bytes=235136 A_stride=2096 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2096
+L8 S0 Mode0 D0: PASS, Error: 0
+L8 S0 Mode0 Cycles: accel=4104, streamer=4130, wall=39395
+L8 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L8 S0 Mode1 Cycles: accel=2234, streamer=2254, wall=208094
+L8 S1 Mode0 D0: PASS, Error: 0
+L8 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25213
+L8 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L8 S1 Mode1 Cycles: accel=1114, streamer=1134, wall=110201
+L8 S2 Mode0 D0: PASS, Error: 0
+L8 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18200
+L8 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L8 S2 Mode1 Cycles: accel=556, streamer=577, wall=61411
+L8 v08_pad48_b1bank34 total checks: 6, total error: 0
+
+## V09 rc=0
+L9 v09_pad64_b1bank34 staging dataset: bytes=235264 A_stride=2112 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2112
+L9 S0 Mode0 D0: PASS, Error: 0
+L9 S0 Mode0 Cycles: accel=4104, streamer=4130, wall=39395
+L9 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L9 S0 Mode1 Cycles: accel=2224, streamer=2245, wall=209590
+L9 S1 Mode0 D0: PASS, Error: 0
+L9 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25198
+L9 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L9 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=111006
+L9 S2 Mode0 D0: PASS, Error: 0
+L9 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18200
+L9 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L9 S2 Mode1 Cycles: accel=543, streamer=563, wall=61797
+L9 v09_pad64_b1bank34 total checks: 6, total error: 0
+

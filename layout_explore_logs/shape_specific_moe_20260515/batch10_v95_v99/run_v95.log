@@ -1,0 +1,49 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=100 shapes=3
+L95 v95_pareto_practical_Agran2 DMA staging cycles: 4061
+L95 v95_pareto_practical_Agran2 staging dataset: bytes=268160 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2128]
+L95 v95_pareto_practical_Agran2 dataset ready
+L95 S0 start
+L95 S0 Mode0 configure streamer
+L95 S0 Mode0 configure core
+L95 S0 Mode0 start
+L95 S0 Mode0 D0: PASS, Error: 0
+L95 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39678
+L95 S0 Mode0 mcycle start-finish: accel=4108, streamer=4143
+L95 S0 Mode1 configure streamer
+L95 S0 Mode1 configure core
+L95 S0 Mode1 start
+L95 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L95 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206816
+L95 S0 Mode1 mcycle start-finish: accel=2187, streamer=2219
+L95 S1 start
+L95 S1 Mode0 configure streamer
+L95 S1 Mode0 configure core
+L95 S1 Mode0 start
+L95 S1 Mode0 D0: PASS, Error: 0
+L95 S1 Mode0 Cycles: accel=2059, streamer=2084, wall=25400
+L95 S1 Mode0 mcycle start-finish: accel=2062, streamer=2093
+L95 S1 Mode1 configure streamer
+L95 S1 Mode1 configure core
+L95 S1 Mode1 start
+L95 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L95 S1 Mode1 Cycles: accel=1106, streamer=1126, wall=108299
+L95 S1 Mode1 mcycle start-finish: accel=1113, streamer=1145
+L95 S2 start
+L95 S2 Mode0 configure streamer
+L95 S2 Mode0 configure core
+L95 S2 Mode0 start
+L95 S2 Mode0 D0: PASS, Error: 0
+L95 S2 Mode0 Cycles: accel=1033, streamer=1058, wall=18402
+L95 S2 Mode0 mcycle start-finish: accel=1036, streamer=1067
+L95 S2 Mode1 configure streamer
+L95 S2 Mode1 configure core
+L95 S2 Mode1 start
+L95 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L95 S2 Mode1 Cycles: accel=535, streamer=555, wall=62293
+L95 S2 Mode1 mcycle start-finish: accel=543, streamer=565
+L95 v95_pareto_practical_Agran2 total checks: 6, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

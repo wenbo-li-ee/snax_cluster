@@ -1,0 +1,100 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=5 shapes=3
+L4 v04_pad16_b1bank34 DMA staging cycles: 3524
+L4 v04_pad16_b1bank34 staging dataset: bytes=234880 A_stride=2064 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2064
+L4 v04_pad16_b1bank34 dataset ready
+L4 S0 start
+L4 S0 Mode0 configure streamer
+L4 S0 Mode0 configure core
+L4 S0 Mode0 start
+L4 S0 Mode0 D0: PASS, Error: 0
+L4 S0 Mode0 Cycles: accel=4112, streamer=4138, wall=39518
+L4 S0 Mode0 mcycle start-finish: accel=4118, streamer=4156
+L4 S0 Mode1 configure streamer
+L4 S0 Mode1 configure core
+L4 S0 Mode1 start
+Unequals. output[2064] = 10240, golden[2064] = 0
+Unequals. output[2065] = 10240, golden[2065] = 0
+Unequals. output[2066] = 10240, golden[2066] = 0
+Unequals. output[2067] = 10240, golden[2067] = 0
+Unequals. output[2068] = 10240, golden[2068] = 0
+Unequals. output[2069] = 10240, golden[2069] = 0
+Unequals. output[2070] = 10240, golden[2070] = 0
+Unequals. output[2071] = 10240, golden[2071] = 0
+Unequals. output[2072] = 10240, golden[2072] = 0
+Unequals. output[2073] = 10240, golden[2073] = 0
+Unequals. output[2074] = 10240, golden[2074] = 0
+Unequals. output[2075] = 10240, golden[2075] = 0
+Unequals. output[2076] = 10240, golden[2076] = 0
+Unequals. output[2077] = 10240, golden[2077] = 0
+Unequals. output[2078] = 10240, golden[2078] = 0
+Unequals. output[2079] = 10240, golden[2079] = 0
+Mismatch print capped at 16 of 480 errors
+L4 S0 Mode1 D padded-contiguous: FAIL, Error: 480
+L4 S0 Mode1 Cycles: accel=2349, streamer=2380, wall=295499
+L4 S0 Mode1 mcycle start-finish: accel=2368, streamer=2402
+L4 S1 start
+L4 S1 Mode0 configure streamer
+L4 S1 Mode0 configure core
+L4 S1 Mode0 start
+L4 S1 Mode0 D0: PASS, Error: 0
+L4 S1 Mode0 Cycles: accel=2058, streamer=2084, wall=25210
+L4 S1 Mode0 mcycle start-finish: accel=2066, streamer=2089
+L4 S1 Mode1 configure streamer
+L4 S1 Mode1 configure core
+L4 S1 Mode1 start
+Unequals. output[2064] = 10240, golden[2064] = 0
+Unequals. output[2065] = 10240, golden[2065] = 0
+Unequals. output[2066] = 10240, golden[2066] = 0
+Unequals. output[2067] = 10240, golden[2067] = 0
+Unequals. output[2068] = 10240, golden[2068] = 0
+Unequals. output[2069] = 10240, golden[2069] = 0
+Unequals. output[2070] = 10240, golden[2070] = 0
+Unequals. output[2071] = 10240, golden[2071] = 0
+Unequals. output[2072] = 10240, golden[2072] = 0
+Unequals. output[2073] = 10240, golden[2073] = 0
+Unequals. output[2074] = 10240, golden[2074] = 0
+Unequals. output[2075] = 10240, golden[2075] = 0
+Unequals. output[2076] = 10240, golden[2076] = 0
+Unequals. output[2077] = 10240, golden[2077] = 0
+Unequals. output[2078] = 10240, golden[2078] = 0
+Unequals. output[2079] = 10240, golden[2079] = 0
+Mismatch print capped at 16 of 96 errors
+L4 S1 Mode1 D padded-contiguous: FAIL, Error: 96
+L4 S1 Mode1 Cycles: accel=1106, streamer=1137, wall=197593
+L4 S1 Mode1 mcycle start-finish: accel=1120, streamer=1154
+L4 S2 start
+L4 S2 Mode0 configure streamer
+L4 S2 Mode0 configure core
+L4 S2 Mode0 start
+L4 S2 Mode0 D0: PASS, Error: 0
+L4 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18190
+L4 S2 Mode0 mcycle start-finish: accel=1040, streamer=1069
+L4 S2 Mode1 configure streamer
+L4 S2 Mode1 configure core
+L4 S2 Mode1 start
+Unequals. output[1032] = -1920, golden[1032] = 0
+Unequals. output[1033] = -1920, golden[1033] = 0
+Unequals. output[1034] = -1920, golden[1034] = 0
+Unequals. output[1035] = -1920, golden[1035] = 0
+Unequals. output[1036] = -1920, golden[1036] = 0
+Unequals. output[1037] = -1920, golden[1037] = 0
+Unequals. output[1038] = -1920, golden[1038] = 0
+Unequals. output[1039] = -1920, golden[1039] = 0
+Unequals. output[1544] = -3840, golden[1544] = -1920
+Unequals. output[1545] = -3840, golden[1545] = -1920
+Unequals. output[1546] = -3840, golden[1546] = -1920
+Unequals. output[1547] = -3840, golden[1547] = -1920
+Unequals. output[1548] = -3840, golden[1548] = -1920
+Unequals. output[1549] = -3840, golden[1549] = -1920
+Unequals. output[1550] = -3840, golden[1550] = -1920
+Unequals. output[1551] = -3840, golden[1551] = -1920
+Mismatch print capped at 16 of 24 errors
+L4 S2 Mode1 D padded-contiguous: FAIL, Error: 24
+L4 S2 Mode1 Cycles: accel=538, streamer=569, wall=151703
+L4 S2 Mode1 mcycle start-finish: accel=556, streamer=574
+L4 v04_pad16_b1bank34 total checks: 6, total error: 600
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

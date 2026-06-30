@@ -161,6 +161,9 @@ VSIM_BENDER += -t QUESTA_SIM
 VSIM_BENDER += -t snax_test_harness
 VLT_BENDER  += -t snax_test_harness
 VCS_BENDER  += -t snax_test_harness
+VSIM_BENDER += -t snitch_cluster
+VLT_BENDER  += -t snitch_cluster
+VCS_BENDER  += -t snitch_cluster
 
 # Verilated and compiled snitch cluster
 VLT_AR = ${VLT_BUILDDIR}/Vtestharness__ALL.a

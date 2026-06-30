@@ -1,0 +1,24 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=1 shapes=3
+L15 l15_weights_first_padded_1024_per_token DMA staging cycles: 3520
+L15 l15_weights_first_padded_1024_per_token staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L15 l15_weights_first_padded_1024_per_token dataset ready
+L15 S0 start
+L15 S0 Mode0 configure streamer
+L15 S0 Mode0 configure core
+L15 S0 Mode0 start
+L15 S0 Mode0 D0: PASS, Error: 0
+L15 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39501
+L15 S0 Mode0 mcycle start-finish: accel=4105, streamer=4138
+L15 S0 Mode1 configure streamer
+L15 S0 Mode1 configure core
+L15 S0 Mode1 start
+L15 S0 Mode1 accelerator timeout: accel=1 streamer=1 w0=1 w1=1
+L15 S1 start
+L15 S1 Mode0 configure streamer
+L15 S1 Mode0 configure core
+L15 S1 Mode0 start
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

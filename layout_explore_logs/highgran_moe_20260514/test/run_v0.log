@@ -1,0 +1,13 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=5 shapes=3
+L0 v00_l15_baseline_pad32_b1bank34 DMA staging cycles: 3527
+L0 v00_l15_baseline_pad32_b1bank34 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L0 v00_l15_baseline_pad32_b1bank34 dataset ready
+L0 S0 start
+L0 S0 Mode0 configure streamer
+L0 S0 Mode0 configure core
+L0 S0 Mode0 start
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

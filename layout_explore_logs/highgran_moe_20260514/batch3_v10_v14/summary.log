@@ -1,0 +1,80 @@
+## V10 rc=0
+L10 v10_pad32_b1bank18 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=18 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L10 S0 Mode0 D0: PASS, Error: 0
+L10 S0 Mode0 Cycles: accel=4105, streamer=4131, wall=39599
+L10 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L10 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206892
+L10 S1 Mode0 D0: PASS, Error: 0
+L10 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25402
+L10 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L10 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109798
+L10 S2 Mode0 D0: PASS, Error: 0
+L10 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18389
+L10 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L10 S2 Mode1 Cycles: accel=543, streamer=563, wall=61295
+L10 v10_pad32_b1bank18 total checks: 6, total error: 0
+
+## V11 rc=0
+L11 v11_pad32_b1bank26 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=26 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L11 S0 Mode0 D0: PASS, Error: 0
+L11 S0 Mode0 Cycles: accel=4105, streamer=4131, wall=39599
+L11 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L11 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206892
+L11 S1 Mode0 D0: PASS, Error: 0
+L11 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25402
+L11 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L11 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109798
+L11 S2 Mode0 D0: PASS, Error: 0
+L11 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18389
+L11 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L11 S2 Mode1 Cycles: accel=543, streamer=563, wall=61295
+L11 v11_pad32_b1bank26 total checks: 6, total error: 0
+
+## V12 rc=0
+L12 v12_pad32_b1bank42 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=42 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L12 S0 Mode0 D0: PASS, Error: 0
+L12 S0 Mode0 Cycles: accel=4100, streamer=4126, wall=39593
+L12 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L12 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206892
+L12 S1 Mode0 D0: PASS, Error: 0
+L12 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25387
+L12 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L12 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109708
+L12 S2 Mode0 D0: PASS, Error: 0
+L12 S2 Mode0 Cycles: accel=1035, streamer=1061, wall=18404
+L12 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L12 S2 Mode1 Cycles: accel=543, streamer=563, wall=61295
+L12 v12_pad32_b1bank42 total checks: 6, total error: 0
+
+## V13 rc=0
+L13 v13_pad32_b1bank58 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=58 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L13 S0 Mode0 D0: PASS, Error: 0
+L13 S0 Mode0 Cycles: accel=4100, streamer=4126, wall=39593
+L13 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L13 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206892
+L13 S1 Mode0 D0: PASS, Error: 0
+L13 S1 Mode0 Cycles: accel=2056, streamer=2082, wall=25387
+L13 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L13 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109708
+L13 S2 Mode0 D0: PASS, Error: 0
+L13 S2 Mode0 Cycles: accel=1038, streamer=1064, wall=18404
+L13 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L13 S2 Mode1 Cycles: accel=543, streamer=563, wall=61295
+L13 v13_pad32_b1bank58 total checks: 6, total error: 0
+
+## V14 rc=0
+L14 v14_pad32_b1bank62 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=62 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L14 S0 Mode0 D0: PASS, Error: 0
+L14 S0 Mode0 Cycles: accel=4100, streamer=4126, wall=39797
+L14 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L14 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206701
+L14 S1 Mode0 D0: PASS, Error: 0
+L14 S1 Mode0 Cycles: accel=2058, streamer=2084, wall=25502
+L14 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L14 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109702
+L14 S2 Mode0 D0: PASS, Error: 0
+L14 S2 Mode0 Cycles: accel=1042, streamer=1068, wall=18424
+L14 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L14 S2 Mode1 Cycles: accel=543, streamer=563, wall=61407
+L14 v14_pad32_b1bank62 total checks: 6, total error: 0
+

@@ -1,0 +1,14 @@
+L0 v00_l15_baseline_pad32_b1bank34 staging dataset: bytes=235008 A_stride=2080 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080
+L0 S0 Mode0 D0: PASS, Error: 0
+L0 S0 Mode0 Cycles: accel=4101, streamer=4126, wall=39395
+L0 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L0 S0 Mode1 Cycles: accel=2179, streamer=2199, wall=206594
+L0 S1 Mode0 D0: PASS, Error: 0
+L0 S1 Mode0 Cycles: accel=2057, streamer=2082, wall=24998
+L0 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L0 S1 Mode1 Cycles: accel=1109, streamer=1129, wall=109491
+L0 S2 Mode0 D0: PASS, Error: 0
+L0 S2 Mode0 Cycles: accel=1036, streamer=1061, wall=18007
+L0 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L0 S2 Mode1 Cycles: accel=543, streamer=563, wall=61181
+L0 v00_l15_baseline_pad32_b1bank34 total checks: 6, total error: 0

@@ -1,0 +1,7 @@
+L4 v04_pad16_b1bank34 staging dataset: bytes=234880 A_stride=2064 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2064
+L4 S0 Mode0 D0: PASS, Error: 0
+L4 S0 Mode0 Cycles: accel=4112, streamer=4138, wall=39518
+L4 S0 Mode1 D padded-contiguous: FAIL, Error: 480
+L4 S0 Mode1 Cycles: accel=2349, streamer=2380, wall=295499
+L4 S1 Mode0 D0: PASS, Error: 0
+L4 S1 Mode0 Cycles: accel=2058, streamer=2084, wall=25210

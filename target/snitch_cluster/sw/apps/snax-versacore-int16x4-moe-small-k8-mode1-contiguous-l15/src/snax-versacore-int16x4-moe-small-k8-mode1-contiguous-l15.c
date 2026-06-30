@@ -169,17 +169,18 @@ static int run_mode0(int layout_id, const shape_cfg_t *cfg,
     configure_identity_rescale_for_mode0();
 
     printf("L%d S%d Mode0 start\n", layout_id, cfg->array_shape);
+    uint32_t streamer_start_cycle = snrt_mcycle();
     set_dual_versacore_streamer_start();
+    uint32_t accel_start_cycle = snrt_mcycle();
     set_dual_versacore_start();
-
-    printf("L%d S%d Mode0 wait accel\n", layout_id, cfg->array_shape);
     if (wait_accelerator_done(layout_id, cfg->array_shape, 0)) {
         return 1000 + cfg->array_shape;
     }
-    printf("L%d S%d Mode0 wait writer\n", layout_id, cfg->array_shape);
+    uint32_t accel_done_cycle = snrt_mcycle();
     if (wait_streamer_done(layout_id, cfg->array_shape, 0)) {
         return 2000 + cfg->array_shape;
     }
+    uint32_t streamer_done_cycle = snrt_mcycle();
 
     int err = check_result_i16_limited(local_d0, cfg->mode0_d0_golden,
                                        cfg->mode0_output_elems);
@@ -191,6 +192,9 @@ static int run_mode0(int layout_id, const shape_cfg_t *cfg,
     printf("L%d S%d Mode0 Cycles: accel=%d, streamer=%d, wall=%u\n",
            layout_id, cfg->array_shape, accel_cycles, streamer_cycles,
            snrt_mcycle() - start_cycle);
+    printf("L%d S%d Mode0 mcycle start-finish: accel=%u, streamer=%u\n",
+           layout_id, cfg->array_shape, accel_done_cycle - accel_start_cycle,
+           streamer_done_cycle - streamer_start_cycle);
 
     if (err) {
         return 5000 + cfg->array_shape;
@@ -207,9 +211,6 @@ static int run_mode1(int layout_id, const shape_cfg_t *cfg,
     printf("L%d S%d Mode1 configure streamer\n", layout_id,
            cfg->array_shape);
     uint32_t start_cycle = snrt_mcycle();
-    for (int i = 0; i < cfg->mode1_padded_output_elems; i++) {
-        local_mode1_d[i] = 0;
-    }
 
     set_dual_versacore_streamer_csr(
         cfg->delta_local_d0, cfg->mode1_A_sstride, cfg->mode1_A_tbound,
@@ -230,17 +231,18 @@ static int run_mode1(int layout_id, const shape_cfg_t *cfg,
     configure_identity_rescale_for_mode1();
 
     printf("L%d S%d Mode1 start\n", layout_id, cfg->array_shape);
+    uint32_t streamer_start_cycle = snrt_mcycle();
     set_dual_versacore_streamer_start();
+    uint32_t accel_start_cycle = snrt_mcycle();
     set_dual_versacore_start();
-
-    printf("L%d S%d Mode1 wait accel\n", layout_id, cfg->array_shape);
     if (wait_accelerator_done(layout_id, cfg->array_shape, 1)) {
         return 3000 + cfg->array_shape;
     }
-    printf("L%d S%d Mode1 wait writer\n", layout_id, cfg->array_shape);
+    uint32_t accel_done_cycle = snrt_mcycle();
     if (wait_streamer_done(layout_id, cfg->array_shape, 1)) {
         return 4000 + cfg->array_shape;
     }
+    uint32_t streamer_done_cycle = snrt_mcycle();
 
     int err = check_result_i16_limited(local_mode1_d,
                                        cfg->mode1_padded_golden,
@@ -253,6 +255,9 @@ static int run_mode1(int layout_id, const shape_cfg_t *cfg,
     printf("L%d S%d Mode1 Cycles: accel=%d, streamer=%d, wall=%u\n",
            layout_id, cfg->array_shape, accel_cycles, streamer_cycles,
            snrt_mcycle() - start_cycle);
+    printf("L%d S%d Mode1 mcycle start-finish: accel=%u, streamer=%u\n",
+           layout_id, cfg->array_shape, accel_done_cycle - accel_start_cycle,
+           streamer_done_cycle - streamer_start_cycle);
 
     return err;
 }

@@ -1,0 +1,49 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=50 shapes=3
+L44 v44_pad40_w2lbank08_m1bank40 DMA staging cycles: 3520
+L44 v44_pad40_w2lbank08_m1bank40 staging dataset: bytes=236160 A_stride=2088 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=40 M1D1_minus_D0=1024 M1_row_stride=2088
+L44 v44_pad40_w2lbank08_m1bank40 dataset ready
+L44 S0 start
+L44 S0 Mode0 configure streamer
+L44 S0 Mode0 configure core
+L44 S0 Mode0 start
+L44 S0 Mode0 D0: PASS, Error: 0
+L44 S0 Mode0 Cycles: accel=4099, streamer=4134, wall=39708
+L44 S0 Mode0 mcycle start-finish: accel=4114, streamer=4150
+L44 S0 Mode1 configure streamer
+L44 S0 Mode1 configure core
+L44 S0 Mode1 start
+L44 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L44 S0 Mode1 Cycles: accel=2506, streamer=2526, wall=208000
+L44 S0 Mode1 mcycle start-finish: accel=2513, streamer=2535
+L44 S1 start
+L44 S1 Mode0 configure streamer
+L44 S1 Mode0 configure core
+L44 S1 Mode0 start
+L44 S1 Mode0 D0: PASS, Error: 0
+L44 S1 Mode0 Cycles: accel=2051, streamer=2086, wall=25597
+L44 S1 Mode0 mcycle start-finish: accel=2069, streamer=2105
+L44 S1 Mode1 configure streamer
+L44 S1 Mode1 configure core
+L44 S1 Mode1 start
+L44 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L44 S1 Mode1 Cycles: accel=1155, streamer=1175, wall=110306
+L44 S1 Mode1 mcycle start-finish: accel=1163, streamer=1185
+L44 S2 start
+L44 S2 Mode0 configure streamer
+L44 S2 Mode0 configure core
+L44 S2 Mode0 start
+L44 S2 Mode0 D0: PASS, Error: 0
+L44 S2 Mode0 Cycles: accel=1027, streamer=1062, wall=18399
+L44 S2 Mode0 mcycle start-finish: accel=1043, streamer=1068
+L44 S2 Mode1 configure streamer
+L44 S2 Mode1 configure core
+L44 S2 Mode1 start
+L44 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L44 S2 Mode1 Cycles: accel=580, streamer=600, wall=61499
+L44 S2 Mode1 mcycle start-finish: accel=587, streamer=609
+L44 v44_pad40_w2lbank08_m1bank40 total checks: 6, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

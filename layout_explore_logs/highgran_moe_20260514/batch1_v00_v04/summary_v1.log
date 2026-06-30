@@ -1,0 +1,14 @@
+L1 v01_compact_token_no_pad_b1bank34 staging dataset: bytes=233728 A_stride=2048 B0_bank=0 B1_bank=34 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2048
+L1 S0 Mode0 D0: PASS, Error: 0
+L1 S0 Mode0 Cycles: accel=4892, streamer=4917, wall=40207
+L1 S0 Mode1 D padded-contiguous: FAIL, Error: 864
+L1 S0 Mode1 Cycles: accel=2513, streamer=2533, wall=295100
+L1 S1 Mode0 D0: PASS, Error: 0
+L1 S1 Mode0 Cycles: accel=2062, streamer=2087, wall=25202
+L1 S1 Mode1 D padded-contiguous: FAIL, Error: 160
+L1 S1 Mode1 Cycles: accel=1106, streamer=1126, wall=197102
+L1 S2 Mode0 D0: PASS, Error: 0
+L1 S2 Mode0 Cycles: accel=1036, streamer=1061, wall=18098
+L1 S2 Mode1 D padded-contiguous: FAIL, Error: 32
+L1 S2 Mode1 Cycles: accel=545, streamer=565, wall=148997
+L1 v01_compact_token_no_pad_b1bank34 total checks: 6, total error: 1056
