@@ -18,6 +18,7 @@
         name: snax_dual_versacore_int16x4_4lane_postproc_v2_cluster
         bender_target:
         [
+            snitch_cluster
             snax_dual_versacore_int16x4_4lane_postproc_v2_cluster
             snax_dual_versacore_swiglu
             sparse_interconnect
