@@ -115,6 +115,8 @@ object DualVersaCoreSwigluGen {
     val cfg = ujson.read(versacoreCfg)
     val PostprocLanes = cfg.obj.get("snax_dual_versacore_postproc_lanes")
       .map(_.num.toInt).getOrElse(64)
+    val RegRWCount = cfg.obj.get("snax_num_rw_csr").map(_.num.toInt).getOrElse(20)
+    val RegROCount = cfg.obj.get("snax_num_ro_csr").map(_.num.toInt).getOrElse(2)
 
     // Writer-facing output width is the post-process chunk width.
     // The old DataWidthD / 2 formula only worked when PostprocLanes happened to
@@ -141,8 +143,8 @@ object DualVersaCoreSwigluGen {
 
     val wrapperSv = header + s"""
 module snax_dual_versacore_swiglu_shell_wrapper #(
-    parameter int unsigned RegRWCount   = 20,
-    parameter int unsigned RegROCount   = 2,
+    parameter int unsigned RegRWCount   = $RegRWCount,
+    parameter int unsigned RegROCount   = $RegROCount,
     parameter int unsigned DataWidthA   = $DataWidthA,
     parameter int unsigned DataWidthB   = $DataWidthB,
     parameter int unsigned DataWidthD   = $DataWidthD,
