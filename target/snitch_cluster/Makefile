@@ -137,7 +137,7 @@ rtl-cluster-gen: | $(GENERATED_DIR)
 
 	$(CLUSTER_GEN) -c ${CFG_OVERRIDE} -o $(GENERATED_DIR) --wrapper
 
-$(GENERATED_DIR)/bender_targets.tmp: $(CFG) | $(GENERATED_DIR)
+$(GENERATED_DIR)/bender_targets.tmp: | $(GENERATED_DIR)
 	${WRAPPER_GEN} --cfg_path="$(CFG_FILE)" --get_bender_targets > $(GENERATED_DIR)/bender_targets.tmp
 
 # The iDMA dependency ships its backend/frontend as templates that must be
