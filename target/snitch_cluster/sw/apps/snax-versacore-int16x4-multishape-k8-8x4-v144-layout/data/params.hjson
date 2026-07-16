@@ -1,0 +1,8 @@
+// Full workload from multishape_k8_4lane_mode1_contiguous_l15_20260507.
+{
+    M_total: 8
+    K0_total: 2048
+    N0_total: 1408
+    K1_total: 1408
+    N1_total: 1024
+}

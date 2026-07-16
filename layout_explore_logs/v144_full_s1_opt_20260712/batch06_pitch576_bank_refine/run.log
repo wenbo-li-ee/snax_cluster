@@ -1,0 +1,37 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=3 shapes=3
+L250 v250_full_A4_S1in144_pitch576_bank52 staging dataset: bytes=4625280 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L250 v250_full_A4_S1in144_pitch576_bank52 DMA staging cycles: 77772
+L250 v250_full_A4_S1in144_pitch576_bank52 dataset ready
+L250 S1 start
+L250 S1 Mode0 configure streamer
+L250 S1 Mode0 configure core
+L250 S1 Mode0 start
+L250 S1 Mode0 D0: PASS, Error: 0
+L250 S1 Mode0 Cycles: accel=50302, streamer=50339, wall=142906
+L250 S1 Mode0 mcycle start-finish: accel=50310, streamer=50349
+L250 v250_full_A4_S1in144_pitch576_bank52 total checks: 1, total error: 0
+L251 v251_full_A4_S1in144_pitch576_bank56 staging dataset: bytes=4625280 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L251 v251_full_A4_S1in144_pitch576_bank56 DMA staging cycles: 77574
+L251 v251_full_A4_S1in144_pitch576_bank56 dataset ready
+L251 S1 start
+L251 S1 Mode0 configure streamer
+L251 S1 Mode0 configure core
+L251 S1 Mode0 start
+L251 S1 Mode0 D0: PASS, Error: 0
+L251 S1 Mode0 Cycles: accel=46641, streamer=46667, wall=138789
+L251 S1 Mode0 mcycle start-finish: accel=46646, streamer=46674
+L251 v251_full_A4_S1in144_pitch576_bank56 total checks: 1, total error: 0
+L252 v252_full_A4_S1in144_pitch576_bank60 staging dataset: bytes=4625280 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L252 v252_full_A4_S1in144_pitch576_bank60 DMA staging cycles: 77581
+L252 v252_full_A4_S1in144_pitch576_bank60 dataset ready
+L252 S1 start
+L252 S1 Mode0 configure streamer
+L252 S1 Mode0 configure core
+L252 S1 Mode0 start
+L252 S1 Mode0 D0: PASS, Error: 0
+L252 S1 Mode0 Cycles: accel=47439, streamer=47465, wall=139591
+L252 S1 Mode0 mcycle start-finish: accel=47444, streamer=47472
+L252 v252_full_A4_S1in144_pitch576_bank60 total checks: 1, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024

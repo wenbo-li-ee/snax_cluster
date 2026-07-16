@@ -1,0 +1,70 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=6 shapes=3
+L230 v230_full_A4_S1in144_pitch448_bank40 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L230 v230_full_A4_S1in144_pitch448_bank40 DMA staging cycles: 76247
+L230 v230_full_A4_S1in144_pitch448_bank40 dataset ready
+L230 S1 start
+L230 S1 Mode0 configure streamer
+L230 S1 Mode0 configure core
+L230 S1 Mode0 start
+L230 S1 Mode0 D0: PASS, Error: 0
+L230 S1 Mode0 Cycles: accel=47635, streamer=47660, wall=140090
+L230 S1 Mode0 mcycle start-finish: accel=47640, streamer=47685
+L230 v230_full_A4_S1in144_pitch448_bank40 total checks: 1, total error: 0
+L231 v231_full_A4_S1in144_pitch480_bank40 staging dataset: bytes=4600704 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L231 v231_full_A4_S1in144_pitch480_bank40 DMA staging cycles: 75999
+L231 v231_full_A4_S1in144_pitch480_bank40 dataset ready
+L231 S1 start
+L231 S1 Mode0 configure streamer
+L231 S1 Mode0 configure core
+L231 S1 Mode0 start
+L231 S1 Mode0 D0: PASS, Error: 0
+L231 S1 Mode0 Cycles: accel=49708, streamer=49733, wall=142005
+L231 S1 Mode0 mcycle start-finish: accel=49712, streamer=49757
+L231 v231_full_A4_S1in144_pitch480_bank40 total checks: 1, total error: 0
+L232 v232_full_A4_S1in144_pitch512_bank40 staging dataset: bytes=4608896 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L232 v232_full_A4_S1in144_pitch512_bank40 DMA staging cycles: 75980
+L232 v232_full_A4_S1in144_pitch512_bank40 dataset ready
+L232 S1 start
+L232 S1 Mode0 configure streamer
+L232 S1 Mode0 configure core
+L232 S1 Mode0 start
+L232 S1 Mode0 D0: PASS, Error: 0
+L232 S1 Mode0 Cycles: accel=50717, streamer=50742, wall=142900
+L232 S1 Mode0 mcycle start-finish: accel=50720, streamer=50748
+L232 v232_full_A4_S1in144_pitch512_bank40 total checks: 1, total error: 0
+L233 v233_full_A4_S1in144_pitch544_bank40 staging dataset: bytes=4617088 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L233 v233_full_A4_S1in144_pitch544_bank40 DMA staging cycles: 75998
+L233 v233_full_A4_S1in144_pitch544_bank40 dataset ready
+L233 S1 start
+L233 S1 Mode0 configure streamer
+L233 S1 Mode0 configure core
+L233 S1 Mode0 start
+L233 S1 Mode0 D0: PASS, Error: 0
+L233 S1 Mode0 Cycles: accel=49266, streamer=49291, wall=141289
+L233 S1 Mode0 mcycle start-finish: accel=49274, streamer=49308
+L233 v233_full_A4_S1in144_pitch544_bank40 total checks: 1, total error: 0
+L234 v234_full_A4_S1in144_pitch576_bank40 staging dataset: bytes=4625280 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L234 v234_full_A4_S1in144_pitch576_bank40 DMA staging cycles: 75998
+L234 v234_full_A4_S1in144_pitch576_bank40 dataset ready
+L234 S1 start
+L234 S1 Mode0 configure streamer
+L234 S1 Mode0 configure core
+L234 S1 Mode0 start
+L234 S1 Mode0 D0: PASS, Error: 0
+L234 S1 Mode0 Cycles: accel=47573, streamer=47598, wall=139680
+L234 S1 Mode0 mcycle start-finish: accel=47576, streamer=47610
+L234 v234_full_A4_S1in144_pitch576_bank40 total checks: 1, total error: 0
+L235 v235_full_A4_S1in144_pitch608_bank40 staging dataset: bytes=4633472 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L235 v235_full_A4_S1in144_pitch608_bank40 DMA staging cycles: 75995
+L235 v235_full_A4_S1in144_pitch608_bank40 dataset ready
+L235 S1 start
+L235 S1 Mode0 configure streamer
+L235 S1 Mode0 configure core
+L235 S1 Mode0 start
+L235 S1 Mode0 D0: PASS, Error: 0
+L235 S1 Mode0 Cycles: accel=49308, streamer=49333, wall=141408
+L235 S1 Mode0 mcycle start-finish: accel=49316, streamer=49350
+L235 v235_full_A4_S1in144_pitch608_bank40 total checks: 1, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024

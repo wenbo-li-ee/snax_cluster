@@ -1,0 +1,21 @@
+# Copyright 2026 KU Leuven.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+MK_DIR   := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+DATA_DIR := $(realpath $(MK_DIR))
+
+DATA_CFG ?= $(DATA_DIR)/params.hjson
+V144_DATAGEN := $(DATA_DIR)/../../snax-versacore-int16x4-moe-small-k8-highgran-layout-search/data/datagen.py
+
+DATA_H = $(DATA_DIR)/data.h
+
+$(DATA_H): $(DATA_DIR)/datagen.py $(V144_DATAGEN) $(DATA_CFG)
+	$< --swcfg $(DATA_CFG) --hwcfg $(ROOT)/target/snitch_cluster/$(CFG_OVERRIDE) > $@
+
+.PHONY: clean-data clean
+
+clean-data:
+	rm -f $(DATA_H)
+
+clean: clean-data

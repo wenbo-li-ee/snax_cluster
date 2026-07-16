@@ -1,0 +1,3 @@
+Warning: Failed to write binary name to logs/.rtlbinary
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  could not open target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15/build/snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15.elf (did you misspell it? If VCS, did you forget +permissive/+permissive-off?)

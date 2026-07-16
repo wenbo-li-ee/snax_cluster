@@ -13,13 +13,43 @@
 #ifndef SELECT_LAYOUT
 #define SELECT_LAYOUT 0
 #endif
+#ifndef NUM_LAYOUTS_TO_RUN
+#define NUM_LAYOUTS_TO_RUN 1
+#endif
+#ifndef SELECT_SHAPE
+#define SELECT_SHAPE -1
+#endif
+#ifndef RUN_MODE1
+#define RUN_MODE1 1
+#endif
 
 static int check_result_i16_limited(const int16_t *output,
                                     const int16_t *golden,
                                     int32_t num_elements) {
     uint32_t err = 0;
 
-    for (int i = 0; i < num_elements; i++) {
+    // The output and generated golden are 64-bit aligned.  Most runs pass, so
+    // compare four int16 values at once and only fall back to scalar checks on
+    // a mismatching word.  This preserves exhaustive checking while reducing
+    // VLT instruction count substantially.
+    int words = num_elements / 4;
+    const uint64_t *output64 = (const uint64_t *)output;
+    const uint64_t *golden64 = (const uint64_t *)golden;
+    for (int word = 0; word < words; word++) {
+        if (output64[word] != golden64[word]) {
+            for (int lane = 0; lane < 4; lane++) {
+                int i = word * 4 + lane;
+                if (output[i] != golden[i]) {
+                    if (err < CHECK_PRINT_LIMIT) {
+                        printf("Unequals. output[%d] = %d, golden[%d] = %d\n",
+                               i, output[i], i, golden[i]);
+                    }
+                    err++;
+                }
+            }
+        }
+    }
+    for (int i = words * 4; i < num_elements; i++) {
         if (output[i] != golden[i]) {
             if (err < CHECK_PRINT_LIMIT) {
                 printf("Unequals. output[%d] = %d, golden[%d] = %d\n", i,
@@ -80,15 +110,8 @@ static int wait_streamer_done(int layout_id, int shape_id, int mode) {
     return 0;
 }
 
-static int stage_layout_to_tcdm(const layout_cfg_t *layout) {
+static int stage_layout_to_tcdm(const layout_cfg_t *layout, int reuse_static) {
     const shape_cfg_t *cfg = &layout->shapes[0];
-
-    uint8_t *local_b0 = (uint8_t *)(snrt_l1_next() + cfg->delta_local_b0);
-    uint8_t *local_b1 = (uint8_t *)(snrt_l1_next() + cfg->delta_local_b1);
-    uint8_t *local_w2_left =
-        (uint8_t *)(snrt_l1_next() + cfg->delta_local_w2l);
-    uint8_t *local_w2_right =
-        (uint8_t *)(snrt_l1_next() + cfg->delta_local_w2r);
 
     if (cfg->tcdm_end > TCDM_CAPACITY_BYTES) {
         if (snrt_global_core_idx() == 0) {
@@ -113,6 +136,15 @@ static int stage_layout_to_tcdm(const layout_cfg_t *layout) {
                layout->shapes[2].a_row_stride);
     }
 
+    if (reuse_static) {
+        if (snrt_global_core_idx() == 0) {
+            printf("L%d %s reusing identical A/weight TCDM image\n",
+                   layout->layout_id, layout->name);
+        }
+        snrt_cluster_hw_barrier();
+        return 0;
+    }
+
     if (snrt_is_dm_core()) {
         uint32_t dma_start = snrt_mcycle();
 
@@ -120,15 +152,57 @@ static int stage_layout_to_tcdm(const layout_cfg_t *layout) {
             int16_t *local_a =
                 (int16_t *)(snrt_l1_next() +
                             layout->shapes[shape].delta_local_a);
-            snrt_dma_start_1d(local_a, layout->shapes[shape].a_data,
-                              layout->shapes[shape].a_data_length);
+            const shape_cfg_t *shape_cfg = &layout->shapes[shape];
+            if (shape_cfg->a_panel_pitch) {
+                // L3/source remains per-token. Pack only the TCDM compute
+                // image into channel-linear 64-bit words per K tile. One 2D
+                // DMA per active token copies its contiguous 16B K slice into
+                // the selected panel pitch; inactive panel holes are unread.
+                for (int token = 0; token < shape_cfg->meshRow; token++) {
+                    const int16_t *src_row =
+                        shape_cfg->a_data + token * (shape_cfg->a_row_stride / 2);
+                    int16_t *dst = local_a +
+                                   token * (shape_cfg->a_panel_token_stride / 2);
+                    snrt_dma_start_2d(dst, src_row, 16,
+                                      shape_cfg->a_panel_pitch, 16,
+                                      shape_cfg->K_tiles);
+                }
+            } else {
+                snrt_dma_start_1d(local_a, shape_cfg->a_data,
+                                  shape_cfg->a_data_length);
+            }
+            int weights_already_staged = 0;
+            if (shape > 0) {
+                const shape_cfg_t *prev = &layout->shapes[shape - 1];
+                weights_already_staged =
+                    prev->delta_local_b0 == shape_cfg->delta_local_b0 &&
+                    prev->delta_local_b1 == shape_cfg->delta_local_b1 &&
+                    prev->delta_local_w2l == shape_cfg->delta_local_w2l &&
+                    prev->delta_local_w2r == shape_cfg->delta_local_w2r &&
+                    prev->w_data == shape_cfg->w_data &&
+                    prev->v_data == shape_cfg->v_data &&
+                    prev->w2_left_data == shape_cfg->w2_left_data &&
+                    prev->w2_right_data == shape_cfg->w2_right_data;
+            }
+            if (!weights_already_staged) {
+                uint8_t *local_b0 =
+                    (uint8_t *)(snrt_l1_next() + shape_cfg->delta_local_b0);
+                uint8_t *local_b1 =
+                    (uint8_t *)(snrt_l1_next() + shape_cfg->delta_local_b1);
+                uint8_t *local_w2_left =
+                    (uint8_t *)(snrt_l1_next() + shape_cfg->delta_local_w2l);
+                uint8_t *local_w2_right =
+                    (uint8_t *)(snrt_l1_next() + shape_cfg->delta_local_w2r);
+                snrt_dma_start_1d(local_b0, shape_cfg->w_data,
+                                  shape_cfg->b_data_length);
+                snrt_dma_start_1d(local_b1, shape_cfg->v_data,
+                                  shape_cfg->b_data_length);
+                snrt_dma_start_1d(local_w2_left, shape_cfg->w2_left_data,
+                                  shape_cfg->w2_data_length);
+                snrt_dma_start_1d(local_w2_right, shape_cfg->w2_right_data,
+                                  shape_cfg->w2_data_length);
+            }
         }
-        snrt_dma_start_1d(local_b0, layout->w_data, layout->b_data_length);
-        snrt_dma_start_1d(local_b1, layout->v_data, layout->b_data_length);
-        snrt_dma_start_1d(local_w2_left, layout->w2_left_data,
-                          layout->w2_data_length);
-        snrt_dma_start_1d(local_w2_right, layout->w2_right_data,
-                          layout->w2_data_length);
         snrt_dma_wait_all();
 
         printf("L%d %s DMA staging cycles: %u\n", layout->layout_id,
@@ -137,6 +211,38 @@ static int stage_layout_to_tcdm(const layout_cfg_t *layout) {
 
     snrt_cluster_hw_barrier();
     return 0;
+}
+
+static int can_reuse_static_image(const layout_cfg_t *prev,
+                                  const layout_cfg_t *next) {
+    if (prev == 0) {
+        return 0;
+    }
+    for (int shape = 0; shape < NUM_SHAPES; shape++) {
+        const shape_cfg_t *a = &prev->shapes[shape];
+        const shape_cfg_t *b = &next->shapes[shape];
+        int same_a_image =
+            a->a_panel_pitch && b->a_panel_pitch
+                ? a->a_panel_pitch == b->a_panel_pitch
+                : (a->a_data == b->a_data &&
+                   a->a_data_length == b->a_data_length &&
+                   a->a_row_stride == b->a_row_stride &&
+                   a->a_panel_pitch == b->a_panel_pitch);
+        if (a->delta_local_a != b->delta_local_a || !same_a_image ||
+            a->a_panel_token_stride != b->a_panel_token_stride ||
+            a->delta_local_b0 != b->delta_local_b0 ||
+            a->delta_local_b1 != b->delta_local_b1 ||
+            a->delta_local_w2l != b->delta_local_w2l ||
+            a->delta_local_w2r != b->delta_local_w2r ||
+            a->w_data != b->w_data || a->v_data != b->v_data ||
+            a->w2_left_data != b->w2_left_data ||
+            a->w2_right_data != b->w2_right_data ||
+            a->b_data_length != b->b_data_length ||
+            a->w2_data_length != b->w2_data_length) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 static void configure_identity_rescale_for_mode0(void) {
@@ -224,8 +330,15 @@ static int run_mode1(int layout_id, const shape_cfg_t *cfg,
 
     printf("L%d S%d Mode1 configure streamer\n", layout_id,
            cfg->array_shape);
-    for (int i = 0; i < cfg->mode1_padded_output_elems; i++) {
-        local_mode1_d[i] = 0;
+    // Both writers overwrite the complete 2*N1 payload.  Only clear the
+    // per-token padding that is intentionally checked by the closed-loop
+    // golden; clearing the whole output dominated VLT wall time.
+    int row_elems = cfg->mode1_output_row_stride_bytes / 2;
+    int payload_elems = (2 * cfg->mode1_output_elems) / cfg->meshRow;
+    for (int token = 0; token < cfg->meshRow; token++) {
+        for (int i = payload_elems; i < row_elems; i++) {
+            local_mode1_d[token * row_elems + i] = 0;
+        }
     }
     uint32_t start_cycle = snrt_mcycle();
 
@@ -290,20 +403,31 @@ static int run_shape(int layout_id, const shape_cfg_t *cfg) {
         return mode0_err;
     }
 
+#if RUN_MODE1
     return run_mode1(layout_id, cfg, subtraction_setting);
+#else
+    return 0;
+#endif
 }
 
 int main(void) {
-    if (SELECT_LAYOUT < 0 || SELECT_LAYOUT >= NUM_LAYOUTS) {
+    if (SELECT_LAYOUT < 0 || SELECT_LAYOUT + NUM_LAYOUTS_TO_RUN > NUM_LAYOUTS) {
         if (snrt_global_core_idx() == 0) {
             printf("Invalid SELECT_LAYOUT=%d, NUM_LAYOUTS=%d\n",
                    SELECT_LAYOUT, NUM_LAYOUTS);
         }
         return 1;
     }
+    if (SELECT_SHAPE < -1 || SELECT_SHAPE >= NUM_SHAPES) {
+        if (snrt_global_core_idx() == 0) {
+            printf("Invalid SELECT_SHAPE=%d, NUM_SHAPES=%d\n", SELECT_SHAPE,
+                   NUM_SHAPES);
+        }
+        return 1;
+    }
 
-    const layout_cfg_t *layout = &layout_cfgs[SELECT_LAYOUT];
     int err = 0;
+    const layout_cfg_t *previous_layout = 0;
 
     if (snrt_global_core_idx() == 0) {
         printf("Small MoE K8 8x4 padded-contiguous L15 app: layouts=%d "
@@ -311,22 +435,31 @@ int main(void) {
                NUM_LAYOUTS, NUM_SHAPES);
     }
 
-    if (stage_layout_to_tcdm(layout)) {
-        return 1;
+    for (int layout_index = SELECT_LAYOUT;
+         layout_index < SELECT_LAYOUT + NUM_LAYOUTS_TO_RUN; layout_index++) {
+        const layout_cfg_t *layout = &layout_cfgs[layout_index];
+        int layout_err = 0;
+        int reuse_static = can_reuse_static_image(previous_layout, layout);
+        if (stage_layout_to_tcdm(layout, reuse_static)) {
+            return 1;
+        }
+        if (snrt_global_core_idx() == 0) {
+            printf("L%d %s dataset ready\n", layout->layout_id, layout->name);
+            int first_shape = SELECT_SHAPE < 0 ? 0 : SELECT_SHAPE;
+            int shape_end = SELECT_SHAPE < 0 ? NUM_SHAPES : SELECT_SHAPE + 1;
+            for (int shape = first_shape; shape < shape_end; shape++) {
+                layout_err += run_shape(layout->layout_id,
+                                        &layout->shapes[shape]);
+            }
+            int checks = (shape_end - first_shape) * (RUN_MODE1 ? 2 : 1);
+            printf("L%d %s total checks: %d, total error: %d\n",
+                   layout->layout_id, layout->name, checks,
+                   layout_err);
+            err += layout_err;
+        }
+        snrt_cluster_hw_barrier();
+        previous_layout = layout;
     }
-
-    if (snrt_global_core_idx() != 0) {
-        return 0;
-    }
-
-    printf("L%d %s dataset ready\n", layout->layout_id, layout->name);
-
-    for (int shape = 0; shape < NUM_SHAPES; shape++) {
-        err += run_shape(layout->layout_id, &layout->shapes[shape]);
-    }
-
-    printf("L%d %s total checks: %d, total error: %d\n", layout->layout_id,
-           layout->name, NUM_SHAPES * 2, err);
 
     return err;
 }

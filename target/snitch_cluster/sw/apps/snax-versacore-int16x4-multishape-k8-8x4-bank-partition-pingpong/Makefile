@@ -2,24 +2,16 @@
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
 
-APP = snax-versacore-int16x4-moe-small-k8-highgran-layout-search
-
-SELECT_LAYOUT ?= 0
-NUM_LAYOUTS_TO_RUN ?= 1
-SELECT_SHAPE ?= -1
+APP = snax-versacore-int16x4-multishape-k8-8x4-bank-partition-pingpong
+SELECT_SHAPE ?= 0
 RUN_MODE1 ?= 1
 FAST_BUILD ?= 0
-RISCV_CFLAGS += -DSELECT_LAYOUT=$(SELECT_LAYOUT)
-RISCV_CFLAGS += -DNUM_LAYOUTS_TO_RUN=$(NUM_LAYOUTS_TO_RUN)
+
 RISCV_CFLAGS += -DSELECT_SHAPE=$(SELECT_SHAPE)
 RISCV_CFLAGS += -DRUN_MODE1=$(RUN_MODE1)
-
-INCDIRS = data \
-          ../../snax/dual-versacore-swiglu/include
-
+INCDIRS = data ../../snax/dual-versacore-swiglu/include
 RISCV_LDFLAGS += ../../snax/dual-versacore-swiglu/build/snax-dual-versacore-swiglu-lib.o
-
-SRCS = src/snax-versacore-int16x4-moe-small-k8-highgran-layout-search.c
+SRCS = src/snax-versacore-int16x4-multishape-k8-8x4-bank-partition-pingpong.c
 
 include ../common.mk
 include ./data/Makefile

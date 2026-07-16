@@ -1,0 +1,49 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=1 shapes=3
+L144 v144_full_joint_A4_S2in176_M1stride176 staging dataset: bytes=4494208 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L144 v144_full_joint_A4_S2in176_M1stride176 DMA staging cycles: 77363
+L144 v144_full_joint_A4_S2in176_M1stride176 dataset ready
+L144 S0 start
+L144 S0 Mode0 configure streamer
+L144 S0 Mode0 configure core
+L144 S0 Mode0 start
+L144 S0 Mode0 D0: PASS, Error: 0
+L144 S0 Mode0 Cycles: accel=92984, streamer=93009, wall=260311
+L144 S0 Mode0 mcycle start-finish: accel=92992, streamer=93024
+L144 S0 Mode1 configure streamer
+L144 S0 Mode1 configure core
+L144 S0 Mode1 start
+L144 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L144 S0 Mode1 Cycles: accel=46577, streamer=46608, wall=287231
+L144 S0 Mode1 mcycle start-finish: accel=46594, streamer=46628
+L144 S1 start
+L144 S1 Mode0 configure streamer
+L144 S1 Mode0 configure core
+L144 S1 Mode0 start
+L144 S1 Mode0 D0: PASS, Error: 0
+L144 S1 Mode0 Cycles: accel=49456, streamer=49481, wall=139010
+L144 S1 Mode0 mcycle start-finish: accel=49462, streamer=49499
+L144 S1 Mode1 configure streamer
+L144 S1 Mode1 configure core
+L144 S1 Mode1 start
+L144 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L144 S1 Mode1 Cycles: accel=23385, streamer=23416, wall=149439
+L144 S1 Mode1 mcycle start-finish: accel=23399, streamer=23433
+L144 S2 start
+L144 S2 Mode0 configure streamer
+L144 S2 Mode0 configure core
+L144 S2 Mode0 start
+L144 S2 Mode0 D0: PASS, Error: 0
+L144 S2 Mode0 Cycles: accel=23284, streamer=23309, wall=267619
+L144 S2 Mode0 mcycle start-finish: accel=23292, streamer=23324
+L144 S2 Mode1 configure streamer
+L144 S2 Mode1 configure core
+L144 S2 Mode1 start
+L144 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L144 S2 Mode1 Cycles: accel=11705, streamer=11736, wall=82446
+L144 S2 Mode1 mcycle start-finish: accel=11722, streamer=11756
+L144 v144_full_joint_A4_S2in176_M1stride176 total checks: 6, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

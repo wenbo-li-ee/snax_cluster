@@ -1,0 +1,4 @@
+make: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15'
+rm -f /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15/data/data.h
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15/build
+make: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15'

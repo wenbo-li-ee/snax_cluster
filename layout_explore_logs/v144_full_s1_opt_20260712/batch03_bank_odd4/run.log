@@ -1,0 +1,94 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=8 shapes=3
+L220 v220_full_A4_S1in144_bank4 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L220 v220_full_A4_S1in144_bank4 DMA staging cycles: 77082
+L220 v220_full_A4_S1in144_bank4 dataset ready
+L220 S1 start
+L220 S1 Mode0 configure streamer
+L220 S1 Mode0 configure core
+L220 S1 Mode0 start
+L220 S1 Mode0 D0: PASS, Error: 0
+L220 S1 Mode0 Cycles: accel=48262, streamer=48287, wall=140790
+L220 S1 Mode0 mcycle start-finish: accel=48270, streamer=48315
+L220 v220_full_A4_S1in144_bank4 total checks: 1, total error: 0
+L221 v221_full_A4_S1in144_bank12 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L221 v221_full_A4_S1in144_bank12 DMA staging cycles: 76888
+L221 v221_full_A4_S1in144_bank12 dataset ready
+L221 S1 start
+L221 S1 Mode0 configure streamer
+L221 S1 Mode0 configure core
+L221 S1 Mode0 start
+L221 S1 Mode0 D0: PASS, Error: 0
+L221 S1 Mode0 Cycles: accel=49752, streamer=49777, wall=141994
+L221 S1 Mode0 mcycle start-finish: accel=49760, streamer=49794
+L221 v221_full_A4_S1in144_bank12 total checks: 1, total error: 0
+L222 v222_full_A4_S1in144_bank20 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L222 v222_full_A4_S1in144_bank20 DMA staging cycles: 76874
+L222 v222_full_A4_S1in144_bank20 dataset ready
+L222 S1 start
+L222 S1 Mode0 configure streamer
+L222 S1 Mode0 configure core
+L222 S1 Mode0 start
+L222 S1 Mode0 D0: PASS, Error: 0
+L222 S1 Mode0 Cycles: accel=49045, streamer=49070, wall=141279
+L222 S1 Mode0 mcycle start-finish: accel=49052, streamer=49086
+L222 v222_full_A4_S1in144_bank20 total checks: 1, total error: 0
+L223 v223_full_A4_S1in144_bank28 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L223 v223_full_A4_S1in144_bank28 DMA staging cycles: 76880
+L223 v223_full_A4_S1in144_bank28 dataset ready
+L223 S1 start
+L223 S1 Mode0 configure streamer
+L223 S1 Mode0 configure core
+L223 S1 Mode0 start
+L223 S1 Mode0 D0: PASS, Error: 0
+L223 S1 Mode0 Cycles: accel=47852, streamer=47877, wall=139996
+L223 S1 Mode0 mcycle start-finish: accel=47858, streamer=47892
+L223 v223_full_A4_S1in144_bank28 total checks: 1, total error: 0
+L224 v224_full_A4_S1in144_bank36 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L224 v224_full_A4_S1in144_bank36 DMA staging cycles: 76882
+L224 v224_full_A4_S1in144_bank36 dataset ready
+L224 S1 start
+L224 S1 Mode0 configure streamer
+L224 S1 Mode0 configure core
+L224 S1 Mode0 start
+L224 S1 Mode0 D0: PASS, Error: 0
+L224 S1 Mode0 Cycles: accel=48923, streamer=48948, wall=141007
+L224 S1 Mode0 mcycle start-finish: accel=48926, streamer=48960
+L224 v224_full_A4_S1in144_bank36 total checks: 1, total error: 0
+L225 v225_full_A4_S1in144_bank44 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L225 v225_full_A4_S1in144_bank44 DMA staging cycles: 76886
+L225 v225_full_A4_S1in144_bank44 dataset ready
+L225 S1 start
+L225 S1 Mode0 configure streamer
+L225 S1 Mode0 configure core
+L225 S1 Mode0 start
+L225 S1 Mode0 D0: PASS, Error: 0
+L225 S1 Mode0 Cycles: accel=49576, streamer=49601, wall=141699
+L225 S1 Mode0 mcycle start-finish: accel=49580, streamer=49614
+L225 v225_full_A4_S1in144_bank44 total checks: 1, total error: 0
+L226 v226_full_A4_S1in144_bank52 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L226 v226_full_A4_S1in144_bank52 DMA staging cycles: 76889
+L226 v226_full_A4_S1in144_bank52 dataset ready
+L226 S1 start
+L226 S1 Mode0 configure streamer
+L226 S1 Mode0 configure core
+L226 S1 Mode0 start
+L226 S1 Mode0 D0: PASS, Error: 0
+L226 S1 Mode0 Cycles: accel=48180, streamer=48205, wall=140299
+L226 S1 Mode0 mcycle start-finish: accel=48187, streamer=48215
+L226 v226_full_A4_S1in144_bank52 total checks: 1, total error: 0
+L227 v227_full_A4_S1in144_bank60 staging dataset: bytes=4592512 A_stride=4128 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=2048 M1_row_stride=4128 shape_A_strides=[4128,4096,4176]
+L227 v227_full_A4_S1in144_bank60 DMA staging cycles: 76884
+L227 v227_full_A4_S1in144_bank60 dataset ready
+L227 S1 start
+L227 S1 Mode0 configure streamer
+L227 S1 Mode0 configure core
+L227 S1 Mode0 start
+L227 S1 Mode0 D0: PASS, Error: 0
+L227 S1 Mode0 Cycles: accel=51951, streamer=51976, wall=144105
+L227 S1 Mode0 mcycle start-finish: accel=51956, streamer=51985
+L227 v227_full_A4_S1in144_bank60 total checks: 1, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

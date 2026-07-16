@@ -1,0 +1,13 @@
+Bank partition S1 (4x8x8), no padding/coloring, granularity=1
+banks: A=0..15 Bping=(16..31) Bpong=(32..47) D=48..63; q=2
+Mode0 DMA2D: panel=4096 span=32768 repeat=64; A size=16 dst_stride=512 repeat=256
+S1 Mode0 DMA staging cycles: 123443
+S1 Mode0 token-striped: PASS, errors=0, accel=45062, streamer=45086, wall=47339
+S1 Mode1 DMA staging cycles: 60732
+S1 Mode1 per-token: D0=PASS D1=PASS, errors=0, accel=22534, streamer=22552, wall=24981
+S1 total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm

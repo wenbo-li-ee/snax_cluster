@@ -1,0 +1,57 @@
+make: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster'
+%Error: verilator: VERILATOR_ROOT is set to inconsistent path. Suggest leaving it unset.
+%Error: VERILATOR_ROOT=/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/.pixi/envs/default/share/verilator
+%Error: verilator: VERILATOR_ROOT is set to inconsistent path. Suggest leaving it unset.
+%Error: VERILATOR_ROOT=/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/.pixi/envs/default/share/verilator
+%Error: verilator: VERILATOR_ROOT is set to inconsistent path. Suggest leaving it unset.
+%Error: VERILATOR_ROOT=/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/.pixi/envs/default/share/verilator
+mkdir -p work-vlt/
+mkdir -p work-vlt/riscv-isa-sim/
+mkdir -p work-vlt/vlt/
+mkdir -p work-vlt/vlt/
+bender script verilator -t rtl   -t sparse_interconnect -t snax_dual_versacore_int16x4_4lane_postproc_v2_cluster_xdma -t snitch_cluster -t snax_dual_versacore_swiglu -t snax_dual_versacore_int16x4_4lane_postproc_v2_cluster -t snax_test_harness > work-vlt/files
+mkdir -p work-vlt/vlt/
+wget -O work-vlt/riscv-isa-sim//98d2c29e431f3b14feefbda48c5f70c2f451acf2 https://github.com/riscv/riscv-isa-sim/tarball/98d2c29e431f3b14feefbda48c5f70c2f451acf2
+/pixi/.pixi/envs/default/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /pixi/.pixi/envs/default/include -std=c++17 -pthread -I work-vlt -I /pixi/.pixi/envs/default/share/verilator/include -I /pixi/.pixi/envs/default/share/verilator/include/vltstd -I work-vlt/riscv-isa-sim/include -I /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../target/common/test -I /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster//test -c /pixi/.pixi/envs/default/share/verilator/include/verilated.cpp -o work-vlt/vlt/verilated.o
+/pixi/.pixi/envs/default/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /pixi/.pixi/envs/default/include -std=c++17 -pthread -I work-vlt -I /pixi/.pixi/envs/default/share/verilator/include -I /pixi/.pixi/envs/default/share/verilator/include/vltstd -I work-vlt/riscv-isa-sim/include -I /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../target/common/test -I /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster//test -c /pixi/.pixi/envs/default/share/verilator/include/verilated_dpi.cpp -o work-vlt/vlt/verilated_dpi.o
+/pixi/.pixi/envs/default/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /pixi/.pixi/envs/default/include -std=c++17 -pthread -I work-vlt -I /pixi/.pixi/envs/default/share/verilator/include -I /pixi/.pixi/envs/default/share/verilator/include/vltstd -I work-vlt/riscv-isa-sim/include -I /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../target/common/test -I /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster//test -c /pixi/.pixi/envs/default/share/verilator/include/verilated_vcd_c.cpp -o work-vlt/vlt/verilated_vcd_c.o
+--2026-07-06 14:41:00--  https://github.com/riscv/riscv-isa-sim/tarball/98d2c29e431f3b14feefbda48c5f70c2f451acf2
+Overriding config file with: target/snitch_cluster/cfg/snax_dual_versacore_int16x4_multidim_spatial_k8_8x4_4lane_bgran2_highgran_search.hjson
+Resolving github.com (github.com)... 140.82.121.4
+Connecting to github.com (github.com)|140.82.121.4|:443... touch: cannot touch 'target/snitch_cluster/cfg/snax_dual_versacore_int16x4_multidim_spatial_k8_8x4_4lane_bgran2_highgran_search.hjson': No such file or directory
+make: *** [Makefile:269: cfg/lru.hjson] Error 1
+make: *** Waiting for unfinished jobs....
+connected.
+HTTP request sent, awaiting response... verilator --Mdir work-vlt/ -f work-vlt/files -Wno-BLKANDNBLK -Wno-LITENDIAN -Wno-CASEINCOMPLETE -Wno-CMPCONST -Wno-WIDTH -Wno-WIDTHCONCAT -Wno-UNSIGNED -Wno-UNOPTFLAT -Wno-fatal +define+SYNTHESIS --unroll-count 1024 --trace -j 36 --cc --build --top-module testharness
+%Error: verilator: VERILATOR_ROOT is set to inconsistent path. Suggest leaving it unset.
+%Error: VERILATOR_ROOT=/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/.pixi/envs/default/share/verilator
+make: *** [Makefile:349: work-vlt/Vtestharness__ALL.a] Error 1
+301 Moved Permanently
+Location: https://github.com/riscv-software-src/riscv-isa-sim/tarball/98d2c29e431f3b14feefbda48c5f70c2f451acf2 [following]
+--2026-07-06 14:41:01--  https://github.com/riscv-software-src/riscv-isa-sim/tarball/98d2c29e431f3b14feefbda48c5f70c2f451acf2
+Reusing existing connection to github.com:443.
+HTTP request sent, awaiting response... 302 Found
+Location: https://codeload.github.com/riscv-software-src/riscv-isa-sim/legacy.tar.gz/98d2c29e431f3b14feefbda48c5f70c2f451acf2 [following]
+--2026-07-06 14:41:01--  https://codeload.github.com/riscv-software-src/riscv-isa-sim/legacy.tar.gz/98d2c29e431f3b14feefbda48c5f70c2f451acf2
+Resolving codeload.github.com (codeload.github.com)... 140.82.121.9
+Connecting to codeload.github.com (codeload.github.com)|140.82.121.9|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/x-gzip]
+Saving to: 'work-vlt/riscv-isa-sim//98d2c29e431f3b14feefbda48c5f70c2f451acf2'
+
+     0K .......... .......... .......... .......... .......... 2.30M
+    50K .......... .......... .......... .......... .......... 4.74M
+   100K .......... .......... .......... .......... .......... 9.17M
+   150K .......... .......... .......... .......... .......... 10.6M
+   200K .......... .......... .......... .......... .......... 21.5M
+   250K .......... .......... .......... .......... .......... 16.9M
+   300K .......... .......... .......... .......... .......... 13.9M
+   350K .......... .......... .......... .......... .......... 17.0M
+   400K .......... .......... .......... .......... .......... 36.3M
+   450K .......... .......... .......... ...                    128M=0.05s
+
+2026-07-06 14:41:01 (8.65 MB/s) - 'work-vlt/riscv-isa-sim//98d2c29e431f3b14feefbda48c5f70c2f451acf2' saved [495060]
+
+tar xfm work-vlt/riscv-isa-sim/98d2c29e431f3b14feefbda48c5f70c2f451acf2 --strip-components=1 -C work-vlt/riscv-isa-sim/
+touch work-vlt/riscv-isa-sim/98d2c29e431f3b14feefbda48c5f70c2f451acf2_unzip
+make: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster'

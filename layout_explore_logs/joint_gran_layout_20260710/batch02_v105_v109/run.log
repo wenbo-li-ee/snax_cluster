@@ -1,0 +1,221 @@
+Small MoE K8 8x4 padded-contiguous L15 app: layouts=110 shapes=3
+L105 v105_joint_A4_B2_shapePanel_128_64_32 staging dataset: bytes=246656 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2128]
+L105 v105_joint_A4_B2_shapePanel_128_64_32 DMA staging cycles: 342691
+L105 v105_joint_A4_B2_shapePanel_128_64_32 dataset ready
+L105 S0 start
+L105 S0 Mode0 configure streamer
+L105 S0 Mode0 configure core
+L105 S0 Mode0 start
+L105 S0 Mode0 D0: PASS, Error: 0
+L105 S0 Mode0 Cycles: accel=4275, streamer=4300, wall=30705
+L105 S0 Mode0 mcycle start-finish: accel=4283, streamer=4306
+L105 S0 Mode1 configure streamer
+L105 S0 Mode1 configure core
+L105 S0 Mode1 start
+L105 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L105 S0 Mode1 Cycles: accel=2185, streamer=2205, wall=130226
+L105 S0 Mode1 mcycle start-finish: accel=2191, streamer=2213
+L105 S1 start
+L105 S1 Mode0 configure streamer
+L105 S1 Mode0 configure core
+L105 S1 Mode0 start
+L105 S1 Mode0 D0: PASS, Error: 0
+L105 S1 Mode0 Cycles: accel=2243, streamer=2268, wall=21093
+L105 S1 Mode0 mcycle start-finish: accel=2250, streamer=2273
+L105 S1 Mode1 configure streamer
+L105 S1 Mode1 configure core
+L105 S1 Mode1 start
+L105 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L105 S1 Mode1 Cycles: accel=1114, streamer=1134, wall=70732
+L105 S1 Mode1 mcycle start-finish: accel=1117, streamer=1140
+L105 S2 start
+L105 S2 Mode0 configure streamer
+L105 S2 Mode0 configure core
+L105 S2 Mode0 start
+L105 S2 Mode0 D0: PASS, Error: 0
+L105 S2 Mode0 Cycles: accel=1078, streamer=1103, wall=16391
+L105 S2 Mode0 mcycle start-finish: accel=1086, streamer=1110
+L105 S2 Mode1 configure streamer
+L105 S2 Mode1 configure core
+L105 S2 Mode1 start
+L105 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L105 S2 Mode1 Cycles: accel=574, streamer=594, wall=43022
+L105 S2 Mode1 mcycle start-finish: accel=582, streamer=599
+L105 v105_joint_A4_B2_shapePanel_128_64_32 total checks: 6, total error: 0
+L106 v106_joint_A4_B2_s2pad64 staging dataset: bytes=246528 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2112]
+L106 v106_joint_A4_B2_s2pad64 reusing identical A/weight TCDM image
+L106 v106_joint_A4_B2_s2pad64 dataset ready
+L106 S0 start
+L106 S0 Mode0 configure streamer
+L106 S0 Mode0 configure core
+L106 S0 Mode0 start
+L106 S0 Mode0 D0: PASS, Error: 0
+L106 S0 Mode0 Cycles: accel=4275, streamer=4300, wall=30287
+L106 S0 Mode0 mcycle start-finish: accel=4278, streamer=4308
+L106 S0 Mode1 configure streamer
+L106 S0 Mode1 configure core
+L106 S0 Mode1 start
+L106 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L106 S0 Mode1 Cycles: accel=2185, streamer=2205, wall=129828
+L106 S0 Mode1 mcycle start-finish: accel=2190, streamer=2213
+L106 S1 start
+L106 S1 Mode0 configure streamer
+L106 S1 Mode0 configure core
+L106 S1 Mode0 start
+L106 S1 Mode0 D0: PASS, Error: 0
+L106 S1 Mode0 Cycles: accel=2243, streamer=2268, wall=21117
+L106 S1 Mode0 mcycle start-finish: accel=2250, streamer=2273
+L106 S1 Mode1 configure streamer
+L106 S1 Mode1 configure core
+L106 S1 Mode1 start
+L106 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L106 S1 Mode1 Cycles: accel=1114, streamer=1134, wall=70725
+L106 S1 Mode1 mcycle start-finish: accel=1122, streamer=1139
+L106 S2 start
+L106 S2 Mode0 configure streamer
+L106 S2 Mode0 configure core
+L106 S2 Mode0 start
+L106 S2 Mode0 D0: PASS, Error: 0
+L106 S2 Mode0 Cycles: accel=1078, streamer=1103, wall=16389
+L106 S2 Mode0 mcycle start-finish: accel=1086, streamer=1110
+L106 S2 Mode1 configure streamer
+L106 S2 Mode1 configure core
+L106 S2 Mode1 start
+L106 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L106 S2 Mode1 Cycles: accel=574, streamer=594, wall=42806
+L106 S2 Mode1 mcycle start-finish: accel=582, streamer=599
+L106 v106_joint_A4_B2_s2pad64 total checks: 6, total error: 0
+L107 v107_joint_A4_B2_s2pad96 staging dataset: bytes=246784 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2144]
+L107 v107_joint_A4_B2_s2pad96 reusing identical A/weight TCDM image
+L107 v107_joint_A4_B2_s2pad96 dataset ready
+L107 S0 start
+L107 S0 Mode0 configure streamer
+L107 S0 Mode0 configure core
+L107 S0 Mode0 start
+L107 S0 Mode0 D0: PASS, Error: 0
+L107 S0 Mode0 Cycles: accel=4275, streamer=4300, wall=30210
+L107 S0 Mode0 mcycle start-finish: accel=4278, streamer=4313
+L107 S0 Mode1 configure streamer
+L107 S0 Mode1 configure core
+L107 S0 Mode1 start
+L107 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L107 S0 Mode1 Cycles: accel=2185, streamer=2205, wall=129814
+L107 S0 Mode1 mcycle start-finish: accel=2190, streamer=2213
+L107 S1 start
+L107 S1 Mode0 configure streamer
+L107 S1 Mode0 configure core
+L107 S1 Mode0 start
+L107 S1 Mode0 D0: PASS, Error: 0
+L107 S1 Mode0 Cycles: accel=2243, streamer=2268, wall=21098
+L107 S1 Mode0 mcycle start-finish: accel=2250, streamer=2273
+L107 S1 Mode1 configure streamer
+L107 S1 Mode1 configure core
+L107 S1 Mode1 start
+L107 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L107 S1 Mode1 Cycles: accel=1114, streamer=1134, wall=70621
+L107 S1 Mode1 mcycle start-finish: accel=1122, streamer=1139
+L107 S2 start
+L107 S2 Mode0 configure streamer
+L107 S2 Mode0 configure core
+L107 S2 Mode0 start
+L107 S2 Mode0 D0: PASS, Error: 0
+L107 S2 Mode0 Cycles: accel=1078, streamer=1103, wall=16308
+L107 S2 Mode0 mcycle start-finish: accel=1086, streamer=1109
+L107 S2 Mode1 configure streamer
+L107 S2 Mode1 configure core
+L107 S2 Mode1 start
+L107 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L107 S2 Mode1 Cycles: accel=574, streamer=594, wall=43345
+L107 S2 Mode1 mcycle start-finish: accel=582, streamer=599
+L107 v107_joint_A4_B2_s2pad96 total checks: 6, total error: 0
+L108 v108_joint_A4_B2_m1bank40 staging dataset: bytes=246720 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=40 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2128]
+L108 v108_joint_A4_B2_m1bank40 reusing identical A/weight TCDM image
+L108 v108_joint_A4_B2_m1bank40 dataset ready
+L108 S0 start
+L108 S0 Mode0 configure streamer
+L108 S0 Mode0 configure core
+L108 S0 Mode0 start
+L108 S0 Mode0 D0: PASS, Error: 0
+L108 S0 Mode0 Cycles: accel=4275, streamer=4300, wall=30205
+L108 S0 Mode0 mcycle start-finish: accel=4278, streamer=4313
+L108 S0 Mode1 configure streamer
+L108 S0 Mode1 configure core
+L108 S0 Mode1 start
+L108 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L108 S0 Mode1 Cycles: accel=2188, streamer=2208, wall=129817
+L108 S0 Mode1 mcycle start-finish: accel=2196, streamer=2213
+L108 S1 start
+L108 S1 Mode0 configure streamer
+L108 S1 Mode0 configure core
+L108 S1 Mode0 start
+L108 S1 Mode0 D0: PASS, Error: 0
+L108 S1 Mode0 Cycles: accel=2243, streamer=2268, wall=21089
+L108 S1 Mode0 mcycle start-finish: accel=2250, streamer=2273
+L108 S1 Mode1 configure streamer
+L108 S1 Mode1 configure core
+L108 S1 Mode1 start
+L108 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L108 S1 Mode1 Cycles: accel=1111, streamer=1131, wall=70721
+L108 S1 Mode1 mcycle start-finish: accel=1116, streamer=1139
+L108 S2 start
+L108 S2 Mode0 configure streamer
+L108 S2 Mode0 configure core
+L108 S2 Mode0 start
+L108 S2 Mode0 D0: PASS, Error: 0
+L108 S2 Mode0 Cycles: accel=1078, streamer=1103, wall=16295
+L108 S2 Mode0 mcycle start-finish: accel=1086, streamer=1109
+L108 S2 Mode1 configure streamer
+L108 S2 Mode1 configure core
+L108 S2 Mode1 start
+L108 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L108 S2 Mode1 Cycles: accel=574, streamer=594, wall=43122
+L108 S2 Mode1 mcycle start-finish: accel=582, streamer=599
+L108 v108_joint_A4_B2_m1bank40 total checks: 6, total error: 0
+L109 v109_joint_A8_B2_shapePanel_128_64_64 staging dataset: bytes=250752 A_stride=2080 B0_bank=0 B1_bank=52 D0_bank=0 M1D0_bank=32 M1D1_minus_D0=1024 M1_row_stride=2080 shape_A_strides=[2080,2048,2128]
+L109 v109_joint_A8_B2_shapePanel_128_64_64 DMA staging cycles: 348643
+L109 v109_joint_A8_B2_shapePanel_128_64_64 dataset ready
+L109 S0 start
+L109 S0 Mode0 configure streamer
+L109 S0 Mode0 configure core
+L109 S0 Mode0 start
+L109 S0 Mode0 D0: PASS, Error: 0
+L109 S0 Mode0 Cycles: accel=4275, streamer=4300, wall=30195
+L109 S0 Mode0 mcycle start-finish: accel=4278, streamer=4307
+L109 S0 Mode1 configure streamer
+L109 S0 Mode1 configure core
+L109 S0 Mode1 start
+L109 S0 Mode1 D padded-contiguous: PASS, Error: 0
+L109 S0 Mode1 Cycles: accel=2185, streamer=2205, wall=129906
+L109 S0 Mode1 mcycle start-finish: accel=2190, streamer=2213
+L109 S1 start
+L109 S1 Mode0 configure streamer
+L109 S1 Mode0 configure core
+L109 S1 Mode0 start
+L109 S1 Mode0 D0: PASS, Error: 0
+L109 S1 Mode0 Cycles: accel=2243, streamer=2268, wall=21084
+L109 S1 Mode0 mcycle start-finish: accel=2250, streamer=2273
+L109 S1 Mode1 configure streamer
+L109 S1 Mode1 configure core
+L109 S1 Mode1 start
+L109 S1 Mode1 D padded-contiguous: PASS, Error: 0
+L109 S1 Mode1 Cycles: accel=1114, streamer=1134, wall=70722
+L109 S1 Mode1 mcycle start-finish: accel=1122, streamer=1139
+L109 S2 start
+L109 S2 Mode0 configure streamer
+L109 S2 Mode0 configure core
+L109 S2 Mode0 start
+L109 S2 Mode0 D0: PASS, Error: 0
+L109 S2 Mode0 Cycles: accel=1193, streamer=1218, wall=19780
+L109 S2 Mode0 mcycle start-finish: accel=1200, streamer=1223
+L109 S2 Mode1 configure streamer
+L109 S2 Mode1 configure core
+L109 S2 Mode1 start
+L109 S2 Mode1 D padded-contiguous: PASS, Error: 0
+L109 S2 Mode1 Cycles: accel=578, streamer=598, wall=43130
+L109 S2 Mode1 mcycle start-finish: accel=582, streamer=605
+L109 v109_joint_A8_B2_shapePanel_128_64_64 total checks: 6, total error: 0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm
