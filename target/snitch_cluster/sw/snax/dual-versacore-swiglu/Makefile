@@ -56,6 +56,8 @@ INCDIRS += $(ROOT)/target/snitch_cluster/sw/runtime/$(RUNTIME_DIR)/include
 
 OBJS        = $(BUILDDIR)/snax-dual-versacore-swiglu-lib.o
 ALL_OUTPUTS = $(OBJS)
+CFG_HEADERS = $(MK_DIR)include/snax_dual_versacore_stationarity.h \
+              $(MK_DIR)include/streamer_csr_addr_map.h
 
 
 ##########
@@ -74,3 +76,5 @@ $(BUILDDIR):
 
 $(BUILDDIR)/%.o: $(SRC_DIR)/%.c | $(BUILDDIR)
 	$(RISCV_CC) $(RISCV_CFLAGS) -c $< -o $@
+
+$(OBJS): $(CFG_HEADERS)

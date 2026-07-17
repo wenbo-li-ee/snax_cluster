@@ -27,6 +27,7 @@ module elem_mul_16b #(
     // Output port (int32 per lane)
     output logic [NUM_LANES-1:0][31:0]   data_o,
     output logic                         valid_o,
+    output logic                         busy_o,
     input  logic                         ready_i
 );
 
@@ -37,6 +38,7 @@ module elem_mul_16b #(
 
     assign out_can_accept = !valid_o || ready_i;
     assign fire          = fifo0_valid && fifo1_valid && out_can_accept;
+    assign busy_o        = fifo0_valid || fifo1_valid || valid_o;
 
     // Each input can be accepted independently. If this stage fires, the buffer
     // can also be refilled in the same cycle.

@@ -115,8 +115,12 @@ object DualVersaCoreSwigluGen {
     val cfg = ujson.read(versacoreCfg)
     val PostprocLanes = cfg.obj.get("snax_dual_versacore_postproc_lanes")
       .map(_.num.toInt).getOrElse(64)
-    val RegRWCount = cfg.obj.get("snax_num_rw_csr").map(_.num.toInt).getOrElse(20)
+    val RegRWCount = cfg.obj.get("snax_num_rw_csr").map(_.num.toInt).getOrElse(23)
     val RegROCount = cfg.obj.get("snax_num_ro_csr").map(_.num.toInt).getOrElse(2)
+    require(
+      RegRWCount == 23,
+      s"snax_dual_versacore_swiglu requires exactly 23 RW CSRs, got $RegRWCount"
+    )
 
     // Writer-facing output width is the post-process chunk width.
     // The old DataWidthD / 2 formula only worked when PostprocLanes happened to
@@ -196,6 +200,16 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     output logic [RegROCount-1:0][RegDataWidth-1:0] csr_reg_ro_set_o
 );
 
+    localparam int unsigned ActiveCfgCount = 19;
+
+    // ReqRspManager owns the staging/next-job CSR bank.  The active bank is
+    // updated atomically only when a START request is accepted.
+    logic [ActiveCfgCount-1:0][RegDataWidth-1:0] active_cfg;
+    logic cores_ready;
+    logic postproc_busy;
+    logic launch_fire;
+    logic ctrl_valid_to_vc;
+
     // =========================================================================
     // CSR extraction
     // =========================================================================
@@ -209,40 +223,41 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     // CSR[7..10]: RESCALE0 (input_zp, multiplier, output_zp, shift)
     // CSR[11..14]: RESCALE1 (input_zp, multiplier, output_zp, shift)
     // CSR[15..18]: RESCALE_MUL (input_zp, multiplier, output_zp, shift)
-    // CSR[19]: START (handled by framework)
+    // CSR[19..21]: reserved
+    // CSR[22]: START (handled by framework)
 
     logic mode_sel;
-    assign mode_sel = csr_reg_set_i[6][0];
+    assign mode_sel = active_cfg[6][0];
 
     // Rescale0 parameters
     logic signed [31:0] rescale0_input_zp;
     logic        [31:0] rescale0_multiplier;
     logic signed [31:0] rescale0_output_zp;
     logic        [7:0]  rescale0_shift;
-    assign rescale0_input_zp   = csr_reg_set_i[7];
-    assign rescale0_multiplier = csr_reg_set_i[8];
-    assign rescale0_output_zp  = csr_reg_set_i[9];
-    assign rescale0_shift      = csr_reg_set_i[10][7:0];
+    assign rescale0_input_zp   = active_cfg[7];
+    assign rescale0_multiplier = active_cfg[8];
+    assign rescale0_output_zp  = active_cfg[9];
+    assign rescale0_shift      = active_cfg[10][7:0];
 
     // Rescale1 parameters
     logic signed [31:0] rescale1_input_zp;
     logic        [31:0] rescale1_multiplier;
     logic signed [31:0] rescale1_output_zp;
     logic        [7:0]  rescale1_shift;
-    assign rescale1_input_zp   = csr_reg_set_i[11];
-    assign rescale1_multiplier = csr_reg_set_i[12];
-    assign rescale1_output_zp  = csr_reg_set_i[13];
-    assign rescale1_shift      = csr_reg_set_i[14][7:0];
+    assign rescale1_input_zp   = active_cfg[11];
+    assign rescale1_multiplier = active_cfg[12];
+    assign rescale1_output_zp  = active_cfg[13];
+    assign rescale1_shift      = active_cfg[14][7:0];
 
     // Rescale_mul parameters
     logic signed [31:0] rescale_mul_input_zp;
     logic        [31:0] rescale_mul_multiplier;
     logic signed [31:0] rescale_mul_output_zp;
     logic        [7:0]  rescale_mul_shift;
-    assign rescale_mul_input_zp   = csr_reg_set_i[15];
-    assign rescale_mul_multiplier = csr_reg_set_i[16];
-    assign rescale_mul_output_zp  = csr_reg_set_i[17];
-    assign rescale_mul_shift      = csr_reg_set_i[18][7:0];
+    assign rescale_mul_input_zp   = active_cfg[15];
+    assign rescale_mul_multiplier = active_cfg[16];
+    assign rescale_mul_output_zp  = active_cfg[17];
+    assign rescale_mul_shift      = active_cfg[18][7:0];
 
     // =========================================================================
     // Internal signals
@@ -325,10 +340,20 @@ module snax_dual_versacore_swiglu_shell_wrapper #(
     assign stream2acc_2_ready_o = vc1_in_b_ready;
     assign vc1_in_b_valid = stream2acc_2_valid_i;
 
-    // CSR control synchronization: both VersaCores must be ready
-    logic ctrl_valid_to_vc;
-    assign csr_reg_set_ready_o = vc0_ctrl_ready && vc1_ctrl_ready;
-    assign ctrl_valid_to_vc = csr_reg_set_valid_i;
+    // CSR control synchronization: launch both VersaCores together, after the
+    // previous job has also drained from the local post-processing pipeline.
+    assign cores_ready = vc0_ctrl_ready && vc1_ctrl_ready;
+    assign csr_reg_set_ready_o = cores_ready && !postproc_busy;
+    assign launch_fire = csr_reg_set_valid_i && csr_reg_set_ready_o;
+    assign ctrl_valid_to_vc = launch_fire;
+
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+            active_cfg <= '0;
+        end else if (launch_fire) begin
+            active_cfg <= csr_reg_set_i[ActiveCfgCount-1:0];
+        end
+    end
 
     // =========================================================================
     // VersaCore 0
@@ -465,7 +490,7 @@ $activeChunkCases
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_0;
     logic chunk_last_0;
     assign chunk_last_0 = (NumChunks <= 1) ||
-                          (chunk_cnt_0 == active_num_chunks(csr_reg_set_i[4]) - 1);
+                          (chunk_cnt_0 == active_num_chunks(active_cfg[4]) - 1);
 
     logic [PostprocLanes-1:0][31:0] chunk_ser0_data;
     logic chunk_ser0_valid;
@@ -504,7 +529,7 @@ $activeChunkCases
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_1;
     logic chunk_last_1;
     assign chunk_last_1 = (NumChunks <= 1) ||
-                          (chunk_cnt_1 == active_num_chunks(csr_reg_set_i[4]) - 1);
+                          (chunk_cnt_1 == active_num_chunks(active_cfg[4]) - 1);
 
     logic [PostprocLanes-1:0][31:0] chunk_ser1_data;
     logic chunk_ser1_valid;
@@ -589,6 +614,7 @@ $activeChunkCases
     // =========================================================================
     logic [PostprocLanes-1:0][15:0] silu_out_data;
     logic silu_out_valid, silu_out_ready;
+    logic silu_busy;
 
     // SiLU input: from rescale0 in mode 0, idle in mode 1
     logic [PostprocLanes-1:0][15:0] silu_in_data;
@@ -607,6 +633,7 @@ $activeChunkCases
         .ready_o (silu_in_ready),
         .data_o  (silu_out_data),
         .valid_o (silu_out_valid),
+        .busy_o  (silu_busy),
         .ready_i (silu_out_ready)
     );
 
@@ -616,6 +643,7 @@ $activeChunkCases
     // =========================================================================
     logic [PostprocLanes-1:0][31:0] elem_mul_out_data;
     logic elem_mul_out_valid, elem_mul_out_ready;
+    logic elem_mul_busy;
 
     // ElemMul input 1: from rescale1 in mode 0, idle in mode 1
     logic elem_mul_in1_valid, elem_mul_in1_ready;
@@ -634,6 +662,7 @@ $activeChunkCases
         .ready_o_1(elem_mul_in1_ready),
         .data_o  (elem_mul_out_data),
         .valid_o (elem_mul_out_valid),
+        .busy_o  (elem_mul_busy),
         .ready_i (elem_mul_out_ready)
     );
 
@@ -792,11 +821,20 @@ $activeChunkCases
     assign acc2stream_1_data_o = out_assemble_1;
     assign acc2stream_1_valid_o = out_assemble_1_valid;
 
+    // Keep the active configuration stable until every local pipeline stage
+    // has drained. Input-A buffering is intentionally excluded: the streamer
+    // may prefill it before the next accelerator START.
+    assign postproc_busy = buf0_valid || buf1_valid ||
+                           rescale0_out_valid || rescale1_out_valid ||
+                           silu_busy || elem_mul_busy ||
+                           rescale_mul_out_valid ||
+                           out_assemble_0_valid || out_assemble_1_valid;
+
     // =========================================================================
     // Read-only CSR outputs
     // =========================================================================
-    // CSR RO[0]: busy (either VersaCore busy)
-    assign csr_reg_ro_set_o[0] = {31'b0, vc0_busy || vc1_busy};
+    // CSR RO[0]: busy (VersaCores plus local post-processing/write interface)
+    assign csr_reg_ro_set_o[0] = {31'b0, vc0_busy || vc1_busy || postproc_busy};
     // CSR RO[1]: performance counter (max of both)
     assign csr_reg_ro_set_o[1] = (vc0_perf_counter > vc1_perf_counter) ?
                                   vc0_perf_counter : vc1_perf_counter;

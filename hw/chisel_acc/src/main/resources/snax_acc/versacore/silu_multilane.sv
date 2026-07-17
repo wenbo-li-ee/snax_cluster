@@ -22,6 +22,7 @@ module silu_multilane #(
     // Output port
     output logic [NUM_LANES-1:0][15:0]       data_o,
     output logic                             valid_o,
+    output logic                             busy_o,
     input  logic                             ready_i
 );
 
@@ -37,6 +38,7 @@ module silu_multilane #(
     // Output interface
     assign ready_o        = !stage_valid[0] || stage_ready[0];
     assign valid_o        = stage_valid[2];
+    assign busy_o         = stage_valid[0] || stage_valid[1] || stage_valid[2];
     assign stage_ready[2] = ready_i;
 
     // Ready propagation (backward)

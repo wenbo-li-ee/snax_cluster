@@ -173,6 +173,14 @@ static int run_mode0(int layout_id, const shape_cfg_t *cfg,
     set_dual_versacore_streamer_start();
     uint32_t accel_start_cycle = snrt_mcycle();
     set_dual_versacore_start();
+
+    // While Mode 0 runs from its START-time snapshot, fill the staging bank
+    // with the complete Mode 1 configuration for this shape.
+    set_dual_versacore_csr(1, cfg->K1, cfg->N1 * cfg->M_tiles,
+                           subtraction_setting, cfg->array_shape, DATA_TYPE);
+    set_dual_versacore_mode(1);
+    configure_identity_rescale_for_mode1();
+
     if (wait_accelerator_done(layout_id, cfg->array_shape, 0)) {
         return 1000 + cfg->array_shape;
     }
@@ -203,8 +211,7 @@ static int run_mode0(int layout_id, const shape_cfg_t *cfg,
     return 0;
 }
 
-static int run_mode1(int layout_id, const shape_cfg_t *cfg,
-                     uint32_t subtraction_setting) {
+static int run_mode1(int layout_id, const shape_cfg_t *cfg) {
     int16_t *local_mode1_d =
         (int16_t *)(snrt_l1_next() + cfg->delta_local_mode1_d0);
 
@@ -224,11 +231,8 @@ static int run_mode1(int layout_id, const shape_cfg_t *cfg,
         cfg->delta_local_mode1_d1, cfg->D_sstride, cfg->mode1_D_tbound,
         cfg->mode1_D_tstride, SET_ADDR_REMAP_INDEX_D1, cfg->D_channel_en);
 
-    printf("L%d S%d Mode1 configure core\n", layout_id, cfg->array_shape);
-    set_dual_versacore_csr(1, cfg->K1, cfg->N1 * cfg->M_tiles,
-                           subtraction_setting, cfg->array_shape, DATA_TYPE);
-    set_dual_versacore_mode(1);
-    configure_identity_rescale_for_mode1();
+    printf("L%d S%d Mode1 use pipelined core config\n", layout_id,
+           cfg->array_shape);
 
     printf("L%d S%d Mode1 start\n", layout_id, cfg->array_shape);
     uint32_t streamer_start_cycle = snrt_mcycle();
@@ -273,7 +277,7 @@ static int run_shape(int layout_id, const shape_cfg_t *cfg) {
         return mode0_err;
     }
 
-    return run_mode1(layout_id, cfg, subtraction_setting);
+    return run_mode1(layout_id, cfg);
 }
 
 int main(void) {
