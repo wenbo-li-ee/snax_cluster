@@ -42,7 +42,7 @@
         cluster_periph_size: 64
         zero_mem_size: 64
         dma_data_width: 512
-        dma_axi_req_fifo_depth: 32
+        dma_axi_req_fifo_depth: 64
         dma_req_fifo_depth: 8
         observable_pin_width: 8
         narrow_trans: 4
