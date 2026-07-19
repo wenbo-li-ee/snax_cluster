@@ -1,0 +1,543 @@
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm
+WEIGHT_RESIDENT_LAYOUT logical_W=2048x1024 logical_V=2048x1024 logical_W2=1024x2048 physical_W2_half=1024x1024 banks=16..47 mode0_rows=0..8191 mode1_rows=8192..12287 free_rows=12288..16383 required=6291456 capacity=8388608
+WEIGHT_DMA_CHUNK mode=0 chunk=0 cols=0..16 buffer=ping slot=0 left_base=128 right_base=192 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1404
+WEIGHT_DMA_CHUNK mode=0 chunk=1 cols=16..32 buffer=pong slot=0 left_base=256 right_base=320 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1373
+WEIGHT_DMA_CHUNK mode=0 chunk=2 cols=32..48 buffer=ping slot=1 left_base=131200 right_base=131264 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1385
+WEIGHT_DMA_CHUNK mode=0 chunk=3 cols=48..64 buffer=pong slot=1 left_base=131328 right_base=131392 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=4 cols=64..80 buffer=ping slot=2 left_base=262272 right_base=262336 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=5 cols=80..96 buffer=pong slot=2 left_base=262400 right_base=262464 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=6 cols=96..112 buffer=ping slot=3 left_base=393344 right_base=393408 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=7 cols=112..128 buffer=pong slot=3 left_base=393472 right_base=393536 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=8 cols=128..144 buffer=ping slot=4 left_base=524416 right_base=524480 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=9 cols=144..160 buffer=pong slot=4 left_base=524544 right_base=524608 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=10 cols=160..176 buffer=ping slot=5 left_base=655488 right_base=655552 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=11 cols=176..192 buffer=pong slot=5 left_base=655616 right_base=655680 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=12 cols=192..208 buffer=ping slot=6 left_base=786560 right_base=786624 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=13 cols=208..224 buffer=pong slot=6 left_base=786688 right_base=786752 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=14 cols=224..240 buffer=ping slot=7 left_base=917632 right_base=917696 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=15 cols=240..256 buffer=pong slot=7 left_base=917760 right_base=917824 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=16 cols=256..272 buffer=ping slot=8 left_base=1048704 right_base=1048768 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=17 cols=272..288 buffer=pong slot=8 left_base=1048832 right_base=1048896 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=18 cols=288..304 buffer=ping slot=9 left_base=1179776 right_base=1179840 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=19 cols=304..320 buffer=pong slot=9 left_base=1179904 right_base=1179968 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=20 cols=320..336 buffer=ping slot=10 left_base=1310848 right_base=1310912 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=21 cols=336..352 buffer=pong slot=10 left_base=1310976 right_base=1311040 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=22 cols=352..368 buffer=ping slot=11 left_base=1441920 right_base=1441984 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=23 cols=368..384 buffer=pong slot=11 left_base=1442048 right_base=1442112 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=24 cols=384..400 buffer=ping slot=12 left_base=1572992 right_base=1573056 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=25 cols=400..416 buffer=pong slot=12 left_base=1573120 right_base=1573184 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=26 cols=416..432 buffer=ping slot=13 left_base=1704064 right_base=1704128 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=27 cols=432..448 buffer=pong slot=13 left_base=1704192 right_base=1704256 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=28 cols=448..464 buffer=ping slot=14 left_base=1835136 right_base=1835200 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=29 cols=464..480 buffer=pong slot=14 left_base=1835264 right_base=1835328 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=30 cols=480..496 buffer=ping slot=15 left_base=1966208 right_base=1966272 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=31 cols=496..512 buffer=pong slot=15 left_base=1966336 right_base=1966400 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=32 cols=512..528 buffer=ping slot=16 left_base=2097280 right_base=2097344 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=33 cols=528..544 buffer=pong slot=16 left_base=2097408 right_base=2097472 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=34 cols=544..560 buffer=ping slot=17 left_base=2228352 right_base=2228416 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=35 cols=560..576 buffer=pong slot=17 left_base=2228480 right_base=2228544 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=36 cols=576..592 buffer=ping slot=18 left_base=2359424 right_base=2359488 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=37 cols=592..608 buffer=pong slot=18 left_base=2359552 right_base=2359616 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=38 cols=608..624 buffer=ping slot=19 left_base=2490496 right_base=2490560 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=39 cols=624..640 buffer=pong slot=19 left_base=2490624 right_base=2490688 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=40 cols=640..656 buffer=ping slot=20 left_base=2621568 right_base=2621632 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=41 cols=656..672 buffer=pong slot=20 left_base=2621696 right_base=2621760 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=42 cols=672..688 buffer=ping slot=21 left_base=2752640 right_base=2752704 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=43 cols=688..704 buffer=pong slot=21 left_base=2752768 right_base=2752832 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=44 cols=704..720 buffer=ping slot=22 left_base=2883712 right_base=2883776 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=45 cols=720..736 buffer=pong slot=22 left_base=2883840 right_base=2883904 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=46 cols=736..752 buffer=ping slot=23 left_base=3014784 right_base=3014848 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=47 cols=752..768 buffer=pong slot=23 left_base=3014912 right_base=3014976 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=48 cols=768..784 buffer=ping slot=24 left_base=3145856 right_base=3145920 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=49 cols=784..800 buffer=pong slot=24 left_base=3145984 right_base=3146048 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=50 cols=800..816 buffer=ping slot=25 left_base=3276928 right_base=3276992 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=51 cols=816..832 buffer=pong slot=25 left_base=3277056 right_base=3277120 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=52 cols=832..848 buffer=ping slot=26 left_base=3408000 right_base=3408064 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=53 cols=848..864 buffer=pong slot=26 left_base=3408128 right_base=3408192 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=54 cols=864..880 buffer=ping slot=27 left_base=3539072 right_base=3539136 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=55 cols=880..896 buffer=pong slot=27 left_base=3539200 right_base=3539264 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=56 cols=896..912 buffer=ping slot=28 left_base=3670144 right_base=3670208 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=57 cols=912..928 buffer=pong slot=28 left_base=3670272 right_base=3670336 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=58 cols=928..944 buffer=ping slot=29 left_base=3801216 right_base=3801280 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=59 cols=944..960 buffer=pong slot=29 left_base=3801344 right_base=3801408 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=60 cols=960..976 buffer=ping slot=30 left_base=3932288 right_base=3932352 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=61 cols=976..992 buffer=pong slot=30 left_base=3932416 right_base=3932480 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_CHUNK mode=0 chunk=62 cols=992..1008 buffer=ping slot=31 left_base=4063360 right_base=4063424 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1366
+WEIGHT_DMA_CHUNK mode=0 chunk=63 cols=1008..1024 buffer=pong slot=31 left_base=4063488 right_base=4063552 panels=4 panel_bytes=4096 size=64 dst_stride=512 src_stride=64 repeat=64 cycles=1365
+WEIGHT_DMA_SUMMARY mode=0 chunks=64 chunk_cols=16 commands=512 total_cycles=1260834 region_offset=0 region_span=4194304 region_end=4194304
+WEIGHT_DMA_CHUNK mode=1 chunk=0 cols=0..16 buffer=ping slot=0 left_base=4194432 right_base=4194496 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=1 cols=16..32 buffer=pong slot=0 left_base=4194560 right_base=4194624 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=2 cols=32..48 buffer=ping slot=1 left_base=4259968 right_base=4260032 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=3 cols=48..64 buffer=pong slot=1 left_base=4260096 right_base=4260160 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=4 cols=64..80 buffer=ping slot=2 left_base=4325504 right_base=4325568 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=5 cols=80..96 buffer=pong slot=2 left_base=4325632 right_base=4325696 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=6 cols=96..112 buffer=ping slot=3 left_base=4391040 right_base=4391104 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=7 cols=112..128 buffer=pong slot=3 left_base=4391168 right_base=4391232 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=8 cols=128..144 buffer=ping slot=4 left_base=4456576 right_base=4456640 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=9 cols=144..160 buffer=pong slot=4 left_base=4456704 right_base=4456768 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=10 cols=160..176 buffer=ping slot=5 left_base=4522112 right_base=4522176 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=11 cols=176..192 buffer=pong slot=5 left_base=4522240 right_base=4522304 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=12 cols=192..208 buffer=ping slot=6 left_base=4587648 right_base=4587712 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=13 cols=208..224 buffer=pong slot=6 left_base=4587776 right_base=4587840 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=14 cols=224..240 buffer=ping slot=7 left_base=4653184 right_base=4653248 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=15 cols=240..256 buffer=pong slot=7 left_base=4653312 right_base=4653376 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=16 cols=256..272 buffer=ping slot=8 left_base=4718720 right_base=4718784 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=17 cols=272..288 buffer=pong slot=8 left_base=4718848 right_base=4718912 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=18 cols=288..304 buffer=ping slot=9 left_base=4784256 right_base=4784320 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=19 cols=304..320 buffer=pong slot=9 left_base=4784384 right_base=4784448 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=20 cols=320..336 buffer=ping slot=10 left_base=4849792 right_base=4849856 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=21 cols=336..352 buffer=pong slot=10 left_base=4849920 right_base=4849984 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=22 cols=352..368 buffer=ping slot=11 left_base=4915328 right_base=4915392 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=23 cols=368..384 buffer=pong slot=11 left_base=4915456 right_base=4915520 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=24 cols=384..400 buffer=ping slot=12 left_base=4980864 right_base=4980928 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=25 cols=400..416 buffer=pong slot=12 left_base=4980992 right_base=4981056 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=26 cols=416..432 buffer=ping slot=13 left_base=5046400 right_base=5046464 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=27 cols=432..448 buffer=pong slot=13 left_base=5046528 right_base=5046592 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=28 cols=448..464 buffer=ping slot=14 left_base=5111936 right_base=5112000 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=29 cols=464..480 buffer=pong slot=14 left_base=5112064 right_base=5112128 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=30 cols=480..496 buffer=ping slot=15 left_base=5177472 right_base=5177536 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=31 cols=496..512 buffer=pong slot=15 left_base=5177600 right_base=5177664 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=32 cols=512..528 buffer=ping slot=16 left_base=5243008 right_base=5243072 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=33 cols=528..544 buffer=pong slot=16 left_base=5243136 right_base=5243200 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=34 cols=544..560 buffer=ping slot=17 left_base=5308544 right_base=5308608 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=35 cols=560..576 buffer=pong slot=17 left_base=5308672 right_base=5308736 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=36 cols=576..592 buffer=ping slot=18 left_base=5374080 right_base=5374144 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=37 cols=592..608 buffer=pong slot=18 left_base=5374208 right_base=5374272 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=38 cols=608..624 buffer=ping slot=19 left_base=5439616 right_base=5439680 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=39 cols=624..640 buffer=pong slot=19 left_base=5439744 right_base=5439808 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=40 cols=640..656 buffer=ping slot=20 left_base=5505152 right_base=5505216 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=41 cols=656..672 buffer=pong slot=20 left_base=5505280 right_base=5505344 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=42 cols=672..688 buffer=ping slot=21 left_base=5570688 right_base=5570752 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=43 cols=688..704 buffer=pong slot=21 left_base=5570816 right_base=5570880 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=44 cols=704..720 buffer=ping slot=22 left_base=5636224 right_base=5636288 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=45 cols=720..736 buffer=pong slot=22 left_base=5636352 right_base=5636416 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=46 cols=736..752 buffer=ping slot=23 left_base=5701760 right_base=5701824 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=47 cols=752..768 buffer=pong slot=23 left_base=5701888 right_base=5701952 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=48 cols=768..784 buffer=ping slot=24 left_base=5767296 right_base=5767360 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=49 cols=784..800 buffer=pong slot=24 left_base=5767424 right_base=5767488 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=50 cols=800..816 buffer=ping slot=25 left_base=5832832 right_base=5832896 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=51 cols=816..832 buffer=pong slot=25 left_base=5832960 right_base=5833024 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=52 cols=832..848 buffer=ping slot=26 left_base=5898368 right_base=5898432 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=53 cols=848..864 buffer=pong slot=26 left_base=5898496 right_base=5898560 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=54 cols=864..880 buffer=ping slot=27 left_base=5963904 right_base=5963968 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=55 cols=880..896 buffer=pong slot=27 left_base=5964032 right_base=5964096 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=56 cols=896..912 buffer=ping slot=28 left_base=6029440 right_base=6029504 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=57 cols=912..928 buffer=pong slot=28 left_base=6029568 right_base=6029632 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=58 cols=928..944 buffer=ping slot=29 left_base=6094976 right_base=6095040 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=59 cols=944..960 buffer=pong slot=29 left_base=6095104 right_base=6095168 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=60 cols=960..976 buffer=ping slot=30 left_base=6160512 right_base=6160576 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=61 cols=976..992 buffer=pong slot=30 left_base=6160640 right_base=6160704 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_CHUNK mode=1 chunk=62 cols=992..1008 buffer=ping slot=31 left_base=6226048 right_base=6226112 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=721
+WEIGHT_DMA_CHUNK mode=1 chunk=63 cols=1008..1024 buffer=pong slot=31 left_base=6226176 right_base=6226240 panels=4 panel_bytes=2048 size=64 dst_stride=512 src_stride=64 repeat=32 cycles=720
+WEIGHT_DMA_SUMMARY mode=1 chunks=64 chunk_cols=16 commands=512 total_cycles=1213604 region_offset=4194304 region_span=2097152 region_end=6291456
+WEIGHTS_RESIDENT_READY mode0_chunks=64 mode1_chunks=64 no_more_weight_dma=1
+TOKEN_DMA shape=0 active_tokens=8 cycles=4672 base=0 banks=0..15 size=16 dst_stride=512 src_stride=16 repeat=256
+SHAPE_BEGIN shape=0 dims=(8,8,4) active_tokens=8 chunk_cols=16 mode0_chunks=64 mode1_chunks=64
+STREAMER_CONTRACT shape=0 mode=0 chunk_cols=16 A_sstride=[8,16] A_bound=[256,4,1,1,1,1] A_stride=[512,0,0,0,0,0] B_sstride=[8,32768] B_bound=[4,64,4,1] B_stride=[16,512,32768,0]
+STREAMER_CONTRACT shape=0 mode=1 chunk_cols=16 A_sstride=[8,16] A_bound=[128,4,1,1,1,1] A_stride=[512,0,0,0,0,0] B_sstride=[8,16384] B_bound=[4,32,4,1] B_stride=[16,512,16384,0] D_bound=[1,8,4,1] D_stride=[512,8,512,0]
+CHUNK_RESULT shape=0 mode=0 chunk=0 cols=0..16 n_tiles=4 buffer=ping b0_base=128 b1_base=192 d_base=384 status=PASS errors=0 accel=1030 streamer=1054 wall=3368
+CHUNK_RESULT shape=0 mode=0 chunk=1 cols=16..32 n_tiles=4 buffer=pong b0_base=256 b1_base=320 d_base=1408 status=PASS errors=0 accel=1030 streamer=1054 wall=3059
+CHUNK_RESULT shape=0 mode=0 chunk=2 cols=32..48 n_tiles=4 buffer=ping b0_base=131200 b1_base=131264 d_base=2432 status=PASS errors=0 accel=1030 streamer=1054 wall=2969
+CHUNK_RESULT shape=0 mode=0 chunk=3 cols=48..64 n_tiles=4 buffer=pong b0_base=131328 b1_base=131392 d_base=3456 status=PASS errors=0 accel=1030 streamer=1054 wall=2982
+CHUNK_RESULT shape=0 mode=0 chunk=4 cols=64..80 n_tiles=4 buffer=ping b0_base=262272 b1_base=262336 d_base=4480 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=5 cols=80..96 n_tiles=4 buffer=pong b0_base=262400 b1_base=262464 d_base=5504 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=6 cols=96..112 n_tiles=4 buffer=ping b0_base=393344 b1_base=393408 d_base=6528 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=7 cols=112..128 n_tiles=4 buffer=pong b0_base=393472 b1_base=393536 d_base=7552 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=8 cols=128..144 n_tiles=4 buffer=ping b0_base=524416 b1_base=524480 d_base=8576 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=9 cols=144..160 n_tiles=4 buffer=pong b0_base=524544 b1_base=524608 d_base=9600 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=10 cols=160..176 n_tiles=4 buffer=ping b0_base=655488 b1_base=655552 d_base=10624 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=11 cols=176..192 n_tiles=4 buffer=pong b0_base=655616 b1_base=655680 d_base=11648 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=12 cols=192..208 n_tiles=4 buffer=ping b0_base=786560 b1_base=786624 d_base=12672 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=13 cols=208..224 n_tiles=4 buffer=pong b0_base=786688 b1_base=786752 d_base=13696 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=14 cols=224..240 n_tiles=4 buffer=ping b0_base=917632 b1_base=917696 d_base=14720 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=15 cols=240..256 n_tiles=4 buffer=pong b0_base=917760 b1_base=917824 d_base=15744 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=16 cols=256..272 n_tiles=4 buffer=ping b0_base=1048704 b1_base=1048768 d_base=16768 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=17 cols=272..288 n_tiles=4 buffer=pong b0_base=1048832 b1_base=1048896 d_base=17792 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=18 cols=288..304 n_tiles=4 buffer=ping b0_base=1179776 b1_base=1179840 d_base=18816 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=19 cols=304..320 n_tiles=4 buffer=pong b0_base=1179904 b1_base=1179968 d_base=19840 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=20 cols=320..336 n_tiles=4 buffer=ping b0_base=1310848 b1_base=1310912 d_base=20864 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=21 cols=336..352 n_tiles=4 buffer=pong b0_base=1310976 b1_base=1311040 d_base=21888 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=22 cols=352..368 n_tiles=4 buffer=ping b0_base=1441920 b1_base=1441984 d_base=22912 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=23 cols=368..384 n_tiles=4 buffer=pong b0_base=1442048 b1_base=1442112 d_base=23936 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=24 cols=384..400 n_tiles=4 buffer=ping b0_base=1572992 b1_base=1573056 d_base=24960 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=25 cols=400..416 n_tiles=4 buffer=pong b0_base=1573120 b1_base=1573184 d_base=25984 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=26 cols=416..432 n_tiles=4 buffer=ping b0_base=1704064 b1_base=1704128 d_base=27008 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=27 cols=432..448 n_tiles=4 buffer=pong b0_base=1704192 b1_base=1704256 d_base=28032 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=28 cols=448..464 n_tiles=4 buffer=ping b0_base=1835136 b1_base=1835200 d_base=29056 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=29 cols=464..480 n_tiles=4 buffer=pong b0_base=1835264 b1_base=1835328 d_base=30080 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=30 cols=480..496 n_tiles=4 buffer=ping b0_base=1966208 b1_base=1966272 d_base=31104 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=31 cols=496..512 n_tiles=4 buffer=pong b0_base=1966336 b1_base=1966400 d_base=32128 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=32 cols=512..528 n_tiles=4 buffer=ping b0_base=2097280 b1_base=2097344 d_base=33152 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=33 cols=528..544 n_tiles=4 buffer=pong b0_base=2097408 b1_base=2097472 d_base=34176 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=34 cols=544..560 n_tiles=4 buffer=ping b0_base=2228352 b1_base=2228416 d_base=35200 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=35 cols=560..576 n_tiles=4 buffer=pong b0_base=2228480 b1_base=2228544 d_base=36224 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=36 cols=576..592 n_tiles=4 buffer=ping b0_base=2359424 b1_base=2359488 d_base=37248 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=37 cols=592..608 n_tiles=4 buffer=pong b0_base=2359552 b1_base=2359616 d_base=38272 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=38 cols=608..624 n_tiles=4 buffer=ping b0_base=2490496 b1_base=2490560 d_base=39296 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=39 cols=624..640 n_tiles=4 buffer=pong b0_base=2490624 b1_base=2490688 d_base=40320 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=40 cols=640..656 n_tiles=4 buffer=ping b0_base=2621568 b1_base=2621632 d_base=41344 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=41 cols=656..672 n_tiles=4 buffer=pong b0_base=2621696 b1_base=2621760 d_base=42368 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=42 cols=672..688 n_tiles=4 buffer=ping b0_base=2752640 b1_base=2752704 d_base=43392 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=43 cols=688..704 n_tiles=4 buffer=pong b0_base=2752768 b1_base=2752832 d_base=44416 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=44 cols=704..720 n_tiles=4 buffer=ping b0_base=2883712 b1_base=2883776 d_base=45440 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=45 cols=720..736 n_tiles=4 buffer=pong b0_base=2883840 b1_base=2883904 d_base=46464 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=46 cols=736..752 n_tiles=4 buffer=ping b0_base=3014784 b1_base=3014848 d_base=47488 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=47 cols=752..768 n_tiles=4 buffer=pong b0_base=3014912 b1_base=3014976 d_base=48512 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=48 cols=768..784 n_tiles=4 buffer=ping b0_base=3145856 b1_base=3145920 d_base=49536 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=49 cols=784..800 n_tiles=4 buffer=pong b0_base=3145984 b1_base=3146048 d_base=50560 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=50 cols=800..816 n_tiles=4 buffer=ping b0_base=3276928 b1_base=3276992 d_base=51584 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=51 cols=816..832 n_tiles=4 buffer=pong b0_base=3277056 b1_base=3277120 d_base=52608 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=52 cols=832..848 n_tiles=4 buffer=ping b0_base=3408000 b1_base=3408064 d_base=53632 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=53 cols=848..864 n_tiles=4 buffer=pong b0_base=3408128 b1_base=3408192 d_base=54656 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=54 cols=864..880 n_tiles=4 buffer=ping b0_base=3539072 b1_base=3539136 d_base=55680 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=55 cols=880..896 n_tiles=4 buffer=pong b0_base=3539200 b1_base=3539264 d_base=56704 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=56 cols=896..912 n_tiles=4 buffer=ping b0_base=3670144 b1_base=3670208 d_base=57728 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=57 cols=912..928 n_tiles=4 buffer=pong b0_base=3670272 b1_base=3670336 d_base=58752 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=58 cols=928..944 n_tiles=4 buffer=ping b0_base=3801216 b1_base=3801280 d_base=59776 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=59 cols=944..960 n_tiles=4 buffer=pong b0_base=3801344 b1_base=3801408 d_base=60800 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=60 cols=960..976 n_tiles=4 buffer=ping b0_base=3932288 b1_base=3932352 d_base=61824 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=61 cols=976..992 n_tiles=4 buffer=pong b0_base=3932416 b1_base=3932480 d_base=62848 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=62 cols=992..1008 n_tiles=4 buffer=ping b0_base=4063360 b1_base=4063424 d_base=63872 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+CHUNK_RESULT shape=0 mode=0 chunk=63 cols=1008..1024 n_tiles=4 buffer=pong b0_base=4063488 b1_base=4063552 d_base=64896 status=PASS errors=0 accel=1030 streamer=1054 wall=2993
+MODE_SUMMARY shape=0 mode=0 status=PASS errors=0 chunks=64 accel_sum=65920 streamer_sum=67456 wall_sum=191958
+CHUNK_RESULT shape=0 mode=1 chunk=0 cols=0..16 n_tiles=4 buffer=ping b0_base=4194432 b1_base=4194496 d0_base=0 d1_base=64 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2851
+CHUNK_RESULT shape=0 mode=1 chunk=1 cols=16..32 n_tiles=4 buffer=pong b0_base=4194560 b1_base=4194624 d0_base=2048 d1_base=2112 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2667
+CHUNK_RESULT shape=0 mode=1 chunk=2 cols=32..48 n_tiles=4 buffer=ping b0_base=4259968 b1_base=4260032 d0_base=4096 d1_base=4160 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2611
+CHUNK_RESULT shape=0 mode=1 chunk=3 cols=48..64 n_tiles=4 buffer=pong b0_base=4260096 b1_base=4260160 d0_base=6144 d1_base=6208 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=4 cols=64..80 n_tiles=4 buffer=ping b0_base=4325504 b1_base=4325568 d0_base=8192 d1_base=8256 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=5 cols=80..96 n_tiles=4 buffer=pong b0_base=4325632 b1_base=4325696 d0_base=10240 d1_base=10304 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=6 cols=96..112 n_tiles=4 buffer=ping b0_base=4391040 b1_base=4391104 d0_base=12288 d1_base=12352 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=7 cols=112..128 n_tiles=4 buffer=pong b0_base=4391168 b1_base=4391232 d0_base=14336 d1_base=14400 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=8 cols=128..144 n_tiles=4 buffer=ping b0_base=4456576 b1_base=4456640 d0_base=16384 d1_base=16448 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=9 cols=144..160 n_tiles=4 buffer=pong b0_base=4456704 b1_base=4456768 d0_base=18432 d1_base=18496 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=10 cols=160..176 n_tiles=4 buffer=ping b0_base=4522112 b1_base=4522176 d0_base=20480 d1_base=20544 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=11 cols=176..192 n_tiles=4 buffer=pong b0_base=4522240 b1_base=4522304 d0_base=22528 d1_base=22592 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=12 cols=192..208 n_tiles=4 buffer=ping b0_base=4587648 b1_base=4587712 d0_base=24576 d1_base=24640 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=13 cols=208..224 n_tiles=4 buffer=pong b0_base=4587776 b1_base=4587840 d0_base=26624 d1_base=26688 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=14 cols=224..240 n_tiles=4 buffer=ping b0_base=4653184 b1_base=4653248 d0_base=28672 d1_base=28736 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=15 cols=240..256 n_tiles=4 buffer=pong b0_base=4653312 b1_base=4653376 d0_base=30720 d1_base=30784 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=16 cols=256..272 n_tiles=4 buffer=ping b0_base=4718720 b1_base=4718784 d0_base=32768 d1_base=32832 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=17 cols=272..288 n_tiles=4 buffer=pong b0_base=4718848 b1_base=4718912 d0_base=34816 d1_base=34880 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=18 cols=288..304 n_tiles=4 buffer=ping b0_base=4784256 b1_base=4784320 d0_base=36864 d1_base=36928 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=19 cols=304..320 n_tiles=4 buffer=pong b0_base=4784384 b1_base=4784448 d0_base=38912 d1_base=38976 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=20 cols=320..336 n_tiles=4 buffer=ping b0_base=4849792 b1_base=4849856 d0_base=40960 d1_base=41024 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=21 cols=336..352 n_tiles=4 buffer=pong b0_base=4849920 b1_base=4849984 d0_base=43008 d1_base=43072 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=22 cols=352..368 n_tiles=4 buffer=ping b0_base=4915328 b1_base=4915392 d0_base=45056 d1_base=45120 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=23 cols=368..384 n_tiles=4 buffer=pong b0_base=4915456 b1_base=4915520 d0_base=47104 d1_base=47168 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=24 cols=384..400 n_tiles=4 buffer=ping b0_base=4980864 b1_base=4980928 d0_base=49152 d1_base=49216 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=25 cols=400..416 n_tiles=4 buffer=pong b0_base=4980992 b1_base=4981056 d0_base=51200 d1_base=51264 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=26 cols=416..432 n_tiles=4 buffer=ping b0_base=5046400 b1_base=5046464 d0_base=53248 d1_base=53312 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=27 cols=432..448 n_tiles=4 buffer=pong b0_base=5046528 b1_base=5046592 d0_base=55296 d1_base=55360 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=28 cols=448..464 n_tiles=4 buffer=ping b0_base=5111936 b1_base=5112000 d0_base=57344 d1_base=57408 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=29 cols=464..480 n_tiles=4 buffer=pong b0_base=5112064 b1_base=5112128 d0_base=59392 d1_base=59456 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=30 cols=480..496 n_tiles=4 buffer=ping b0_base=5177472 b1_base=5177536 d0_base=61440 d1_base=61504 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=31 cols=496..512 n_tiles=4 buffer=pong b0_base=5177600 b1_base=5177664 d0_base=63488 d1_base=63552 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=32 cols=512..528 n_tiles=4 buffer=ping b0_base=5243008 b1_base=5243072 d0_base=65536 d1_base=65600 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=33 cols=528..544 n_tiles=4 buffer=pong b0_base=5243136 b1_base=5243200 d0_base=67584 d1_base=67648 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=34 cols=544..560 n_tiles=4 buffer=ping b0_base=5308544 b1_base=5308608 d0_base=69632 d1_base=69696 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=35 cols=560..576 n_tiles=4 buffer=pong b0_base=5308672 b1_base=5308736 d0_base=71680 d1_base=71744 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=36 cols=576..592 n_tiles=4 buffer=ping b0_base=5374080 b1_base=5374144 d0_base=73728 d1_base=73792 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=37 cols=592..608 n_tiles=4 buffer=pong b0_base=5374208 b1_base=5374272 d0_base=75776 d1_base=75840 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=38 cols=608..624 n_tiles=4 buffer=ping b0_base=5439616 b1_base=5439680 d0_base=77824 d1_base=77888 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=39 cols=624..640 n_tiles=4 buffer=pong b0_base=5439744 b1_base=5439808 d0_base=79872 d1_base=79936 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=40 cols=640..656 n_tiles=4 buffer=ping b0_base=5505152 b1_base=5505216 d0_base=81920 d1_base=81984 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=41 cols=656..672 n_tiles=4 buffer=pong b0_base=5505280 b1_base=5505344 d0_base=83968 d1_base=84032 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=42 cols=672..688 n_tiles=4 buffer=ping b0_base=5570688 b1_base=5570752 d0_base=86016 d1_base=86080 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=43 cols=688..704 n_tiles=4 buffer=pong b0_base=5570816 b1_base=5570880 d0_base=88064 d1_base=88128 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=44 cols=704..720 n_tiles=4 buffer=ping b0_base=5636224 b1_base=5636288 d0_base=90112 d1_base=90176 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=45 cols=720..736 n_tiles=4 buffer=pong b0_base=5636352 b1_base=5636416 d0_base=92160 d1_base=92224 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=46 cols=736..752 n_tiles=4 buffer=ping b0_base=5701760 b1_base=5701824 d0_base=94208 d1_base=94272 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=47 cols=752..768 n_tiles=4 buffer=pong b0_base=5701888 b1_base=5701952 d0_base=96256 d1_base=96320 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=48 cols=768..784 n_tiles=4 buffer=ping b0_base=5767296 b1_base=5767360 d0_base=98304 d1_base=98368 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=49 cols=784..800 n_tiles=4 buffer=pong b0_base=5767424 b1_base=5767488 d0_base=100352 d1_base=100416 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=50 cols=800..816 n_tiles=4 buffer=ping b0_base=5832832 b1_base=5832896 d0_base=102400 d1_base=102464 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=51 cols=816..832 n_tiles=4 buffer=pong b0_base=5832960 b1_base=5833024 d0_base=104448 d1_base=104512 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=52 cols=832..848 n_tiles=4 buffer=ping b0_base=5898368 b1_base=5898432 d0_base=106496 d1_base=106560 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=53 cols=848..864 n_tiles=4 buffer=pong b0_base=5898496 b1_base=5898560 d0_base=108544 d1_base=108608 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=54 cols=864..880 n_tiles=4 buffer=ping b0_base=5963904 b1_base=5963968 d0_base=110592 d1_base=110656 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=55 cols=880..896 n_tiles=4 buffer=pong b0_base=5964032 b1_base=5964096 d0_base=112640 d1_base=112704 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=56 cols=896..912 n_tiles=4 buffer=ping b0_base=6029440 b1_base=6029504 d0_base=114688 d1_base=114752 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=57 cols=912..928 n_tiles=4 buffer=pong b0_base=6029568 b1_base=6029632 d0_base=116736 d1_base=116800 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=58 cols=928..944 n_tiles=4 buffer=ping b0_base=6094976 b1_base=6095040 d0_base=118784 d1_base=118848 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=59 cols=944..960 n_tiles=4 buffer=pong b0_base=6095104 b1_base=6095168 d0_base=120832 d1_base=120896 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=60 cols=960..976 n_tiles=4 buffer=ping b0_base=6160512 b1_base=6160576 d0_base=122880 d1_base=122944 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=61 cols=976..992 n_tiles=4 buffer=pong b0_base=6160640 b1_base=6160704 d0_base=124928 d1_base=124992 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=62 cols=992..1008 n_tiles=4 buffer=ping b0_base=6226048 b1_base=6226112 d0_base=126976 d1_base=127040 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+CHUNK_RESULT shape=0 mode=1 chunk=63 cols=1008..1024 n_tiles=4 buffer=pong b0_base=6226176 b1_base=6226240 d0_base=129024 d1_base=129088 D0=PASS D1=PASS errors=0 accel=518 streamer=536 wall=2599
+MODE_SUMMARY shape=0 mode=1 status=PASS errors=0 chunks=64 accel_sum=33152 streamer_sum=34304 wall_sum=166668 output_banks=0..15
+SHAPE_END shape=0 status=PASS total_errors=0
+SHAPE_BEGIN shape=1 dims=(4,8,8) active_tokens=4 chunk_cols=16 mode0_chunks=64 mode1_chunks=64
+TOKEN_DMA shape=1 active_tokens=4 cycles=4672 base=0 banks=0..15 size=16 dst_stride=512 src_stride=16 repeat=256
+STREAMER_CONTRACT shape=1 mode=0 chunk_cols=16 A_sstride=[8,16] A_bound=[256,2,1,1,1,1] A_stride=[512,0,0,0,0,0] B_sstride=[8,32768] B_bound=[4,64,2,1] B_stride=[16,512,65536,0]
+STREAMER_CONTRACT shape=1 mode=1 chunk_cols=16 A_sstride=[8,16] A_bound=[2,64,2,1,1,1] A_stride=[64,512,0,0,0,0] B_sstride=[8,16384] B_bound=[4,32,2,1] B_stride=[16,512,32768,0] D_bound=[2,4,2,1] D_stride=[512,8,1024,0]
+CHUNK_RESULT shape=1 mode=0 chunk=0 cols=0..16 n_tiles=2 buffer=ping b0_base=128 b1_base=192 d_base=384 status=PASS errors=0 accel=518 streamer=542 wall=2547
+CHUNK_RESULT shape=1 mode=0 chunk=1 cols=16..32 n_tiles=2 buffer=pong b0_base=256 b1_base=320 d_base=896 status=PASS errors=0 accel=518 streamer=542 wall=2536
+CHUNK_RESULT shape=1 mode=0 chunk=2 cols=32..48 n_tiles=2 buffer=ping b0_base=131200 b1_base=131264 d_base=1408 status=PASS errors=0 accel=518 streamer=542 wall=2507
+CHUNK_RESULT shape=1 mode=0 chunk=3 cols=48..64 n_tiles=2 buffer=pong b0_base=131328 b1_base=131392 d_base=1920 status=PASS errors=0 accel=518 streamer=542 wall=2479
+CHUNK_RESULT shape=1 mode=0 chunk=4 cols=64..80 n_tiles=2 buffer=ping b0_base=262272 b1_base=262336 d_base=2432 status=PASS errors=0 accel=518 streamer=542 wall=2405
+CHUNK_RESULT shape=1 mode=0 chunk=5 cols=80..96 n_tiles=2 buffer=pong b0_base=262400 b1_base=262464 d_base=2944 status=PASS errors=0 accel=518 streamer=542 wall=2473
+CHUNK_RESULT shape=1 mode=0 chunk=6 cols=96..112 n_tiles=2 buffer=ping b0_base=393344 b1_base=393408 d_base=3456 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=7 cols=112..128 n_tiles=2 buffer=pong b0_base=393472 b1_base=393536 d_base=3968 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=8 cols=128..144 n_tiles=2 buffer=ping b0_base=524416 b1_base=524480 d_base=4480 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=9 cols=144..160 n_tiles=2 buffer=pong b0_base=524544 b1_base=524608 d_base=4992 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=10 cols=160..176 n_tiles=2 buffer=ping b0_base=655488 b1_base=655552 d_base=5504 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=11 cols=176..192 n_tiles=2 buffer=pong b0_base=655616 b1_base=655680 d_base=6016 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=12 cols=192..208 n_tiles=2 buffer=ping b0_base=786560 b1_base=786624 d_base=6528 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=13 cols=208..224 n_tiles=2 buffer=pong b0_base=786688 b1_base=786752 d_base=7040 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=14 cols=224..240 n_tiles=2 buffer=ping b0_base=917632 b1_base=917696 d_base=7552 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=15 cols=240..256 n_tiles=2 buffer=pong b0_base=917760 b1_base=917824 d_base=8064 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=16 cols=256..272 n_tiles=2 buffer=ping b0_base=1048704 b1_base=1048768 d_base=8576 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=17 cols=272..288 n_tiles=2 buffer=pong b0_base=1048832 b1_base=1048896 d_base=9088 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=18 cols=288..304 n_tiles=2 buffer=ping b0_base=1179776 b1_base=1179840 d_base=9600 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=19 cols=304..320 n_tiles=2 buffer=pong b0_base=1179904 b1_base=1179968 d_base=10112 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=20 cols=320..336 n_tiles=2 buffer=ping b0_base=1310848 b1_base=1310912 d_base=10624 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=21 cols=336..352 n_tiles=2 buffer=pong b0_base=1310976 b1_base=1311040 d_base=11136 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=22 cols=352..368 n_tiles=2 buffer=ping b0_base=1441920 b1_base=1441984 d_base=11648 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=23 cols=368..384 n_tiles=2 buffer=pong b0_base=1442048 b1_base=1442112 d_base=12160 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=24 cols=384..400 n_tiles=2 buffer=ping b0_base=1572992 b1_base=1573056 d_base=12672 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=25 cols=400..416 n_tiles=2 buffer=pong b0_base=1573120 b1_base=1573184 d_base=13184 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=26 cols=416..432 n_tiles=2 buffer=ping b0_base=1704064 b1_base=1704128 d_base=13696 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=27 cols=432..448 n_tiles=2 buffer=pong b0_base=1704192 b1_base=1704256 d_base=14208 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=28 cols=448..464 n_tiles=2 buffer=ping b0_base=1835136 b1_base=1835200 d_base=14720 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=29 cols=464..480 n_tiles=2 buffer=pong b0_base=1835264 b1_base=1835328 d_base=15232 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=30 cols=480..496 n_tiles=2 buffer=ping b0_base=1966208 b1_base=1966272 d_base=15744 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=31 cols=496..512 n_tiles=2 buffer=pong b0_base=1966336 b1_base=1966400 d_base=16256 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=32 cols=512..528 n_tiles=2 buffer=ping b0_base=2097280 b1_base=2097344 d_base=16768 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=33 cols=528..544 n_tiles=2 buffer=pong b0_base=2097408 b1_base=2097472 d_base=17280 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=34 cols=544..560 n_tiles=2 buffer=ping b0_base=2228352 b1_base=2228416 d_base=17792 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=35 cols=560..576 n_tiles=2 buffer=pong b0_base=2228480 b1_base=2228544 d_base=18304 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=36 cols=576..592 n_tiles=2 buffer=ping b0_base=2359424 b1_base=2359488 d_base=18816 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=37 cols=592..608 n_tiles=2 buffer=pong b0_base=2359552 b1_base=2359616 d_base=19328 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=38 cols=608..624 n_tiles=2 buffer=ping b0_base=2490496 b1_base=2490560 d_base=19840 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=39 cols=624..640 n_tiles=2 buffer=pong b0_base=2490624 b1_base=2490688 d_base=20352 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=40 cols=640..656 n_tiles=2 buffer=ping b0_base=2621568 b1_base=2621632 d_base=20864 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=41 cols=656..672 n_tiles=2 buffer=pong b0_base=2621696 b1_base=2621760 d_base=21376 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=42 cols=672..688 n_tiles=2 buffer=ping b0_base=2752640 b1_base=2752704 d_base=21888 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=43 cols=688..704 n_tiles=2 buffer=pong b0_base=2752768 b1_base=2752832 d_base=22400 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=44 cols=704..720 n_tiles=2 buffer=ping b0_base=2883712 b1_base=2883776 d_base=22912 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=45 cols=720..736 n_tiles=2 buffer=pong b0_base=2883840 b1_base=2883904 d_base=23424 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=46 cols=736..752 n_tiles=2 buffer=ping b0_base=3014784 b1_base=3014848 d_base=23936 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=47 cols=752..768 n_tiles=2 buffer=pong b0_base=3014912 b1_base=3014976 d_base=24448 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=48 cols=768..784 n_tiles=2 buffer=ping b0_base=3145856 b1_base=3145920 d_base=24960 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=49 cols=784..800 n_tiles=2 buffer=pong b0_base=3145984 b1_base=3146048 d_base=25472 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=50 cols=800..816 n_tiles=2 buffer=ping b0_base=3276928 b1_base=3276992 d_base=25984 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=51 cols=816..832 n_tiles=2 buffer=pong b0_base=3277056 b1_base=3277120 d_base=26496 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=52 cols=832..848 n_tiles=2 buffer=ping b0_base=3408000 b1_base=3408064 d_base=27008 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=53 cols=848..864 n_tiles=2 buffer=pong b0_base=3408128 b1_base=3408192 d_base=27520 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=54 cols=864..880 n_tiles=2 buffer=ping b0_base=3539072 b1_base=3539136 d_base=28032 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=55 cols=880..896 n_tiles=2 buffer=pong b0_base=3539200 b1_base=3539264 d_base=28544 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=56 cols=896..912 n_tiles=2 buffer=ping b0_base=3670144 b1_base=3670208 d_base=29056 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=57 cols=912..928 n_tiles=2 buffer=pong b0_base=3670272 b1_base=3670336 d_base=29568 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=58 cols=928..944 n_tiles=2 buffer=ping b0_base=3801216 b1_base=3801280 d_base=30080 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=59 cols=944..960 n_tiles=2 buffer=pong b0_base=3801344 b1_base=3801408 d_base=30592 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=60 cols=960..976 n_tiles=2 buffer=ping b0_base=3932288 b1_base=3932352 d_base=31104 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=61 cols=976..992 n_tiles=2 buffer=pong b0_base=3932416 b1_base=3932480 d_base=31616 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=62 cols=992..1008 n_tiles=2 buffer=ping b0_base=4063360 b1_base=4063424 d_base=32128 status=PASS errors=0 accel=518 streamer=542 wall=2482
+CHUNK_RESULT shape=1 mode=0 chunk=63 cols=1008..1024 n_tiles=2 buffer=pong b0_base=4063488 b1_base=4063552 d_base=32640 status=PASS errors=0 accel=518 streamer=542 wall=2482
+MODE_SUMMARY shape=1 mode=0 status=PASS errors=0 chunks=64 accel_sum=33152 streamer_sum=34688 wall_sum=158903
+CHUNK_RESULT shape=1 mode=1 chunk=0 cols=0..16 n_tiles=2 buffer=ping b0_base=4194432 b1_base=4194496 d0_base=0 d1_base=64 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2446
+CHUNK_RESULT shape=1 mode=1 chunk=1 cols=16..32 n_tiles=2 buffer=pong b0_base=4194560 b1_base=4194624 d0_base=2048 d1_base=2112 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2360
+CHUNK_RESULT shape=1 mode=1 chunk=2 cols=32..48 n_tiles=2 buffer=ping b0_base=4259968 b1_base=4260032 d0_base=4096 d1_base=4160 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=3 cols=48..64 n_tiles=2 buffer=pong b0_base=4260096 b1_base=4260160 d0_base=6144 d1_base=6208 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=4 cols=64..80 n_tiles=2 buffer=ping b0_base=4325504 b1_base=4325568 d0_base=8192 d1_base=8256 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=5 cols=80..96 n_tiles=2 buffer=pong b0_base=4325632 b1_base=4325696 d0_base=10240 d1_base=10304 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=6 cols=96..112 n_tiles=2 buffer=ping b0_base=4391040 b1_base=4391104 d0_base=12288 d1_base=12352 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=7 cols=112..128 n_tiles=2 buffer=pong b0_base=4391168 b1_base=4391232 d0_base=14336 d1_base=14400 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=8 cols=128..144 n_tiles=2 buffer=ping b0_base=4456576 b1_base=4456640 d0_base=16384 d1_base=16448 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=9 cols=144..160 n_tiles=2 buffer=pong b0_base=4456704 b1_base=4456768 d0_base=18432 d1_base=18496 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=10 cols=160..176 n_tiles=2 buffer=ping b0_base=4522112 b1_base=4522176 d0_base=20480 d1_base=20544 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=11 cols=176..192 n_tiles=2 buffer=pong b0_base=4522240 b1_base=4522304 d0_base=22528 d1_base=22592 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=12 cols=192..208 n_tiles=2 buffer=ping b0_base=4587648 b1_base=4587712 d0_base=24576 d1_base=24640 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=13 cols=208..224 n_tiles=2 buffer=pong b0_base=4587776 b1_base=4587840 d0_base=26624 d1_base=26688 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=14 cols=224..240 n_tiles=2 buffer=ping b0_base=4653184 b1_base=4653248 d0_base=28672 d1_base=28736 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=15 cols=240..256 n_tiles=2 buffer=pong b0_base=4653312 b1_base=4653376 d0_base=30720 d1_base=30784 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=16 cols=256..272 n_tiles=2 buffer=ping b0_base=4718720 b1_base=4718784 d0_base=32768 d1_base=32832 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=17 cols=272..288 n_tiles=2 buffer=pong b0_base=4718848 b1_base=4718912 d0_base=34816 d1_base=34880 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=18 cols=288..304 n_tiles=2 buffer=ping b0_base=4784256 b1_base=4784320 d0_base=36864 d1_base=36928 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=19 cols=304..320 n_tiles=2 buffer=pong b0_base=4784384 b1_base=4784448 d0_base=38912 d1_base=38976 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=20 cols=320..336 n_tiles=2 buffer=ping b0_base=4849792 b1_base=4849856 d0_base=40960 d1_base=41024 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=21 cols=336..352 n_tiles=2 buffer=pong b0_base=4849920 b1_base=4849984 d0_base=43008 d1_base=43072 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=22 cols=352..368 n_tiles=2 buffer=ping b0_base=4915328 b1_base=4915392 d0_base=45056 d1_base=45120 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=23 cols=368..384 n_tiles=2 buffer=pong b0_base=4915456 b1_base=4915520 d0_base=47104 d1_base=47168 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=24 cols=384..400 n_tiles=2 buffer=ping b0_base=4980864 b1_base=4980928 d0_base=49152 d1_base=49216 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=25 cols=400..416 n_tiles=2 buffer=pong b0_base=4980992 b1_base=4981056 d0_base=51200 d1_base=51264 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=26 cols=416..432 n_tiles=2 buffer=ping b0_base=5046400 b1_base=5046464 d0_base=53248 d1_base=53312 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=27 cols=432..448 n_tiles=2 buffer=pong b0_base=5046528 b1_base=5046592 d0_base=55296 d1_base=55360 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=28 cols=448..464 n_tiles=2 buffer=ping b0_base=5111936 b1_base=5112000 d0_base=57344 d1_base=57408 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=29 cols=464..480 n_tiles=2 buffer=pong b0_base=5112064 b1_base=5112128 d0_base=59392 d1_base=59456 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=30 cols=480..496 n_tiles=2 buffer=ping b0_base=5177472 b1_base=5177536 d0_base=61440 d1_base=61504 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=31 cols=496..512 n_tiles=2 buffer=pong b0_base=5177600 b1_base=5177664 d0_base=63488 d1_base=63552 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=32 cols=512..528 n_tiles=2 buffer=ping b0_base=5243008 b1_base=5243072 d0_base=65536 d1_base=65600 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=33 cols=528..544 n_tiles=2 buffer=pong b0_base=5243136 b1_base=5243200 d0_base=67584 d1_base=67648 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=34 cols=544..560 n_tiles=2 buffer=ping b0_base=5308544 b1_base=5308608 d0_base=69632 d1_base=69696 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=35 cols=560..576 n_tiles=2 buffer=pong b0_base=5308672 b1_base=5308736 d0_base=71680 d1_base=71744 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=36 cols=576..592 n_tiles=2 buffer=ping b0_base=5374080 b1_base=5374144 d0_base=73728 d1_base=73792 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=37 cols=592..608 n_tiles=2 buffer=pong b0_base=5374208 b1_base=5374272 d0_base=75776 d1_base=75840 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=38 cols=608..624 n_tiles=2 buffer=ping b0_base=5439616 b1_base=5439680 d0_base=77824 d1_base=77888 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=39 cols=624..640 n_tiles=2 buffer=pong b0_base=5439744 b1_base=5439808 d0_base=79872 d1_base=79936 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=40 cols=640..656 n_tiles=2 buffer=ping b0_base=5505152 b1_base=5505216 d0_base=81920 d1_base=81984 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=41 cols=656..672 n_tiles=2 buffer=pong b0_base=5505280 b1_base=5505344 d0_base=83968 d1_base=84032 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=42 cols=672..688 n_tiles=2 buffer=ping b0_base=5570688 b1_base=5570752 d0_base=86016 d1_base=86080 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=43 cols=688..704 n_tiles=2 buffer=pong b0_base=5570816 b1_base=5570880 d0_base=88064 d1_base=88128 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=44 cols=704..720 n_tiles=2 buffer=ping b0_base=5636224 b1_base=5636288 d0_base=90112 d1_base=90176 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=45 cols=720..736 n_tiles=2 buffer=pong b0_base=5636352 b1_base=5636416 d0_base=92160 d1_base=92224 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=46 cols=736..752 n_tiles=2 buffer=ping b0_base=5701760 b1_base=5701824 d0_base=94208 d1_base=94272 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=47 cols=752..768 n_tiles=2 buffer=pong b0_base=5701888 b1_base=5701952 d0_base=96256 d1_base=96320 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=48 cols=768..784 n_tiles=2 buffer=ping b0_base=5767296 b1_base=5767360 d0_base=98304 d1_base=98368 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=49 cols=784..800 n_tiles=2 buffer=pong b0_base=5767424 b1_base=5767488 d0_base=100352 d1_base=100416 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=50 cols=800..816 n_tiles=2 buffer=ping b0_base=5832832 b1_base=5832896 d0_base=102400 d1_base=102464 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=51 cols=816..832 n_tiles=2 buffer=pong b0_base=5832960 b1_base=5833024 d0_base=104448 d1_base=104512 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=52 cols=832..848 n_tiles=2 buffer=ping b0_base=5898368 b1_base=5898432 d0_base=106496 d1_base=106560 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=53 cols=848..864 n_tiles=2 buffer=pong b0_base=5898496 b1_base=5898560 d0_base=108544 d1_base=108608 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=54 cols=864..880 n_tiles=2 buffer=ping b0_base=5963904 b1_base=5963968 d0_base=110592 d1_base=110656 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=55 cols=880..896 n_tiles=2 buffer=pong b0_base=5964032 b1_base=5964096 d0_base=112640 d1_base=112704 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=56 cols=896..912 n_tiles=2 buffer=ping b0_base=6029440 b1_base=6029504 d0_base=114688 d1_base=114752 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=57 cols=912..928 n_tiles=2 buffer=pong b0_base=6029568 b1_base=6029632 d0_base=116736 d1_base=116800 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=58 cols=928..944 n_tiles=2 buffer=ping b0_base=6094976 b1_base=6095040 d0_base=118784 d1_base=118848 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=59 cols=944..960 n_tiles=2 buffer=pong b0_base=6095104 b1_base=6095168 d0_base=120832 d1_base=120896 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=60 cols=960..976 n_tiles=2 buffer=ping b0_base=6160512 b1_base=6160576 d0_base=122880 d1_base=122944 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=61 cols=976..992 n_tiles=2 buffer=pong b0_base=6160640 b1_base=6160704 d0_base=124928 d1_base=124992 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=62 cols=992..1008 n_tiles=2 buffer=ping b0_base=6226048 b1_base=6226112 d0_base=126976 d1_base=127040 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+CHUNK_RESULT shape=1 mode=1 chunk=63 cols=1008..1024 n_tiles=2 buffer=pong b0_base=6226176 b1_base=6226240 d0_base=129024 d1_base=129088 D0=PASS D1=PASS errors=0 accel=262 streamer=280 wall=2305
+MODE_SUMMARY shape=1 mode=1 status=PASS errors=0 chunks=64 accel_sum=16768 streamer_sum=17920 wall_sum=147716 output_banks=0..15
+SHAPE_END shape=1 status=PASS total_errors=0
+SHAPE_BEGIN shape=2 dims=(2,8,16) active_tokens=2 chunk_cols=16 mode0_chunks=64 mode1_chunks=64
+TOKEN_DMA shape=2 active_tokens=2 cycles=4672 base=0 banks=0..15 size=16 dst_stride=512 src_stride=16 repeat=256
+STREAMER_CONTRACT shape=2 mode=0 chunk_cols=16 A_sstride=[8,16] A_bound=[256,1,1,1,1,1] A_stride=[512,0,0,0,0,0] B_sstride=[8,32768] B_bound=[4,64,1,1] B_stride=[16,512,131072,0]
+STREAMER_CONTRACT shape=2 mode=1 chunk_cols=16 A_sstride=[8,32] A_bound=[2,2,32,1,1,1] A_stride=[16,64,512,0,0,0] B_sstride=[8,16384] B_bound=[4,32,1,1] B_stride=[16,512,65536,0] D_bound=[4,2,1,1] D_stride=[512,8,2048,0]
+CHUNK_RESULT shape=2 mode=0 chunk=0 cols=0..16 n_tiles=1 buffer=ping b0_base=128 b1_base=192 d_base=384 status=PASS errors=0 accel=264 streamer=288 wall=2247
+CHUNK_RESULT shape=2 mode=0 chunk=1 cols=16..32 n_tiles=1 buffer=pong b0_base=256 b1_base=320 d_base=448 status=PASS errors=0 accel=264 streamer=288 wall=2305
+CHUNK_RESULT shape=2 mode=0 chunk=2 cols=32..48 n_tiles=1 buffer=ping b0_base=131200 b1_base=131264 d_base=896 status=PASS errors=0 accel=264 streamer=288 wall=2178
+CHUNK_RESULT shape=2 mode=0 chunk=3 cols=48..64 n_tiles=1 buffer=pong b0_base=131328 b1_base=131392 d_base=960 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=4 cols=64..80 n_tiles=1 buffer=ping b0_base=262272 b1_base=262336 d_base=1408 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=5 cols=80..96 n_tiles=1 buffer=pong b0_base=262400 b1_base=262464 d_base=1472 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=6 cols=96..112 n_tiles=1 buffer=ping b0_base=393344 b1_base=393408 d_base=1920 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=7 cols=112..128 n_tiles=1 buffer=pong b0_base=393472 b1_base=393536 d_base=1984 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=8 cols=128..144 n_tiles=1 buffer=ping b0_base=524416 b1_base=524480 d_base=2432 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=9 cols=144..160 n_tiles=1 buffer=pong b0_base=524544 b1_base=524608 d_base=2496 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=10 cols=160..176 n_tiles=1 buffer=ping b0_base=655488 b1_base=655552 d_base=2944 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=11 cols=176..192 n_tiles=1 buffer=pong b0_base=655616 b1_base=655680 d_base=3008 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=12 cols=192..208 n_tiles=1 buffer=ping b0_base=786560 b1_base=786624 d_base=3456 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=13 cols=208..224 n_tiles=1 buffer=pong b0_base=786688 b1_base=786752 d_base=3520 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=14 cols=224..240 n_tiles=1 buffer=ping b0_base=917632 b1_base=917696 d_base=3968 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=15 cols=240..256 n_tiles=1 buffer=pong b0_base=917760 b1_base=917824 d_base=4032 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=16 cols=256..272 n_tiles=1 buffer=ping b0_base=1048704 b1_base=1048768 d_base=4480 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=17 cols=272..288 n_tiles=1 buffer=pong b0_base=1048832 b1_base=1048896 d_base=4544 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=18 cols=288..304 n_tiles=1 buffer=ping b0_base=1179776 b1_base=1179840 d_base=4992 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=19 cols=304..320 n_tiles=1 buffer=pong b0_base=1179904 b1_base=1179968 d_base=5056 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=20 cols=320..336 n_tiles=1 buffer=ping b0_base=1310848 b1_base=1310912 d_base=5504 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=21 cols=336..352 n_tiles=1 buffer=pong b0_base=1310976 b1_base=1311040 d_base=5568 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=22 cols=352..368 n_tiles=1 buffer=ping b0_base=1441920 b1_base=1441984 d_base=6016 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=23 cols=368..384 n_tiles=1 buffer=pong b0_base=1442048 b1_base=1442112 d_base=6080 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=24 cols=384..400 n_tiles=1 buffer=ping b0_base=1572992 b1_base=1573056 d_base=6528 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=25 cols=400..416 n_tiles=1 buffer=pong b0_base=1573120 b1_base=1573184 d_base=6592 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=26 cols=416..432 n_tiles=1 buffer=ping b0_base=1704064 b1_base=1704128 d_base=7040 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=27 cols=432..448 n_tiles=1 buffer=pong b0_base=1704192 b1_base=1704256 d_base=7104 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=28 cols=448..464 n_tiles=1 buffer=ping b0_base=1835136 b1_base=1835200 d_base=7552 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=29 cols=464..480 n_tiles=1 buffer=pong b0_base=1835264 b1_base=1835328 d_base=7616 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=30 cols=480..496 n_tiles=1 buffer=ping b0_base=1966208 b1_base=1966272 d_base=8064 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=31 cols=496..512 n_tiles=1 buffer=pong b0_base=1966336 b1_base=1966400 d_base=8128 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=32 cols=512..528 n_tiles=1 buffer=ping b0_base=2097280 b1_base=2097344 d_base=8576 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=33 cols=528..544 n_tiles=1 buffer=pong b0_base=2097408 b1_base=2097472 d_base=8640 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=34 cols=544..560 n_tiles=1 buffer=ping b0_base=2228352 b1_base=2228416 d_base=9088 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=35 cols=560..576 n_tiles=1 buffer=pong b0_base=2228480 b1_base=2228544 d_base=9152 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=36 cols=576..592 n_tiles=1 buffer=ping b0_base=2359424 b1_base=2359488 d_base=9600 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=37 cols=592..608 n_tiles=1 buffer=pong b0_base=2359552 b1_base=2359616 d_base=9664 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=38 cols=608..624 n_tiles=1 buffer=ping b0_base=2490496 b1_base=2490560 d_base=10112 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=39 cols=624..640 n_tiles=1 buffer=pong b0_base=2490624 b1_base=2490688 d_base=10176 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=40 cols=640..656 n_tiles=1 buffer=ping b0_base=2621568 b1_base=2621632 d_base=10624 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=41 cols=656..672 n_tiles=1 buffer=pong b0_base=2621696 b1_base=2621760 d_base=10688 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=42 cols=672..688 n_tiles=1 buffer=ping b0_base=2752640 b1_base=2752704 d_base=11136 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=43 cols=688..704 n_tiles=1 buffer=pong b0_base=2752768 b1_base=2752832 d_base=11200 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=44 cols=704..720 n_tiles=1 buffer=ping b0_base=2883712 b1_base=2883776 d_base=11648 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=45 cols=720..736 n_tiles=1 buffer=pong b0_base=2883840 b1_base=2883904 d_base=11712 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=46 cols=736..752 n_tiles=1 buffer=ping b0_base=3014784 b1_base=3014848 d_base=12160 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=47 cols=752..768 n_tiles=1 buffer=pong b0_base=3014912 b1_base=3014976 d_base=12224 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=48 cols=768..784 n_tiles=1 buffer=ping b0_base=3145856 b1_base=3145920 d_base=12672 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=49 cols=784..800 n_tiles=1 buffer=pong b0_base=3145984 b1_base=3146048 d_base=12736 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=50 cols=800..816 n_tiles=1 buffer=ping b0_base=3276928 b1_base=3276992 d_base=13184 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=51 cols=816..832 n_tiles=1 buffer=pong b0_base=3277056 b1_base=3277120 d_base=13248 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=52 cols=832..848 n_tiles=1 buffer=ping b0_base=3408000 b1_base=3408064 d_base=13696 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=53 cols=848..864 n_tiles=1 buffer=pong b0_base=3408128 b1_base=3408192 d_base=13760 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=54 cols=864..880 n_tiles=1 buffer=ping b0_base=3539072 b1_base=3539136 d_base=14208 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=55 cols=880..896 n_tiles=1 buffer=pong b0_base=3539200 b1_base=3539264 d_base=14272 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=56 cols=896..912 n_tiles=1 buffer=ping b0_base=3670144 b1_base=3670208 d_base=14720 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=57 cols=912..928 n_tiles=1 buffer=pong b0_base=3670272 b1_base=3670336 d_base=14784 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=58 cols=928..944 n_tiles=1 buffer=ping b0_base=3801216 b1_base=3801280 d_base=15232 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=59 cols=944..960 n_tiles=1 buffer=pong b0_base=3801344 b1_base=3801408 d_base=15296 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=60 cols=960..976 n_tiles=1 buffer=ping b0_base=3932288 b1_base=3932352 d_base=15744 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=61 cols=976..992 n_tiles=1 buffer=pong b0_base=3932416 b1_base=3932480 d_base=15808 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=62 cols=992..1008 n_tiles=1 buffer=ping b0_base=4063360 b1_base=4063424 d_base=16256 status=PASS errors=0 accel=264 streamer=288 wall=2208
+CHUNK_RESULT shape=2 mode=0 chunk=63 cols=1008..1024 n_tiles=1 buffer=pong b0_base=4063488 b1_base=4063552 d_base=16320 status=PASS errors=0 accel=264 streamer=288 wall=2208
+MODE_SUMMARY shape=2 mode=0 status=PASS errors=0 chunks=64 accel_sum=16896 streamer_sum=18432 wall_sum=141418
+CHUNK_RESULT shape=2 mode=1 chunk=0 cols=0..16 n_tiles=1 buffer=ping b0_base=4194432 b1_base=4194496 d0_base=0 d1_base=64 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2287
+CHUNK_RESULT shape=2 mode=1 chunk=1 cols=16..32 n_tiles=1 buffer=pong b0_base=4194560 b1_base=4194624 d0_base=2048 d1_base=2112 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2272
+CHUNK_RESULT shape=2 mode=1 chunk=2 cols=32..48 n_tiles=1 buffer=ping b0_base=4259968 b1_base=4260032 d0_base=4096 d1_base=4160 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=3 cols=48..64 n_tiles=1 buffer=pong b0_base=4260096 b1_base=4260160 d0_base=6144 d1_base=6208 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2201
+CHUNK_RESULT shape=2 mode=1 chunk=4 cols=64..80 n_tiles=1 buffer=ping b0_base=4325504 b1_base=4325568 d0_base=8192 d1_base=8256 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=5 cols=80..96 n_tiles=1 buffer=pong b0_base=4325632 b1_base=4325696 d0_base=10240 d1_base=10304 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=6 cols=96..112 n_tiles=1 buffer=ping b0_base=4391040 b1_base=4391104 d0_base=12288 d1_base=12352 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=7 cols=112..128 n_tiles=1 buffer=pong b0_base=4391168 b1_base=4391232 d0_base=14336 d1_base=14400 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=8 cols=128..144 n_tiles=1 buffer=ping b0_base=4456576 b1_base=4456640 d0_base=16384 d1_base=16448 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=9 cols=144..160 n_tiles=1 buffer=pong b0_base=4456704 b1_base=4456768 d0_base=18432 d1_base=18496 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=10 cols=160..176 n_tiles=1 buffer=ping b0_base=4522112 b1_base=4522176 d0_base=20480 d1_base=20544 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=11 cols=176..192 n_tiles=1 buffer=pong b0_base=4522240 b1_base=4522304 d0_base=22528 d1_base=22592 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=12 cols=192..208 n_tiles=1 buffer=ping b0_base=4587648 b1_base=4587712 d0_base=24576 d1_base=24640 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=13 cols=208..224 n_tiles=1 buffer=pong b0_base=4587776 b1_base=4587840 d0_base=26624 d1_base=26688 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=14 cols=224..240 n_tiles=1 buffer=ping b0_base=4653184 b1_base=4653248 d0_base=28672 d1_base=28736 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=15 cols=240..256 n_tiles=1 buffer=pong b0_base=4653312 b1_base=4653376 d0_base=30720 d1_base=30784 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=16 cols=256..272 n_tiles=1 buffer=ping b0_base=4718720 b1_base=4718784 d0_base=32768 d1_base=32832 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=17 cols=272..288 n_tiles=1 buffer=pong b0_base=4718848 b1_base=4718912 d0_base=34816 d1_base=34880 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=18 cols=288..304 n_tiles=1 buffer=ping b0_base=4784256 b1_base=4784320 d0_base=36864 d1_base=36928 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=19 cols=304..320 n_tiles=1 buffer=pong b0_base=4784384 b1_base=4784448 d0_base=38912 d1_base=38976 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=20 cols=320..336 n_tiles=1 buffer=ping b0_base=4849792 b1_base=4849856 d0_base=40960 d1_base=41024 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=21 cols=336..352 n_tiles=1 buffer=pong b0_base=4849920 b1_base=4849984 d0_base=43008 d1_base=43072 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=22 cols=352..368 n_tiles=1 buffer=ping b0_base=4915328 b1_base=4915392 d0_base=45056 d1_base=45120 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=23 cols=368..384 n_tiles=1 buffer=pong b0_base=4915456 b1_base=4915520 d0_base=47104 d1_base=47168 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=24 cols=384..400 n_tiles=1 buffer=ping b0_base=4980864 b1_base=4980928 d0_base=49152 d1_base=49216 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=25 cols=400..416 n_tiles=1 buffer=pong b0_base=4980992 b1_base=4981056 d0_base=51200 d1_base=51264 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=26 cols=416..432 n_tiles=1 buffer=ping b0_base=5046400 b1_base=5046464 d0_base=53248 d1_base=53312 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=27 cols=432..448 n_tiles=1 buffer=pong b0_base=5046528 b1_base=5046592 d0_base=55296 d1_base=55360 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=28 cols=448..464 n_tiles=1 buffer=ping b0_base=5111936 b1_base=5112000 d0_base=57344 d1_base=57408 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=29 cols=464..480 n_tiles=1 buffer=pong b0_base=5112064 b1_base=5112128 d0_base=59392 d1_base=59456 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=30 cols=480..496 n_tiles=1 buffer=ping b0_base=5177472 b1_base=5177536 d0_base=61440 d1_base=61504 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=31 cols=496..512 n_tiles=1 buffer=pong b0_base=5177600 b1_base=5177664 d0_base=63488 d1_base=63552 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=32 cols=512..528 n_tiles=1 buffer=ping b0_base=5243008 b1_base=5243072 d0_base=65536 d1_base=65600 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=33 cols=528..544 n_tiles=1 buffer=pong b0_base=5243136 b1_base=5243200 d0_base=67584 d1_base=67648 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=34 cols=544..560 n_tiles=1 buffer=ping b0_base=5308544 b1_base=5308608 d0_base=69632 d1_base=69696 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=35 cols=560..576 n_tiles=1 buffer=pong b0_base=5308672 b1_base=5308736 d0_base=71680 d1_base=71744 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=36 cols=576..592 n_tiles=1 buffer=ping b0_base=5374080 b1_base=5374144 d0_base=73728 d1_base=73792 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=37 cols=592..608 n_tiles=1 buffer=pong b0_base=5374208 b1_base=5374272 d0_base=75776 d1_base=75840 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=38 cols=608..624 n_tiles=1 buffer=ping b0_base=5439616 b1_base=5439680 d0_base=77824 d1_base=77888 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=39 cols=624..640 n_tiles=1 buffer=pong b0_base=5439744 b1_base=5439808 d0_base=79872 d1_base=79936 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=40 cols=640..656 n_tiles=1 buffer=ping b0_base=5505152 b1_base=5505216 d0_base=81920 d1_base=81984 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=41 cols=656..672 n_tiles=1 buffer=pong b0_base=5505280 b1_base=5505344 d0_base=83968 d1_base=84032 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=42 cols=672..688 n_tiles=1 buffer=ping b0_base=5570688 b1_base=5570752 d0_base=86016 d1_base=86080 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=43 cols=688..704 n_tiles=1 buffer=pong b0_base=5570816 b1_base=5570880 d0_base=88064 d1_base=88128 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=44 cols=704..720 n_tiles=1 buffer=ping b0_base=5636224 b1_base=5636288 d0_base=90112 d1_base=90176 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=45 cols=720..736 n_tiles=1 buffer=pong b0_base=5636352 b1_base=5636416 d0_base=92160 d1_base=92224 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=46 cols=736..752 n_tiles=1 buffer=ping b0_base=5701760 b1_base=5701824 d0_base=94208 d1_base=94272 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=47 cols=752..768 n_tiles=1 buffer=pong b0_base=5701888 b1_base=5701952 d0_base=96256 d1_base=96320 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=48 cols=768..784 n_tiles=1 buffer=ping b0_base=5767296 b1_base=5767360 d0_base=98304 d1_base=98368 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=49 cols=784..800 n_tiles=1 buffer=pong b0_base=5767424 b1_base=5767488 d0_base=100352 d1_base=100416 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=50 cols=800..816 n_tiles=1 buffer=ping b0_base=5832832 b1_base=5832896 d0_base=102400 d1_base=102464 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=51 cols=816..832 n_tiles=1 buffer=pong b0_base=5832960 b1_base=5833024 d0_base=104448 d1_base=104512 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=52 cols=832..848 n_tiles=1 buffer=ping b0_base=5898368 b1_base=5898432 d0_base=106496 d1_base=106560 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=53 cols=848..864 n_tiles=1 buffer=pong b0_base=5898496 b1_base=5898560 d0_base=108544 d1_base=108608 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=54 cols=864..880 n_tiles=1 buffer=ping b0_base=5963904 b1_base=5963968 d0_base=110592 d1_base=110656 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=55 cols=880..896 n_tiles=1 buffer=pong b0_base=5964032 b1_base=5964096 d0_base=112640 d1_base=112704 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=56 cols=896..912 n_tiles=1 buffer=ping b0_base=6029440 b1_base=6029504 d0_base=114688 d1_base=114752 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=57 cols=912..928 n_tiles=1 buffer=pong b0_base=6029568 b1_base=6029632 d0_base=116736 d1_base=116800 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=58 cols=928..944 n_tiles=1 buffer=ping b0_base=6094976 b1_base=6095040 d0_base=118784 d1_base=118848 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=59 cols=944..960 n_tiles=1 buffer=pong b0_base=6095104 b1_base=6095168 d0_base=120832 d1_base=120896 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=60 cols=960..976 n_tiles=1 buffer=ping b0_base=6160512 b1_base=6160576 d0_base=122880 d1_base=122944 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=61 cols=976..992 n_tiles=1 buffer=pong b0_base=6160640 b1_base=6160704 d0_base=124928 d1_base=124992 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=62 cols=992..1008 n_tiles=1 buffer=ping b0_base=6226048 b1_base=6226112 d0_base=126976 d1_base=127040 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+CHUNK_RESULT shape=2 mode=1 chunk=63 cols=1008..1024 n_tiles=1 buffer=pong b0_base=6226176 b1_base=6226240 d0_base=129024 d1_base=129088 D0=PASS D1=PASS errors=0 accel=136 streamer=154 wall=2199
+MODE_SUMMARY shape=2 mode=1 status=PASS errors=0 chunks=64 accel_sum=8704 streamer_sum=9856 wall_sum=140899 output_banks=0..15
+SHAPE_END shape=2 status=PASS total_errors=0
+FINAL_RESULT selected_shape=-1 chunk_cols=16 status=PASS total_errors=0

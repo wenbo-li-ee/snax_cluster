@@ -97,6 +97,7 @@ SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-mode1-contiguous-l15
 SUBDIRS += snax-versacore-int16x4-moe-small-k8-mode1-contiguous-l15
 SUBDIRS += snax-versacore-int16x4-moe-small-k8-highgran-layout-search
 SUBDIRS += snax-versacore-int16x4-multishape-k8-8x4-dma-overlap
+SUBDIRS += snax-versacore-int16x4-multishape-k8-common16-chunked
 SUBDIRS += snax-dma-benchmark-4lane
 endif
 ifeq ($(CFG_OVERRIDE), cfg/snax_dual_versacore_int16x4_multidim_spatial_k8_8x4_4lane_a4_b2_layout_v144.hjson)
