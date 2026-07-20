@@ -204,6 +204,8 @@ module snitch_cluster
     // In case you are using the `RegisterTCDMCuts` feature this adds an
     // additional cycle latency, which is taken into account here.
     parameter int unsigned MemoryMacroLatency = 1 + RegisterTCDMCuts,
+    /// Maximum number of outstanding requests in the local DMA-to-TCDM AXI bridge.
+    parameter int unsigned DMAAxiToTCDMBufDepth = MemoryMacroLatency + 1,
     /// Width of observable register
     parameter int unsigned ObsWidth = 8,
     /// Enable debug support.
@@ -708,7 +710,7 @@ DmaXbarCfg.NoMstPorts
       .DataWidth(WideDataWidth),
       .IdWidth(WideIdWidthOut),
       .NumBanks(1),
-      .BufDepth(MemoryMacroLatency + 1)
+      .BufDepth(DMAAxiToTCDMBufDepth)
   ) i_axi_to_mem_dma (
       .clk_i,
       .rst_ni,

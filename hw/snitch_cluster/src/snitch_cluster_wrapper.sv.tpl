@@ -573,6 +573,9 @@ total_snax_tcdm_ports = total_snax_narrow_ports
     .NrBanks (${cfg['pkg_name']}::NrBanks),
     .DMAAxiReqFifoDepth (${cfg['dma_axi_req_fifo_depth']}),
     .DMAReqFifoDepth (${cfg['dma_req_fifo_depth']}),
+% if 'dma_axi_to_tcdm_buf_depth' in cfg:
+    .DMAAxiToTCDMBufDepth (${cfg['dma_axi_to_tcdm_buf_depth']}),
+% endif
     .ICacheLineWidth (${cfg['pkg_name']}::ICacheLineWidth),
     .ICacheLineCount (${cfg['pkg_name']}::ICacheLineCount),
     .ICacheSets (${cfg['pkg_name']}::ICacheSets),

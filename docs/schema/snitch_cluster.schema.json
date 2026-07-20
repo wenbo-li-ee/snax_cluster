@@ -151,6 +151,11 @@
             "description": "Number of request entries the DMA can keep",
             "default": 3
         },
+        "dma_axi_to_tcdm_buf_depth": {
+            "type": "integer",
+            "description": "Maximum number of outstanding requests in the local DMA-to-TCDM AXI bridge.",
+            "minimum": 1
+        },
         "observable_pin_width": {
             "type": "number",
             "description": "Number of observable pin width",
