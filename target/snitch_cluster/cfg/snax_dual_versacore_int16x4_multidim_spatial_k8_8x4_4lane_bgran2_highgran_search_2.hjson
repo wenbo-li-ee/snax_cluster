@@ -45,6 +45,7 @@
         dma_axi_req_fifo_depth: 64
         dma_req_fifo_depth: 8
         dma_axi_to_tcdm_buf_depth: 3
+        dma_xbar_fall_through: true
         observable_pin_width: 8
         narrow_trans: 4
         wide_trans: 64

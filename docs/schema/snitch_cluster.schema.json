@@ -156,6 +156,11 @@
             "description": "Maximum number of outstanding requests in the local DMA-to-TCDM AXI bridge.",
             "minimum": 1
         },
+        "dma_xbar_fall_through": {
+            "type": "boolean",
+            "description": "Allow same-cycle AW-to-W routing through an empty DMA crossbar route FIFO.",
+            "default": false
+        },
         "observable_pin_width": {
             "type": "number",
             "description": "Number of observable pin width",

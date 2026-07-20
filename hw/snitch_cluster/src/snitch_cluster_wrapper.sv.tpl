@@ -576,6 +576,9 @@ total_snax_tcdm_ports = total_snax_narrow_ports
 % if 'dma_axi_to_tcdm_buf_depth' in cfg:
     .DMAAxiToTCDMBufDepth (${cfg['dma_axi_to_tcdm_buf_depth']}),
 % endif
+% if 'dma_xbar_fall_through' in cfg:
+    .DmaXbarFallThrough (${int(cfg['dma_xbar_fall_through'])}),
+% endif
     .ICacheLineWidth (${cfg['pkg_name']}::ICacheLineWidth),
     .ICacheLineCount (${cfg['pkg_name']}::ICacheLineCount),
     .ICacheSets (${cfg['pkg_name']}::ICacheSets),

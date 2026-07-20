@@ -175,6 +175,8 @@ module snitch_cluster
     /// Outstanding transactions on the wide network
     parameter int unsigned WideMaxMstTrans = 4,
     parameter int unsigned WideMaxSlvTrans = 4,
+    /// Allow same-cycle AW-to-W routing through an empty DMA crossbar route FIFO.
+    parameter bit DmaXbarFallThrough = 1'b0,
     /// Outstanding transactions on the narrow network
     parameter int unsigned NarrowMaxMstTrans = 4,
     parameter int unsigned NarrowMaxSlvTrans = 4,
@@ -375,7 +377,7 @@ module snitch_cluster
       NoMstPorts: NrWideSlaves,
       MaxMstTrans: WideMaxMstTrans,
       MaxSlvTrans: WideMaxSlvTrans,
-      FallThrough: 1'b0,
+      FallThrough: DmaXbarFallThrough,
       LatencyMode: WideXbarLatency,
       PipelineStages: 0,
       AxiIdWidthSlvPorts: WideIdWidthIn,
