@@ -46,7 +46,7 @@
         dma_req_fifo_depth: 8
         observable_pin_width: 8
         narrow_trans: 4
-        wide_trans: 32
+        wide_trans: 64
         dma_user_width: 1
         enable_debug: false
         vm_support: false
