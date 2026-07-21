@@ -163,7 +163,10 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
     UInt(readerParam.crossClusterParam.AxiAddressWidth.W)
   )
   val axiTransferBeatSize = UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
-  val spatialStride       = UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
+  val spatialStrides      = Vec(
+    readerParam.crossClusterParam.maxSpatialDimension,
+    UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
+  )
 
   val temporalBounds  = Vec(
     readerParam.crossClusterParam.maxTemporalDimension,
@@ -187,12 +190,18 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
     if (writerPtr.length > 1 && cfg.writerPtr.length > 1) writerPtr(1) := cfg.writerPtr(1)
     else writerPtr(1)        := 0.U(0.W)
     axiTransferBeatSize      := cfg.axiTransferBeatSize
-    spatialStride            := cfg.aguCfg
-      .spatialStrides(0)
-      .apply(
-        cfg.aguCfg.spatialStrides(0).getWidth - 1,
-        log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8)
-      )
+    spatialStrides.zipWithIndex.foreach { case (stride, index) =>
+      if (index < cfg.aguCfg.spatialStrides.length) {
+        stride := cfg.aguCfg
+          .spatialStrides(index)
+          .apply(
+            cfg.aguCfg.spatialStrides(index).getWidth - 1,
+            log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8)
+          )
+      } else {
+        stride := 0.U
+      }
+    }
     temporalStrides          := cfg.aguCfg.temporalStrides.map(
       _.apply(
         cfg.aguCfg.temporalStrides(0).getWidth - 1,
@@ -216,9 +225,11 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
     if (xdmaCfg.writerPtr.length > 2) xdmaCfg.writerPtr.tail.tail.foreach(_ := 0.U(0.W))
     xdmaCfg.axiTransferBeatSize                            := axiTransferBeatSize
     xdmaCfg.aguCfg.ptr                                     := { if (readerSide) readerPtr else writerPtr(0) }
-    xdmaCfg.aguCfg.spatialStrides(0)                       := spatialStride ## 0.U(
-      log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8).W
-    )
+    xdmaCfg.aguCfg.spatialStrides.zipWithIndex.foreach { case (stride, index) =>
+      stride := spatialStrides(index) ## 0.U(
+        log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8).W
+      )
+    }
 
     xdmaCfg.aguCfg.temporalStrides := temporalStrides
       .map(
@@ -255,7 +266,7 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
 //  writerPtr: 48b
 //  Broadcast writerPtr: 48b
 //  axiTransferBeatSize: 16b
-//  spatialStride: 16b
+//  spatialStrides: 16b * SpatialDim
 //  temporalBounds: 16b * Dim
 //  temporalStrides: 16b * Dim
 //  enabledChannel: 8b
@@ -273,7 +284,9 @@ class XDMAInterClusterCfgIOSerializer(readerwriterParam: XDMAParam) extends Modu
       _ ## _
     ) ## io.cfgIn.bits.temporalBounds.reverse.reduce(
       _ ## _
-    ) ## io.cfgIn.bits.spatialStride ## io.cfgIn.bits.axiTransferBeatSize ## io.cfgIn.bits.writerPtr(1) ## io.cfgIn.bits
+    ) ## io.cfgIn.bits.spatialStrides.reverse.reduce(
+      _ ## _
+    ) ## io.cfgIn.bits.axiTransferBeatSize ## io.cfgIn.bits.writerPtr(1) ## io.cfgIn.bits
       .writerPtr(0) ## io.cfgIn.bits.readerPtr ## io.cfgIn.bits.taskID
 
   val frameBodyLength = readerwriterParam.axiParam.dataWidth - 5
@@ -424,15 +437,17 @@ class XDMAInterClusterCfgIODeserializer(readerwriterParam: XDMAParam) extends Mo
     cfgSerialized.getWidth - 1,
     readerwriterParam.crossClusterParam.tcdmAddressWidth
   )
-  // Assign spatialStride
-  io.cfgOut.bits.spatialStride := cfgSerialized(
-    readerwriterParam.crossClusterParam.tcdmAddressWidth - 1,
-    0
-  )
-  cfgSerialized = cfgSerialized(
-    cfgSerialized.getWidth - 1,
-    readerwriterParam.crossClusterParam.tcdmAddressWidth
-  )
+  // Assign spatialStrides
+  io.cfgOut.bits.spatialStrides.foreach { i =>
+    i := cfgSerialized(
+      readerwriterParam.crossClusterParam.tcdmAddressWidth - 1,
+      0
+    )
+    cfgSerialized = cfgSerialized(
+      cfgSerialized.getWidth - 1,
+      readerwriterParam.crossClusterParam.tcdmAddressWidth
+    )
+  }
   // Assign temporalBounds
   io.cfgOut.bits.temporalBounds.foreach { i =>
     i := cfgSerialized(

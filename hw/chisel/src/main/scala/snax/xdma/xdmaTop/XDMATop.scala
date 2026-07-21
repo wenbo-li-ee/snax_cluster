@@ -197,9 +197,30 @@ object XDMATopGen extends App {
     dataWidth = parsedArgs("axiDataWidth").toInt
   )
 
+  val spatialChannelCount =
+    parsedArgs("axiDataWidth").toInt / parsedArgs("tcdmDataWidth").toInt
+
+  def spatialBounds(side: String): List[Int] = {
+    val key = s"${side}_agu_spatial_bounds"
+    val bounds = (parsedXdmaCfg \ key)
+      .asOpt[Seq[Int]]
+      .getOrElse(Seq(spatialChannelCount))
+      .toList
+    require(bounds.nonEmpty, s"$key must contain at least one bound")
+    require(
+      bounds.forall(_ > 0) && bounds.product == spatialChannelCount,
+      s"$key product must equal the $spatialChannelCount xDMA channels"
+    )
+    bounds
+  }
+
+  val readerSpatialBounds = spatialBounds("reader")
+  val writerSpatialBounds = spatialBounds("writer")
+
   val crossClusterParam = new XDMACrossClusterParam(
     maxMulticastDest     = (parsedXdmaCfg \ "max_multicast").as[Int],
     maxTemporalDimension = (parsedXdmaCfg \ "max_dimension").as[Int],
+    maxSpatialDimension  = readerSpatialBounds.length.max(writerSpatialBounds.length),
     // `max_mem_size_kiB` is the unified XDMA-addressable region (KiB).
     tcdmSize             = (parsedXdmaCfg \ "max_mem_size_kiB").as[Int],
     // wordlineWidth (per-bank TCDM data bus width) equals the cluster's
@@ -210,13 +231,11 @@ object XDMATopGen extends App {
   )
 
   val readerParam = new ReaderWriterParam(
-    spatialBounds        = List(
-      parsedArgs("axiDataWidth").toInt / parsedArgs("tcdmDataWidth").toInt
-    ),
+    spatialBounds        = readerSpatialBounds,
     temporalDimension    = (parsedXdmaCfg \ "reader_agu_temporal_dimension").as[Int],
     tcdmDataWidth        = parsedArgs("tcdmDataWidth").toInt,
     tcdmSize             = parsedArgs("tcdmSize").toInt,
-    numChannel           = parsedArgs("axiDataWidth").toInt / parsedArgs("tcdmDataWidth").toInt,
+    numChannel           = spatialChannelCount,
     addressBufferDepth   = (parsedXdmaCfg \ "reader_buffer").as[Int],
     dataBufferDepth      = (parsedXdmaCfg \ "reader_buffer").as[Int],
     configurableChannel  = true,
@@ -226,13 +245,11 @@ object XDMATopGen extends App {
   )
 
   val writerParam          = new ReaderWriterParam(
-    spatialBounds        = List(
-      parsedArgs("axiDataWidth").toInt / parsedArgs("tcdmDataWidth").toInt
-    ),
+    spatialBounds        = writerSpatialBounds,
     temporalDimension    = (parsedXdmaCfg \ "writer_agu_temporal_dimension").as[Int],
     tcdmDataWidth        = parsedArgs("tcdmDataWidth").toInt,
     tcdmSize             = parsedArgs("tcdmSize").toInt,
-    numChannel           = parsedArgs("axiDataWidth").toInt / parsedArgs("tcdmDataWidth").toInt,
+    numChannel           = spatialChannelCount,
     addressBufferDepth   = (parsedXdmaCfg \ "writer_buffer").as[Int],
     dataBufferDepth      = (parsedXdmaCfg \ "writer_buffer").as[Int],
     configurableChannel  = true,
@@ -387,8 +404,12 @@ return new $extensionName($extensionArgs)
 
 // The stride and bound region of the reader of XDMA
 #define XDMA_SRC_TEMP_DIM ${crossClusterParam.maxTemporalDimension}
+#define XDMA_SRC_SPATIAL_DIM ${readerParam.aguParam.spatialBounds.length}
+#define XDMA_SRC_SPATIAL_BOUNDS { ${readerParam.aguParam.spatialBounds.mkString(", ")} }
+#define XDMA_SRC_SPATIAL_BOUND_0 ${readerParam.aguParam.spatialBounds.head}
+#define XDMA_SRC_SPATIAL_BOUND_1 ${readerParam.aguParam.spatialBounds.lift(1).getOrElse(1)}
 #define XDMA_SRC_SPATIAL_STRIDE_PTR XDMA_DST_ADDR_PTR_LSB + XDMA_MAX_DST_COUNT * 2
-#define XDMA_SRC_TEMP_BOUND_PTR XDMA_SRC_SPATIAL_STRIDE_PTR + 1
+#define XDMA_SRC_TEMP_BOUND_PTR XDMA_SRC_SPATIAL_STRIDE_PTR + XDMA_SRC_SPATIAL_DIM
 #define XDMA_SRC_TEMP_STRIDE_PTR XDMA_SRC_TEMP_BOUND_PTR + XDMA_SRC_TEMP_DIM
 
 // The channel and strobe region of the reader of XDMA
@@ -406,8 +427,12 @@ return new $extensionName($extensionArgs)
 
 // The stride and bound region of the writer of XDMA
 #define XDMA_DST_TEMP_DIM ${crossClusterParam.maxTemporalDimension}
+#define XDMA_DST_SPATIAL_DIM ${writerParam.aguParam.spatialBounds.length}
+#define XDMA_DST_SPATIAL_BOUNDS { ${writerParam.aguParam.spatialBounds.mkString(", ")} }
+#define XDMA_DST_SPATIAL_BOUND_0 ${writerParam.aguParam.spatialBounds.head}
+#define XDMA_DST_SPATIAL_BOUND_1 ${writerParam.aguParam.spatialBounds.lift(1).getOrElse(1)}
 #define XDMA_DST_SPATIAL_STRIDE_PTR XDMA_SRC_EXT_CSR_PTR + XDMA_SRC_EXT_CSR_NUM
-#define XDMA_DST_TEMP_BOUND_PTR XDMA_DST_SPATIAL_STRIDE_PTR + 1
+#define XDMA_DST_TEMP_BOUND_PTR XDMA_DST_SPATIAL_STRIDE_PTR + XDMA_DST_SPATIAL_DIM
 #define XDMA_DST_TEMP_STRIDE_PTR XDMA_DST_TEMP_BOUND_PTR + XDMA_DST_TEMP_DIM
 
 #define XDMA_DST_ENABLED_CHAN_PTR XDMA_DST_TEMP_STRIDE_PTR + XDMA_DST_TEMP_DIM

@@ -273,6 +273,8 @@
             max_mem_size_kiB: 4096
             reader_buffer: 12
             writer_buffer: 12
+            reader_agu_spatial_bounds: [8]
+            writer_agu_spatial_bounds: [2, 4]
             reader_agu_temporal_dimension: 5
             writer_agu_temporal_dimension: 5
             writer_extensions:

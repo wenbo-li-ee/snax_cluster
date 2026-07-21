@@ -17,6 +17,21 @@
 
 #define XDMA_LANE_BYTES (XDMA_WIDTH / XDMA_SPATIAL_CHAN)
 
+static const uint32_t snax_xdma_src_spatial_bounds[] =
+    XDMA_SRC_SPATIAL_BOUNDS;
+static const uint32_t snax_xdma_dst_spatial_bounds[] =
+    XDMA_DST_SPATIAL_BOUNDS;
+
+static inline void snax_xdma_set_linear_spatial_strides(
+    uint32_t csr, const uint32_t* bounds, uint32_t dimensions,
+    uint32_t inner_stride) {
+    uint32_t stride = inner_stride;
+    for (uint32_t i = 0; i < dimensions; i++) {
+        snax_write_xdma_cfg_reg(csr + i, stride);
+        stride *= bounds[i];
+    }
+}
+
 #if defined(READER_EXT_TRANSPOSERROW8_8COL8_8BIT8_16)
 #define XDMA_ROW_MAJOR_TRANSPOSE_EXT_ID READER_EXT_TRANSPOSERROW8_8COL8_8BIT8_16
 #elif defined(READER_EXT_TRANSPOSERROW8_8_8COL8_8_8BIT8_16_32)
@@ -199,11 +214,14 @@ int32_t snax_xdma_memcpy_nd_full_addr(
         XDMA_DEBUG_PRINT("src loop and dst loop is not equal\n");
         // return -3;
     }
-    // Spatial Stride at src
-    snax_write_xdma_cfg_reg(XDMA_SRC_SPATIAL_STRIDE_PTR, spatial_stride_src);
-
-    // Spatial Stride at dst
-    snax_write_xdma_cfg_reg(XDMA_DST_SPATIAL_STRIDE_PTR, spatial_stride_dst);
+    // Preserve a linear channel order for both one- and multi-dimensional
+    // spatial AGUs.
+    snax_xdma_set_linear_spatial_strides(
+        XDMA_SRC_SPATIAL_STRIDE_PTR, snax_xdma_src_spatial_bounds,
+        XDMA_SRC_SPATIAL_DIM, spatial_stride_src);
+    snax_xdma_set_linear_spatial_strides(
+        XDMA_DST_SPATIAL_STRIDE_PTR, snax_xdma_dst_spatial_bounds,
+        XDMA_DST_SPATIAL_DIM, spatial_stride_dst);
 
     // Temporal Dimension 0 to n at src
     for (uint32_t i = 0; i < temp_dim_src; i++) {
@@ -336,11 +354,12 @@ int32_t snax_xdma_multicast_nd_full_address(
         // return -3;
     }
 
-    // Spatial Stride at src
-    snax_write_xdma_cfg_reg(XDMA_SRC_SPATIAL_STRIDE_PTR, spatial_stride_src);
-
-    // Spatial Stride at dst
-    snax_write_xdma_cfg_reg(XDMA_DST_SPATIAL_STRIDE_PTR, spatial_stride_dst);
+    snax_xdma_set_linear_spatial_strides(
+        XDMA_SRC_SPATIAL_STRIDE_PTR, snax_xdma_src_spatial_bounds,
+        XDMA_SRC_SPATIAL_DIM, spatial_stride_src);
+    snax_xdma_set_linear_spatial_strides(
+        XDMA_DST_SPATIAL_STRIDE_PTR, snax_xdma_dst_spatial_bounds,
+        XDMA_DST_SPATIAL_DIM, spatial_stride_dst);
 
     // Temporal Dimension 0 to n at src
     for (uint32_t i = 0; i < temp_dim_src; i++) {
