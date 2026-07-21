@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.util._
 
 import snax.readerWriter.AddressGenUnitCfgIO
-import snax.readerWriter.AddressGenUnitParam
 import snax.readerWriter.ReaderWriterCfgIO
 import snax.utils._
 import snax.xdma.DesignParams._
@@ -32,14 +31,7 @@ class XDMACfgIO(val param: XDMAParam) extends Bundle {
   val axiTransferBeatSize = UInt(param.crossClusterParam.tcdmAddressWidth.W)
 
   val aguCfg          =
-    new AddressGenUnitCfgIO(param =
-      AddressGenUnitParam(
-        temporalDimension = param.crossClusterParam.maxTemporalDimension,
-        numChannel        = param.axiParam.dataWidth / param.crossClusterParam.wordlineWidth,
-        outputBufferDepth = param.rwParam.aguParam.outputBufferDepth,
-        tcdmSize          = param.crossClusterParam.tcdmSize
-      )
-    ) // Buffered within AGU
+    new AddressGenUnitCfgIO(param = param.rwParam.aguParam) // Buffered within AGU
   val readerwriterCfg = new ReaderWriterCfgIO(param.rwParam)
   // The LocalLoopback signal to control the data in reader directly sending back to writer
   val localLoopback   = Bool()
