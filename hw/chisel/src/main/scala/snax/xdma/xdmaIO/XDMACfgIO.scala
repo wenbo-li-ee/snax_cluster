@@ -265,6 +265,9 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
 //  enabledByte: 8b
 
 class XDMAInterClusterCfgIOSerializer(readerwriterParam: XDMAParam) extends Module {
+  override val desiredName =
+    s"XDMAInterClusterCfgIOSerializer_W${readerwriterParam.axiParam.dataWidth}_SD${readerwriterParam.crossClusterParam.maxSpatialDimension}_TD${readerwriterParam.crossClusterParam.maxTemporalDimension}"
+
   val io = IO(new Bundle {
     val cfgIn  = Flipped(Decoupled(new XDMAInterClusterCfgIO(readerwriterParam, readerwriterParam)))
     val cfgOut = Decoupled(UInt(readerwriterParam.axiParam.dataWidth.W))
@@ -322,6 +325,9 @@ class XDMAInterClusterCfgIOSerializer(readerwriterParam: XDMAParam) extends Modu
 }
 
 class XDMAInterClusterCfgIODeserializer(readerwriterParam: XDMAParam) extends Module {
+  override val desiredName =
+    s"XDMAInterClusterCfgIODeserializer_W${readerwriterParam.axiParam.dataWidth}_SD${readerwriterParam.crossClusterParam.maxSpatialDimension}_TD${readerwriterParam.crossClusterParam.maxTemporalDimension}"
+
   val io = IO(new Bundle {
     val cfgIn  = Flipped(Decoupled(UInt(readerwriterParam.axiParam.dataWidth.W)))
     val cfgOut = Decoupled(new XDMAInterClusterCfgIO(readerwriterParam, readerwriterParam))
