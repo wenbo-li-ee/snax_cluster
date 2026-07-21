@@ -217,7 +217,7 @@ class XDMACtrl(readerparam: XDMAParam, writerparam: XDMAParam, clusterName: Stri
   val csrManager = Module(
     new ReqRspManager(
       numReadWriteReg = numCSRPerPtr + // Reader Pointer needs numCSRPerPtr CSRs
-        readerparam.rwParam.aguParam.spatialBounds.length +      // Spatial Strides for reader
+        readerparam.crossClusterParam.maxSpatialDimension +      // Spatial Strides for reader
         readerparam.crossClusterParam.maxTemporalDimension * 2 + // Temporal Strides + Bounds for reader
         {
           if (readerparam.rwParam.configurableChannel) 1 else 0
@@ -230,7 +230,7 @@ class XDMACtrl(readerparam: XDMAParam, writerparam: XDMAParam, clusterName: Stri
               .reduce(_ + _) + 1
         } + // The total num of param on reader extension (custom CSR + bypass CSR)
         numCSRPerPtr * writerparam.crossClusterParam.maxMulticastDest + // Writer Pointer needs numCSRPerPtr * maxMulticastDest CSRs
-        writerparam.rwParam.aguParam.spatialBounds.length +      // Spatial Strides for writer
+        writerparam.crossClusterParam.maxSpatialDimension +      // Spatial Strides for writer
         writerparam.crossClusterParam.maxTemporalDimension * 2 + // Temporal Strides + Bounds for writer
         {
           if (writerparam.rwParam.configurableChannel) 1 else 0

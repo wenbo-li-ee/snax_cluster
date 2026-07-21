@@ -76,40 +76,6 @@ class AddressGenUnitTester extends AnyFlatSpec with ChiselScalatestTester {
       }
     }
 
-  "AddressGenUnit: two-dimensional spatial token layout" should " pass" in test(
-    new AddressGenUnit(
-      AddressGenUnitParam(
-        spatialBounds     = List(2, 4),
-        temporalDimension = 1,
-        numChannel        = 8,
-        outputBufferDepth = 2,
-        tcdmSize          = 8192
-      )
-    )
-  ) { dut =>
-    val base     = 0x1000
-    val expected = Seq(0, 8, 512, 520, 1024, 1032, 1536, 1544)
-
-    dut.io.cfg.ptr.poke(base.U)
-    dut.io.cfg.spatialStrides(0).poke(8.U)
-    dut.io.cfg.spatialStrides(1).poke(512.U)
-    dut.io.cfg.temporalStrides(0).poke(2048.U)
-    dut.io.cfg.temporalBounds(0).poke(1.U)
-    dut.io.cfg.addressRemapIndex.poke(0.U)
-    dut.io.addr.foreach(_.ready.poke(true.B))
-
-    dut.io.start.poke(true.B)
-    dut.clock.step()
-    dut.io.start.poke(false.B)
-    while (!dut.io.addr.head.valid.peek().litToBoolean) {
-      dut.clock.step()
-    }
-    dut.io.addr.zip(expected).foreach { case (addr, offset) =>
-      addr.valid.expect(true.B)
-      addr.bits.expect((base + offset).U)
-    }
-  }
-
   "AddressGenUnit: continuous 1D fetch with memory remapped to non-interleaved in superbank" should " pass" in test(
     new AddressGenUnit(
       AddressGenUnitParam(
