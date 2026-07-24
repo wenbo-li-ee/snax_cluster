@@ -1,6 +1,6 @@
 # XDMA Gather/Scatter 用户 API 指南
 
-本文说明如何使用 XDMA 的 indexed-lane 地址模式，在一个 512-bit beat 中
+本文说明如何使用 XDMA 的 indexed-token 地址模式，在一个 512-bit beat 中
 gather/scatter 四个任意的 16-byte token，同时保留原 Cartesian stride
 模式。
 
@@ -19,6 +19,9 @@ has_gather_scatter: true
 #define XDMA_HAS_GATHER_SCATTER 1
 #define XDMA_ADDR_MODE_STRIDE 0
 #define XDMA_ADDR_MODE_INDEXED 1
+#define XDMA_INDEXED_LANES_PER_TOKEN 2
+#define XDMA_INDEXED_TOKEN_COUNT 4
+#define XDMA_INDEXED_LANE_BYTES 8
 ```
 
 应用程序需要包含：
@@ -45,20 +48,20 @@ XDMA_SPATIAL_CHAN == 8   // 一个 512-bit beat 有 8 个 lane
 ```c
 int32_t snax_xdma_set_src_address_mode(
     uint32_t mode,
-    const uint32_t *channel_offsets);
+    const uint32_t *token_offsets);
 
 int32_t snax_xdma_set_dst_address_mode(
     uint32_t mode,
-    const uint32_t *channel_offsets);
+    const uint32_t *token_offsets);
 ```
 
 参数含义：
 
 - `mode = XDMA_ADDR_MODE_STRIDE`：使用原 Cartesian spatial stride。
-- `mode = XDMA_ADDR_MODE_INDEXED`：使用每个 lane 独立的 offset。
-- `channel_offsets`：长度至少为 `XDMA_SPATIAL_CHAN` 的数组；每项是相对
-  source/destination base pointer 的 byte offset。
-- stride 模式不读取 `channel_offsets`，可以传 `NULL`。
+- `mode = XDMA_ADDR_MODE_INDEXED`：使用每个 token 独立的起始 offset。
+- `token_offsets`：长度至少为 `XDMA_INDEXED_TOKEN_COUNT`（当前为 4）的
+  数组；每项是相对 source/destination base pointer 的 byte offset。
+- stride 模式不读取 `token_offsets`，可以传 `NULL`。
 
 返回值：
 
@@ -86,45 +89,45 @@ address[lane] =
   + Cartesian_spatial_offset[lane]
 ```
 
-indexed 模式变为：
+indexed 模式下，每个 token offset 自动生成两个连续 lane 地址：
 
 ```text
-address[lane] =
+address[2 * token] =
     base_pointer
   + temporal_offset
-  + channel_offsets[lane]
+  + token_offsets[token]
+
+address[2 * token + 1] =
+    base_pointer
+  + temporal_offset
+  + token_offsets[token]
+  + 8
 ```
 
-`channel_offsets` 是相对地址，不是绝对地址。当前每个 lane 访问 8 byte，
-因此 `base_pointer + channel_offsets[lane]` 应当按 8 byte 对齐，并且落在
+`token_offsets` 是相对地址，不是绝对地址。当前每个 lane 访问 8 byte，
+因此 `base_pointer + token_offsets[token]` 应当按 8 byte 对齐，并且落在
 合法的 TCDM 地址范围内。
 
-如果一个 token 占连续两个 64-bit bank，一个 16-byte token 的 offset pair
-应写成：
+一个 token 占连续两个 64-bit bank，但软件只配置第一个 bank；第二个地址
+由硬件自动加 8 生成。四个任意 token 只需要四个 offset：
 
 ```c
-token_offset, token_offset + 8
-```
-
-四个任意 token 可以表示为：
-
-```c
-static const uint32_t offsets[XDMA_SPATIAL_CHAN] = {
-    token0_offset, token0_offset + 8,
-    token1_offset, token1_offset + 8,
-    token2_offset, token2_offset + 8,
-    token3_offset, token3_offset + 8,
+static const uint32_t offsets[XDMA_INDEXED_TOKEN_COUNT] = {
+    token0_offset,
+    token1_offset,
+    token2_offset,
+    token3_offset,
 };
 ```
 
 例如选择 bank pair `(3,4)、(17,18)、(29,30)、(45,46)`：
 
 ```c
-static const uint32_t gather_offsets[8] = {
-    3 * 8,  4 * 8,
-    17 * 8, 18 * 8,
-    29 * 8, 30 * 8,
-    45 * 8, 46 * 8,
+static const uint32_t gather_offsets[XDMA_INDEXED_TOKEN_COUNT] = {
+    3 * 8,
+    17 * 8,
+    29 * 8,
+    45 * 8,
 };
 ```
 
@@ -133,9 +136,12 @@ lane 和地址的对应关系为：
 | XDMA lane | 访问地址 |
 | --- | --- |
 | 0 | `base + temporal_offset + offsets[0]` |
-| 1 | `base + temporal_offset + offsets[1]` |
+| 1 | `base + temporal_offset + offsets[0] + 8` |
+| 2 | `base + temporal_offset + offsets[1]` |
+| 3 | `base + temporal_offset + offsets[1] + 8` |
 | ... | ... |
-| 7 | `base + temporal_offset + offsets[7]` |
+| 6 | `base + temporal_offset + offsets[3]` |
+| 7 | `base + temporal_offset + offsets[3] + 8` |
 
 ## 4. 必须遵守的调用顺序
 
@@ -167,7 +173,7 @@ snax_xdma_local_wait(task_id);
 
 下面的例子从四个任意 source token gather，然后在同一个 XDMA 任务中
 scatter 到四个任意 destination token。例子连续处理 `rows` 行；每一行使用
-同一组 lane offsets，并通过 temporal stride 移动到下一行。
+同一组 token offsets，并通过 temporal stride 移动到下一行。
 
 ```c
 #include <stdint.h>
@@ -182,8 +188,8 @@ int xdma_gather_scatter_four_tokens(
     uint32_t rows,
     uint32_t src_row_stride,
     uint32_t dst_row_stride,
-    const uint32_t src_offsets[XDMA_SPATIAL_CHAN],
-    const uint32_t dst_offsets[XDMA_SPATIAL_CHAN]) {
+    const uint32_t src_offsets[XDMA_INDEXED_TOKEN_COUNT],
+    const uint32_t dst_offsets[XDMA_INDEXED_TOKEN_COUNT]) {
 #if !XDMA_HAS_GATHER_SCATTER
     (void)src;
     (void)dst;
@@ -236,18 +242,18 @@ int xdma_gather_scatter_four_tokens(
 调用示例：
 
 ```c
-static const uint32_t src_offsets[8] = {
-    3 * 8,  4 * 8,
-    17 * 8, 18 * 8,
-    29 * 8, 30 * 8,
-    45 * 8, 46 * 8,
+static const uint32_t src_offsets[XDMA_INDEXED_TOKEN_COUNT] = {
+    3 * 8,
+    17 * 8,
+    29 * 8,
+    45 * 8,
 };
 
-static const uint32_t dst_offsets[8] = {
-    6 * 8,  7 * 8,
-    20 * 8, 21 * 8,
-    35 * 8, 36 * 8,
-    51 * 8, 52 * 8,
+static const uint32_t dst_offsets[XDMA_INDEXED_TOKEN_COUNT] = {
+    6 * 8,
+    20 * 8,
+    35 * 8,
+    51 * 8,
 };
 
 int rc = xdma_gather_scatter_four_tokens(
@@ -320,11 +326,11 @@ indexed 模式只替换 spatial lane 地址生成，原 temporal bounds/strides 
 生效。因此：
 
 - 一个任务可以连续处理多行；
-- 每一行都会使用相同的 8 个 `channel_offsets`；
+- 每一行都会使用相同的 4 个 `token_offsets`；
 - 每一行的共同位移由该侧的 temporal AGU 产生。
 
 当前 API 不是从内存读取 index list 的间接寻址引擎。一个任务执行期间，
-8 个 offsets 不会逐 beat 自动换成另一组任意值。如果下一组四个 token
+4 个 token offsets 不会逐 beat 自动换成另一组任意值。如果下一组四个 token
 没有共同的 temporal stride，需要等待当前任务完成，然后重新配置 offsets
 并启动下一个任务。
 

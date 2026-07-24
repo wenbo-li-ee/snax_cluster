@@ -12,16 +12,22 @@
 #define ROWS 3u
 #define GUARD_WORD 0xdeadbeefdeadbeefULL
 
-static const uint32_t token_offsets[XDMA_SPATIAL_CHAN] = {
-    3u * LANE_BYTES,  4u * LANE_BYTES,  17u * LANE_BYTES,
-    18u * LANE_BYTES, 29u * LANE_BYTES, 30u * LANE_BYTES,
-    45u * LANE_BYTES, 46u * LANE_BYTES,
+_Static_assert(XDMA_INDEXED_TOKEN_COUNT * XDMA_INDEXED_LANES_PER_TOKEN ==
+                   XDMA_SPATIAL_CHAN,
+               "indexed token geometry must cover every XDMA lane");
+
+static const uint32_t token_offsets[XDMA_INDEXED_TOKEN_COUNT] = {
+    3u * LANE_BYTES,
+    17u * LANE_BYTES,
+    29u * LANE_BYTES,
+    45u * LANE_BYTES,
 };
 
-static const uint32_t scatter_offsets[XDMA_SPATIAL_CHAN] = {
-    6u * LANE_BYTES,  7u * LANE_BYTES,  20u * LANE_BYTES,
-    21u * LANE_BYTES, 35u * LANE_BYTES, 36u * LANE_BYTES,
-    51u * LANE_BYTES, 52u * LANE_BYTES,
+static const uint32_t scatter_offsets[XDMA_INDEXED_TOKEN_COUNT] = {
+    6u * LANE_BYTES,
+    20u * LANE_BYTES,
+    35u * LANE_BYTES,
+    51u * LANE_BYTES,
 };
 
 static uint64_t pattern(uint32_t row, uint32_t lane) {
@@ -51,8 +57,14 @@ static int check_sparse_destination(const uint8_t *dst) {
             (const uint64_t *)(dst + row * ROW_BYTES);
         for (uint32_t bank = 0; bank < ROW_BYTES / LANE_BYTES; bank++) {
             uint64_t expected = GUARD_WORD;
-            for (uint32_t lane = 0; lane < XDMA_SPATIAL_CHAN; lane++) {
-                if (scatter_offsets[lane] / LANE_BYTES == bank) {
+            for (uint32_t token = 0; token < XDMA_INDEXED_TOKEN_COUNT;
+                 token++) {
+                uint32_t first_bank = scatter_offsets[token] / LANE_BYTES;
+                if (bank == first_bank ||
+                    bank == first_bank + XDMA_INDEXED_LANES_PER_TOKEN - 1) {
+                    uint32_t lane =
+                        token * XDMA_INDEXED_LANES_PER_TOKEN +
+                        (bank - first_bank);
                     expected = pattern(row, lane);
                     break;
                 }
@@ -87,10 +99,17 @@ static int test_gather(uint8_t *src, uint8_t *dst) {
         uint64_t *dst_row = (uint64_t *)(dst + row * BEAT_BYTES);
         for (uint32_t lane = 0; lane < ROW_BYTES / LANE_BYTES; lane++)
             src_row[lane] = GUARD_WORD;
-        for (uint32_t lane = 0; lane < XDMA_SPATIAL_CHAN; lane++) {
-            *(uint64_t *)(src + row * ROW_BYTES + token_offsets[lane]) =
-                pattern(row, lane);
-            dst_row[lane] = 0;
+        for (uint32_t token = 0; token < XDMA_INDEXED_TOKEN_COUNT;
+             token++) {
+            for (uint32_t word = 0; word < XDMA_INDEXED_LANES_PER_TOKEN;
+                 word++) {
+                uint32_t lane =
+                    token * XDMA_INDEXED_LANES_PER_TOKEN + word;
+                *(uint64_t *)(src + row * ROW_BYTES +
+                              token_offsets[token] + word * LANE_BYTES) =
+                    pattern(row, lane);
+                dst_row[lane] = 0;
+            }
         }
     }
     if (configure_copy(src, dst, ROW_BYTES, BEAT_BYTES) != 0 ||
@@ -132,9 +151,16 @@ static int test_gather_scatter(uint8_t *src, uint8_t *dst) {
             src_row[bank] = GUARD_WORD;
             dst_row[bank] = GUARD_WORD;
         }
-        for (uint32_t lane = 0; lane < XDMA_SPATIAL_CHAN; lane++) {
-            *(uint64_t *)(src + row * ROW_BYTES + token_offsets[lane]) =
-                pattern(row, lane);
+        for (uint32_t token = 0; token < XDMA_INDEXED_TOKEN_COUNT;
+             token++) {
+            for (uint32_t word = 0; word < XDMA_INDEXED_LANES_PER_TOKEN;
+                 word++) {
+                uint32_t lane =
+                    token * XDMA_INDEXED_LANES_PER_TOKEN + word;
+                *(uint64_t *)(src + row * ROW_BYTES +
+                              token_offsets[token] + word * LANE_BYTES) =
+                    pattern(row, lane);
+            }
         }
     }
     if (configure_copy(src, dst, ROW_BYTES, ROW_BYTES) != 0 ||

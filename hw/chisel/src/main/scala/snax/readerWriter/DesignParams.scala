@@ -30,10 +30,44 @@ class AddressGenUnitParam(
   val tcdmLogicWordSize: Seq[Int],
   // XDMA-only optional mode. Generic accelerator streamers leave this false,
   // so their CSR map and generated hardware remain unchanged.
-  val hasGatherScatter:  Boolean = false
-)
+  val hasGatherScatter:      Boolean = false,
+  val indexedLanesPerOffset: Int     = 2,
+  val indexedLaneByteStride: Int     = 8
+) {
+  require(!hasGatherScatter || indexedLanesPerOffset > 0)
+  require(!hasGatherScatter || indexedLaneByteStride > 0)
+  require(!hasGatherScatter || numChannel % indexedLanesPerOffset == 0)
+  val indexedOffsetCount =
+    if (hasGatherScatter) numChannel / indexedLanesPerOffset else 0
+}
 
 object AddressGenUnitParam {
+  def apply(
+    spatialBounds:          List[Int],
+    temporalDimension:      Int,
+    numChannel:             Int,
+    outputBufferDepth:      Int,
+    tcdmSize:               Int,
+    tcdmPhysWordSize:       Int,
+    tcdmLogicWordSize:      Seq[Int],
+    hasGatherScatter:       Boolean,
+    indexedLanesPerOffset: Int,
+    indexedLaneByteStride: Int
+  ): AddressGenUnitParam =
+    new AddressGenUnitParam(
+      spatialBounds          = spatialBounds,
+      temporalDimension      = temporalDimension,
+      addressWidth           = log2Ceil(tcdmSize) + 10,
+      numChannel             = numChannel,
+      outputBufferDepth      = outputBufferDepth,
+      tcdmSize               = tcdmSize,
+      tcdmPhysWordSize       = tcdmPhysWordSize,
+      tcdmLogicWordSize      = tcdmLogicWordSize,
+      hasGatherScatter       = hasGatherScatter,
+      indexedLanesPerOffset = indexedLanesPerOffset,
+      indexedLaneByteStride = indexedLaneByteStride
+    )
+
   def apply(
     spatialBounds:     List[Int],
     temporalDimension: Int,
@@ -44,16 +78,17 @@ object AddressGenUnitParam {
     tcdmLogicWordSize: Seq[Int],
     hasGatherScatter:  Boolean
   ): AddressGenUnitParam =
-    new AddressGenUnitParam(
-      spatialBounds     = spatialBounds,
-      temporalDimension = temporalDimension,
-      addressWidth      = log2Ceil(tcdmSize) + 10,
-      numChannel        = numChannel,
-      outputBufferDepth = outputBufferDepth,
-      tcdmSize          = tcdmSize,
-      tcdmPhysWordSize  = tcdmPhysWordSize,
-      tcdmLogicWordSize = tcdmLogicWordSize,
-      hasGatherScatter  = hasGatherScatter
+    apply(
+      spatialBounds,
+      temporalDimension,
+      numChannel,
+      outputBufferDepth,
+      tcdmSize,
+      tcdmPhysWordSize,
+      tcdmLogicWordSize,
+      hasGatherScatter,
+      indexedLanesPerOffset = 2,
+      indexedLaneByteStride = 8
     )
 
   def apply(
@@ -73,7 +108,9 @@ object AddressGenUnitParam {
       tcdmSize,
       tcdmPhysWordSize,
       tcdmLogicWordSize,
-      hasGatherScatter = false
+      hasGatherScatter      = false,
+      indexedLanesPerOffset = 2,
+      indexedLaneByteStride = 8
     )
 
   def apply(
@@ -145,17 +182,21 @@ class ReaderWriterParam(
   val crossClockDomain:     Boolean   = false,
   val dynamicPriority:      Boolean   = true,
   val higherStaticPriority: Boolean   = false,
-  val hasGatherScatter:     Boolean   = false
+  val hasGatherScatter:     Boolean   = false,
+  val indexedLanesPerOffset: Int      = 2,
+  val indexedLaneByteStride: Int      = 8
 ) {
   val aguParam = AddressGenUnitParam(
-    spatialBounds     = spatialBounds,
-    temporalDimension = temporalDimension,
-    numChannel        = numChannel,
-    outputBufferDepth = addressBufferDepth,
-    tcdmSize          = tcdmSize,
-    tcdmPhysWordSize  = tcdmPhysWordSize,
-    tcdmLogicWordSize = tcdmLogicWordSize,
-    hasGatherScatter  = hasGatherScatter
+    spatialBounds          = spatialBounds,
+    temporalDimension      = temporalDimension,
+    numChannel             = numChannel,
+    outputBufferDepth      = addressBufferDepth,
+    tcdmSize               = tcdmSize,
+    tcdmPhysWordSize       = tcdmPhysWordSize,
+    tcdmLogicWordSize      = tcdmLogicWordSize,
+    hasGatherScatter       = hasGatherScatter,
+    indexedLanesPerOffset  = indexedLanesPerOffset,
+    indexedLaneByteStride  = indexedLaneByteStride
   )
 
   val tcdmParam = TCDMParam(
@@ -176,7 +217,7 @@ class ReaderWriterParam(
                                                                   0) + (if (tcdmLogicWordSize.length > 1) 1
                                                                         else
                                                                           0) + (if (hasGatherScatter)
-                                                                                  1 + numChannel
+                                                                                  1 + aguParam.indexedOffsetCount
                                                                                 else
                                                                                   0)
 }

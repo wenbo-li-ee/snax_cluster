@@ -41,8 +41,10 @@ class XDMACfgIO(val param: XDMAParam) extends Bundle {
         outputBufferDepth = param.rwParam.aguParam.outputBufferDepth,
         tcdmSize          = param.crossClusterParam.tcdmSize,
         tcdmPhysWordSize  = 256,
-        tcdmLogicWordSize = Seq(256),
-        hasGatherScatter  = param.rwParam.aguParam.hasGatherScatter
+        tcdmLogicWordSize      = Seq(256),
+        hasGatherScatter       = param.rwParam.aguParam.hasGatherScatter,
+        indexedLanesPerOffset  = param.rwParam.aguParam.indexedLanesPerOffset,
+        indexedLaneByteStride  = param.rwParam.aguParam.indexedLaneByteStride
       )
     ) // Buffered within AGU
   val readerwriterCfg = new ReaderWriterCfgIO(param.rwParam)
@@ -151,8 +153,8 @@ class XDMAIntraClusterCfgIO(param: XDMAParam) extends Bundle {
       aguCfg.temporalBounds.length
     )
     if (param.rwParam.aguParam.hasGatherScatter) {
-      aguCfg.addressMode    := cfg.aguCfg.addressMode
-      aguCfg.channelOffsets := cfg.aguCfg.channelOffsets
+      aguCfg.addressMode  := cfg.aguCfg.addressMode
+      aguCfg.tokenOffsets := cfg.aguCfg.tokenOffsets
     } else {
       aguCfg.addressMode := 0.U
     }
@@ -175,9 +177,9 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
   )
   val axiTransferBeatSize = UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
   val spatialStride       = UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
-  val addressMode         = UInt((if (readerParam.rwParam.aguParam.hasGatherScatter) 1 else 0).W)
-  val channelOffsets      = Vec(
-    if (readerParam.rwParam.aguParam.hasGatherScatter) readerParam.crossClusterParam.channelNum else 0,
+  val addressMode = UInt((if (readerParam.rwParam.aguParam.hasGatherScatter) 1 else 0).W)
+  val tokenOffsets = Vec(
+    readerParam.rwParam.aguParam.indexedOffsetCount,
     UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
   )
 
@@ -211,7 +213,7 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
       )
     if (readerParam.rwParam.aguParam.hasGatherScatter) {
       addressMode := cfg.aguCfg.addressMode
-      channelOffsets.zip(cfg.aguCfg.channelOffsets).foreach { case (dst, src) =>
+      tokenOffsets.zip(cfg.aguCfg.tokenOffsets).foreach { case (dst, src) =>
         dst := src(
           src.getWidth - 1,
           log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8)
@@ -248,7 +250,7 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
     )
     if (xdmaCfg.param.rwParam.aguParam.hasGatherScatter) {
       xdmaCfg.aguCfg.addressMode := addressMode
-      xdmaCfg.aguCfg.channelOffsets.zip(channelOffsets).foreach { case (dst, src) =>
+      xdmaCfg.aguCfg.tokenOffsets.zip(tokenOffsets).foreach { case (dst, src) =>
         dst := src ## 0.U(log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8).W)
       }
     } else {
@@ -292,7 +294,7 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
 //  axiTransferBeatSize: 16b
 //  spatialStride: 16b
 //  addressMode: 1b (optional)
-//  channelOffsets: 16b * channelNum (optional)
+//  tokenOffsets: 16b * indexedOffsetCount (optional)
 //  temporalBounds: 16b * Dim
 //  temporalStrides: 16b * Dim
 //  enabledChannel: 8b
@@ -304,9 +306,9 @@ class XDMAInterClusterCfgIOSerializer(readerwriterParam: XDMAParam) extends Modu
     val cfgOut = Decoupled(UInt(readerwriterParam.axiParam.dataWidth.W))
   })
 
-  val indexedLaneCfg =
+  val indexedTokenCfg =
     if (readerwriterParam.rwParam.aguParam.hasGatherScatter)
-      io.cfgIn.bits.channelOffsets.reverse.reduce(_ ## _) ## io.cfgIn.bits.addressMode
+      io.cfgIn.bits.tokenOffsets.reverse.reduce(_ ## _) ## io.cfgIn.bits.addressMode
     else 0.U(0.W)
 
   // Serialize the entire cfg to one vector
@@ -315,7 +317,7 @@ class XDMAInterClusterCfgIOSerializer(readerwriterParam: XDMAParam) extends Modu
       _ ## _
     ) ## io.cfgIn.bits.temporalBounds.reverse.reduce(
       _ ## _
-    ) ## indexedLaneCfg ## io.cfgIn.bits.spatialStride ## io.cfgIn.bits.axiTransferBeatSize ## io.cfgIn.bits
+    ) ## indexedTokenCfg ## io.cfgIn.bits.spatialStride ## io.cfgIn.bits.axiTransferBeatSize ## io.cfgIn.bits
       .writerPtr(1) ## io.cfgIn.bits
       .writerPtr(0) ## io.cfgIn.bits.readerPtr ## io.cfgIn.bits.taskID
 
@@ -476,11 +478,11 @@ class XDMAInterClusterCfgIODeserializer(readerwriterParam: XDMAParam) extends Mo
     cfgSerialized.getWidth - 1,
     readerwriterParam.crossClusterParam.tcdmAddressWidth
   )
-  // Assign optional indexed-lane mode and offsets
+  // Assign optional indexed-token mode and offsets
   if (readerwriterParam.rwParam.aguParam.hasGatherScatter) {
     io.cfgOut.bits.addressMode := cfgSerialized(0)
     cfgSerialized = cfgSerialized(cfgSerialized.getWidth - 1, 1)
-    io.cfgOut.bits.channelOffsets.foreach { i =>
+    io.cfgOut.bits.tokenOffsets.foreach { i =>
       i := cfgSerialized(
         readerwriterParam.crossClusterParam.tcdmAddressWidth - 1,
         0

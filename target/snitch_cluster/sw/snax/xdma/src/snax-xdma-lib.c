@@ -500,43 +500,43 @@ int32_t snax_xdma_disable_dst_ext(uint8_t ext) {
     return 0;
 }
 int32_t snax_xdma_set_src_address_mode(
-    uint32_t mode, const uint32_t* channel_offsets) {
+    uint32_t mode, const uint32_t* token_offsets) {
 #if XDMA_HAS_GATHER_SCATTER
     if (mode > XDMA_ADDR_MODE_INDEXED ||
-        (mode == XDMA_ADDR_MODE_INDEXED && channel_offsets == 0)) {
+        (mode == XDMA_ADDR_MODE_INDEXED && token_offsets == 0)) {
         return -1;
     }
     snax_write_xdma_cfg_reg(XDMA_SRC_ADDR_MODE_PTR, mode);
     if (mode == XDMA_ADDR_MODE_INDEXED) {
-        for (uint32_t i = 0; i < XDMA_SPATIAL_CHAN; i++) {
-            snax_write_xdma_cfg_reg(XDMA_SRC_CHAN_OFFSET_PTR + i,
-                                    channel_offsets[i]);
+        for (uint32_t i = 0; i < XDMA_INDEXED_TOKEN_COUNT; i++) {
+            snax_write_xdma_cfg_reg(XDMA_SRC_TOKEN_OFFSET_PTR + i,
+                                    token_offsets[i]);
         }
     }
     return 0;
 #else
-    (void)channel_offsets;
+    (void)token_offsets;
     return mode == XDMA_ADDR_MODE_STRIDE ? 0 : -2;
 #endif
 }
 
 int32_t snax_xdma_set_dst_address_mode(
-    uint32_t mode, const uint32_t* channel_offsets) {
+    uint32_t mode, const uint32_t* token_offsets) {
 #if XDMA_HAS_GATHER_SCATTER
     if (mode > XDMA_ADDR_MODE_INDEXED ||
-        (mode == XDMA_ADDR_MODE_INDEXED && channel_offsets == 0)) {
+        (mode == XDMA_ADDR_MODE_INDEXED && token_offsets == 0)) {
         return -1;
     }
     snax_write_xdma_cfg_reg(XDMA_DST_ADDR_MODE_PTR, mode);
     if (mode == XDMA_ADDR_MODE_INDEXED) {
-        for (uint32_t i = 0; i < XDMA_SPATIAL_CHAN; i++) {
-            snax_write_xdma_cfg_reg(XDMA_DST_CHAN_OFFSET_PTR + i,
-                                    channel_offsets[i]);
+        for (uint32_t i = 0; i < XDMA_INDEXED_TOKEN_COUNT; i++) {
+            snax_write_xdma_cfg_reg(XDMA_DST_TOKEN_OFFSET_PTR + i,
+                                    token_offsets[i]);
         }
     }
     return 0;
 #else
-    (void)channel_offsets;
+    (void)token_offsets;
     return mode == XDMA_ADDR_MODE_STRIDE ? 0 : -2;
 #endif
 }

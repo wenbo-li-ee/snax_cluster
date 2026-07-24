@@ -211,6 +211,8 @@ object XDMATopGen extends App {
 
   val hasGatherScatter =
     (parsedXdmaCfg \ "has_gather_scatter").asOpt[Boolean].getOrElse(false)
+  val indexedLanesPerOffset = 2
+  val indexedLaneByteStride = parsedArgs("tcdmDataWidth").toInt / 8
 
   val readerParam = new ReaderWriterParam(
     spatialBounds        = List(
@@ -225,8 +227,10 @@ object XDMATopGen extends App {
     configurableChannel  = true,
     configurableByteMask = false,
     dynamicPriority      = false,
-    higherStaticPriority = true,
-    hasGatherScatter     = hasGatherScatter
+    higherStaticPriority  = true,
+    hasGatherScatter      = hasGatherScatter,
+    indexedLanesPerOffset = indexedLanesPerOffset,
+    indexedLaneByteStride = indexedLaneByteStride
   )
 
   val writerParam          = new ReaderWriterParam(
@@ -242,8 +246,10 @@ object XDMATopGen extends App {
     configurableChannel  = true,
     configurableByteMask = true,
     dynamicPriority      = false,
-    higherStaticPriority = true,
-    hasGatherScatter     = hasGatherScatter
+    higherStaticPriority  = true,
+    hasGatherScatter      = hasGatherScatter,
+    indexedLanesPerOffset = indexedLanesPerOffset,
+    indexedLaneByteStride = indexedLaneByteStride
   )
   var readerExtensionParam = Seq[HasDataPathExtension]()
   var writerExtensionParam = Seq[HasDataPathExtension]()
@@ -398,13 +404,14 @@ return new $extensionName($extensionArgs)
 #define XDMA_HAS_GATHER_SCATTER ${if (hasGatherScatter) 1 else 0}
 #define XDMA_ADDR_MODE_STRIDE 0
 #define XDMA_ADDR_MODE_INDEXED 1
+#define XDMA_INDEXED_LANES_PER_TOKEN ${readerParam.aguParam.indexedLanesPerOffset}
+#define XDMA_INDEXED_TOKEN_COUNT ${readerParam.aguParam.indexedOffsetCount}
+#define XDMA_INDEXED_LANE_BYTES ${readerParam.aguParam.indexedLaneByteStride}
 #define XDMA_SRC_ADDR_MODE_PTR XDMA_SRC_TEMP_STRIDE_PTR + XDMA_SRC_TEMP_DIM
-#define XDMA_SRC_CHAN_OFFSET_PTR XDMA_SRC_ADDR_MODE_PTR + ${if (hasGatherScatter) 1 else 0}
+#define XDMA_SRC_TOKEN_OFFSET_PTR XDMA_SRC_ADDR_MODE_PTR + ${if (hasGatherScatter) 1 else 0}
 
 // The channel and strobe region of the reader of XDMA
-#define XDMA_SRC_ENABLED_CHAN_PTR XDMA_SRC_CHAN_OFFSET_PTR + ${if (hasGatherScatter)
-                                                              readerParam.tcdmParam.numChannel
-                                                            else 0}
+#define XDMA_SRC_ENABLED_CHAN_PTR XDMA_SRC_TOKEN_OFFSET_PTR + ${readerParam.aguParam.indexedOffsetCount}
 #define XDMA_SRC_ENABLE_PTR XDMA_SRC_ENABLED_CHAN_PTR + ${if (readerParam.configurableChannel) 1
       else 0}
 #define XDMA_SRC_EXT_NUM ${readerExtensionParam.length}
@@ -422,11 +429,9 @@ return new $extensionName($extensionArgs)
 #define XDMA_DST_TEMP_BOUND_PTR XDMA_DST_SPATIAL_STRIDE_PTR + 1
 #define XDMA_DST_TEMP_STRIDE_PTR XDMA_DST_TEMP_BOUND_PTR + XDMA_DST_TEMP_DIM
 #define XDMA_DST_ADDR_MODE_PTR XDMA_DST_TEMP_STRIDE_PTR + XDMA_DST_TEMP_DIM
-#define XDMA_DST_CHAN_OFFSET_PTR XDMA_DST_ADDR_MODE_PTR + ${if (hasGatherScatter) 1 else 0}
+#define XDMA_DST_TOKEN_OFFSET_PTR XDMA_DST_ADDR_MODE_PTR + ${if (hasGatherScatter) 1 else 0}
 
-#define XDMA_DST_ENABLED_CHAN_PTR XDMA_DST_CHAN_OFFSET_PTR + ${if (hasGatherScatter)
-                                                              writerParam.tcdmParam.numChannel
-                                                            else 0}
+#define XDMA_DST_ENABLED_CHAN_PTR XDMA_DST_TOKEN_OFFSET_PTR + ${writerParam.aguParam.indexedOffsetCount}
 #define XDMA_DST_ENABLED_BYTE_PTR XDMA_DST_ENABLED_CHAN_PTR + ${if (writerParam.configurableChannel) 1
       else 0}
 #define XDMA_DST_ENABLE_PTR XDMA_DST_ENABLED_BYTE_PTR + ${if (writerParam.configurableByteMask) 1

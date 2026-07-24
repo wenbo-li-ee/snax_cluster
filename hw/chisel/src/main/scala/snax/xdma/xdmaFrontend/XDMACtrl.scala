@@ -221,9 +221,9 @@ class XDMACtrl(readerparam: XDMAParam, writerparam: XDMAParam, clusterName: Stri
         readerparam.crossClusterParam.maxTemporalDimension * 2 + // Temporal Strides + Bounds for reader
         {
           if (readerparam.rwParam.aguParam.hasGatherScatter)
-            1 + readerparam.rwParam.tcdmParam.numChannel
+            1 + readerparam.rwParam.aguParam.indexedOffsetCount
           else 0
-        } + // Address mode + per-channel offsets for reader
+        } + // Address mode + per-token offsets for reader
         {
           if (readerparam.rwParam.configurableChannel) 1 else 0
         } +                                                      // Enabled Channel for reader
@@ -239,9 +239,9 @@ class XDMACtrl(readerparam: XDMAParam, writerparam: XDMAParam, clusterName: Stri
         writerparam.crossClusterParam.maxTemporalDimension * 2 + // Temporal Strides + Bounds for writer
         {
           if (writerparam.rwParam.aguParam.hasGatherScatter)
-            1 + writerparam.rwParam.tcdmParam.numChannel
+            1 + writerparam.rwParam.aguParam.indexedOffsetCount
           else 0
-        } + // Address mode + per-channel offsets for writer
+        } + // Address mode + per-token offsets for writer
         {
           if (writerparam.rwParam.configurableChannel) 1 else 0
         } +                                                      // Enabled Channel for writer

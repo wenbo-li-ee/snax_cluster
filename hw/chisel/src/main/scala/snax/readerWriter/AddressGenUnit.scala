@@ -24,13 +24,13 @@ class AddressGenUnitCfgIO(param: AddressGenUnitParam) extends Bundle {
   val temporalBounds    = Vec(param.temporalDimension, UInt(param.addressWidth.W))
   val temporalStrides   = Vec(param.temporalDimension, UInt(param.addressWidth.W))
   val addressRemapIndex = UInt(log2Ceil(param.tcdmLogicWordSize.length).W)
-  // Optional XDMA-only indexed-lane mode:
+  // Optional XDMA-only indexed-token mode:
   //   0: original Cartesian spatial stride
-  //   1: one independently programmable byte offset per output channel
+  //   1: one programmable token offset per group of consecutive lanes
   // Generic accelerator streamers elaborate both fields to zero width.
-  val addressMode       = UInt((if (param.hasGatherScatter) 1 else 0).W)
-  val channelOffsets    =
-    Vec(if (param.hasGatherScatter) param.numChannel else 0, UInt(param.addressWidth.W))
+  val addressMode = UInt((if (param.hasGatherScatter) 1 else 0).W)
+  val tokenOffsets =
+    Vec(param.indexedOffsetCount, UInt(param.addressWidth.W))
 
   def connectWithList(csrList: IndexedSeq[UInt]): IndexedSeq[UInt] = {
     var remainingCSR = csrList
@@ -64,8 +64,8 @@ class AddressGenUnitCfgIO(param: AddressGenUnitParam) extends Bundle {
     if (param.hasGatherScatter) {
       addressMode := remainingCSR.head
       remainingCSR = remainingCSR.tail
-      for (i <- 0 until channelOffsets.length) {
-        channelOffsets(i) := remainingCSR.head
+      for (i <- 0 until tokenOffsets.length) {
+        tokenOffsets(i) := remainingCSR.head
         remainingCSR = remainingCSR.tail
       }
     } else {
@@ -167,10 +167,16 @@ class AddressGenUnit(param: AddressGenUnitParam, moduleNamePrefix: String = "unn
   // Calculate all addresses for different channels together
   val currentAddress = Wire(Vec(io.addr.length, UInt(param.addressWidth.W)))
   currentAddress.zipWithIndex.foreach { case (address, index) =>
-    val spatialOffset =
-      if (param.hasGatherScatter)
-        Mux(io.cfg.addressMode === 1.U, io.cfg.channelOffsets(index), cartesianSpatialOffsets(index))
-      else cartesianSpatialOffsets(index)
+    val spatialOffset = if (param.hasGatherScatter) {
+      val indexedOffset =
+        io.cfg.tokenOffsets(index / param.indexedLanesPerOffset) +
+          (index % param.indexedLanesPerOffset * param.indexedLaneByteStride).U
+      Mux(
+        io.cfg.addressMode === 1.U,
+        indexedOffset,
+        cartesianSpatialOffsets(index)
+      )
+    } else cartesianSpatialOffsets(index)
     address := io.cfg.ptr + temporalOffset + spatialOffset
   }
 
