@@ -492,6 +492,9 @@ class XDMAInterClusterCfgIODeserializer(readerwriterParam: XDMAParam) extends Mo
         readerwriterParam.crossClusterParam.tcdmAddressWidth
       )
     }
+  } else {
+    io.cfgOut.bits.addressMode := 0.U
+    io.cfgOut.bits.tokenOffsets.foreach(_ := 0.U)
   }
   // Assign temporalBounds
   io.cfgOut.bits.temporalBounds.foreach { i =>
