@@ -21,6 +21,14 @@ static inline void snax_write_xdma_cfg_reg(uint32_t addr, uint32_t value) {
     csrw_ss(XDMA_CFG_ADDR + addr, value);
 }
 
+// Select the original Cartesian-stride mode or the XDMA-only indexed-lane
+// gather/scatter mode. Offsets are byte offsets relative to the corresponding
+// source/destination base pointer, one offset per 64-bit XDMA lane.
+int32_t snax_xdma_set_src_address_mode(uint32_t mode,
+                                      const uint32_t* channel_offsets);
+int32_t snax_xdma_set_dst_address_mode(uint32_t mode,
+                                      const uint32_t* channel_offsets);
+
 // Data Copy Task
 int32_t snax_xdma_memcpy_nd_full_addr(
     uint64_t src, uint64_t dst, uint32_t spatial_stride_src,

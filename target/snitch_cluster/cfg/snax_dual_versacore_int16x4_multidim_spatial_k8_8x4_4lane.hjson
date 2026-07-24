@@ -39,7 +39,7 @@
         cluster_periph_size: 64
         zero_mem_size: 64
         dma_data_width: 512
-        dma_axi_req_fifo_depth: 16
+        dma_axi_req_fifo_depth: 32
         dma_req_fifo_depth: 8
         observable_pin_width: 8
         narrow_trans: 4
@@ -67,13 +67,14 @@
             lat_sdotp: 2
             fpu_pipe_config: BEFORE
             narrow_xbar_latency: CUT_ALL_PORTS
-            wide_xbar_latency: CUT_ALL_PORTS
+            wide_xbar_latency: CUT_ALL_AX
+            wide_xbar_fall_through: true
             register_core_req: true
             register_core_rsp: true
             register_offload_req: true
             register_offload_rsp: true
             register_ext_narrow: true
-            register_ext_wide: true
+            register_ext_wide: false
         }
         hives:
         [
@@ -270,6 +271,9 @@
             writer_buffer: 12
             reader_agu_temporal_dimension: 5
             writer_agu_temporal_dimension: 5
+            // XDMA-only: retain Cartesian stride mode and add selectable
+            // per-lane indexed offsets for 4-token gather/scatter.
+            has_gather_scatter: true
             writer_extensions:
             {
                 HasVerilogMemset: {}

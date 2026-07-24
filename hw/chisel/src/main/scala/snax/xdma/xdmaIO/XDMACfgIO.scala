@@ -33,11 +33,16 @@ class XDMACfgIO(val param: XDMAParam) extends Bundle {
 
   val aguCfg          =
     new AddressGenUnitCfgIO(param =
-      AddressGenUnitParam(
+      new AddressGenUnitParam(
+        spatialBounds     = List(param.axiParam.dataWidth / param.crossClusterParam.wordlineWidth),
         temporalDimension = param.crossClusterParam.maxTemporalDimension,
+        addressWidth      = log2Ceil(param.crossClusterParam.tcdmSize) + 10,
         numChannel        = param.axiParam.dataWidth / param.crossClusterParam.wordlineWidth,
         outputBufferDepth = param.rwParam.aguParam.outputBufferDepth,
-        tcdmSize          = param.crossClusterParam.tcdmSize
+        tcdmSize          = param.crossClusterParam.tcdmSize,
+        tcdmPhysWordSize  = 256,
+        tcdmLogicWordSize = Seq(256),
+        hasGatherScatter  = param.rwParam.aguParam.hasGatherScatter
       )
     ) // Buffered within AGU
   val readerwriterCfg = new ReaderWriterCfgIO(param.rwParam)
@@ -145,6 +150,12 @@ class XDMAIntraClusterCfgIO(param: XDMAParam) extends Bundle {
     aguCfg.temporalBounds := cfg.aguCfg.temporalBounds.take(
       aguCfg.temporalBounds.length
     )
+    if (param.rwParam.aguParam.hasGatherScatter) {
+      aguCfg.addressMode    := cfg.aguCfg.addressMode
+      aguCfg.channelOffsets := cfg.aguCfg.channelOffsets
+    } else {
+      aguCfg.addressMode := 0.U
+    }
 
     readerwriterCfg := cfg.readerwriterCfg
     localLoopback   := cfg.localLoopback
@@ -164,6 +175,11 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
   )
   val axiTransferBeatSize = UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
   val spatialStride       = UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
+  val addressMode         = UInt((if (readerParam.rwParam.aguParam.hasGatherScatter) 1 else 0).W)
+  val channelOffsets      = Vec(
+    if (readerParam.rwParam.aguParam.hasGatherScatter) readerParam.crossClusterParam.channelNum else 0,
+    UInt(readerParam.crossClusterParam.tcdmAddressWidth.W)
+  )
 
   val temporalBounds  = Vec(
     readerParam.crossClusterParam.maxTemporalDimension,
@@ -193,6 +209,17 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
         cfg.aguCfg.spatialStrides(0).getWidth - 1,
         log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8)
       )
+    if (readerParam.rwParam.aguParam.hasGatherScatter) {
+      addressMode := cfg.aguCfg.addressMode
+      channelOffsets.zip(cfg.aguCfg.channelOffsets).foreach { case (dst, src) =>
+        dst := src(
+          src.getWidth - 1,
+          log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8)
+        )
+      }
+    } else {
+      addressMode := 0.U
+    }
     temporalStrides          := cfg.aguCfg.temporalStrides.map(
       _.apply(
         cfg.aguCfg.temporalStrides(0).getWidth - 1,
@@ -219,6 +246,14 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
     xdmaCfg.aguCfg.spatialStrides(0)                       := spatialStride ## 0.U(
       log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8).W
     )
+    if (xdmaCfg.param.rwParam.aguParam.hasGatherScatter) {
+      xdmaCfg.aguCfg.addressMode := addressMode
+      xdmaCfg.aguCfg.channelOffsets.zip(channelOffsets).foreach { case (dst, src) =>
+        dst := src ## 0.U(log2Ceil(readerParam.crossClusterParam.wordlineWidth / 8).W)
+      }
+    } else {
+      xdmaCfg.aguCfg.addressMode := 0.U
+    }
 
     xdmaCfg.aguCfg.temporalStrides := temporalStrides
       .map(
@@ -256,6 +291,8 @@ class XDMAInterClusterCfgIO(readerParam: XDMAParam, writerParam: XDMAParam) exte
 //  Broadcast writerPtr: 48b
 //  axiTransferBeatSize: 16b
 //  spatialStride: 16b
+//  addressMode: 1b (optional)
+//  channelOffsets: 16b * channelNum (optional)
 //  temporalBounds: 16b * Dim
 //  temporalStrides: 16b * Dim
 //  enabledChannel: 8b
@@ -267,13 +304,19 @@ class XDMAInterClusterCfgIOSerializer(readerwriterParam: XDMAParam) extends Modu
     val cfgOut = Decoupled(UInt(readerwriterParam.axiParam.dataWidth.W))
   })
 
+  val indexedLaneCfg =
+    if (readerwriterParam.rwParam.aguParam.hasGatherScatter)
+      io.cfgIn.bits.channelOffsets.reverse.reduce(_ ## _) ## io.cfgIn.bits.addressMode
+    else 0.U(0.W)
+
   // Serialize the entire cfg to one vector
   var cfgSerialized =
     io.cfgIn.bits.enabledByte ## io.cfgIn.bits.enabledChannel ## io.cfgIn.bits.temporalStrides.reverse.reduce(
       _ ## _
     ) ## io.cfgIn.bits.temporalBounds.reverse.reduce(
       _ ## _
-    ) ## io.cfgIn.bits.spatialStride ## io.cfgIn.bits.axiTransferBeatSize ## io.cfgIn.bits.writerPtr(1) ## io.cfgIn.bits
+    ) ## indexedLaneCfg ## io.cfgIn.bits.spatialStride ## io.cfgIn.bits.axiTransferBeatSize ## io.cfgIn.bits
+      .writerPtr(1) ## io.cfgIn.bits
       .writerPtr(0) ## io.cfgIn.bits.readerPtr ## io.cfgIn.bits.taskID
 
   val frameBodyLength = readerwriterParam.axiParam.dataWidth - 5
@@ -433,6 +476,21 @@ class XDMAInterClusterCfgIODeserializer(readerwriterParam: XDMAParam) extends Mo
     cfgSerialized.getWidth - 1,
     readerwriterParam.crossClusterParam.tcdmAddressWidth
   )
+  // Assign optional indexed-lane mode and offsets
+  if (readerwriterParam.rwParam.aguParam.hasGatherScatter) {
+    io.cfgOut.bits.addressMode := cfgSerialized(0)
+    cfgSerialized = cfgSerialized(cfgSerialized.getWidth - 1, 1)
+    io.cfgOut.bits.channelOffsets.foreach { i =>
+      i := cfgSerialized(
+        readerwriterParam.crossClusterParam.tcdmAddressWidth - 1,
+        0
+      )
+      cfgSerialized = cfgSerialized(
+        cfgSerialized.getWidth - 1,
+        readerwriterParam.crossClusterParam.tcdmAddressWidth
+      )
+    }
+  }
   // Assign temporalBounds
   io.cfgOut.bits.temporalBounds.foreach { i =>
     i := cfgSerialized(

@@ -205,6 +205,11 @@ int32_t snax_xdma_memcpy_nd_full_addr(
     // Spatial Stride at dst
     snax_write_xdma_cfg_reg(XDMA_DST_SPATIAL_STRIDE_PTR, spatial_stride_dst);
 
+    // Every legacy memcpy descriptor explicitly restores Cartesian-stride
+    // mode, so a previous gather/scatter task cannot leak into the next task.
+    snax_xdma_set_src_address_mode(XDMA_ADDR_MODE_STRIDE, 0);
+    snax_xdma_set_dst_address_mode(XDMA_ADDR_MODE_STRIDE, 0);
+
     // Temporal Dimension 0 to n at src
     for (uint32_t i = 0; i < temp_dim_src; i++) {
         if (i >= XDMA_SRC_TEMP_DIM) {
@@ -493,4 +498,45 @@ int32_t snax_xdma_disable_dst_ext(uint8_t ext) {
         snax_read_xdma_cfg_reg(XDMA_DST_ENABLE_PTR) & ~(1 << ext));
 
     return 0;
+}
+int32_t snax_xdma_set_src_address_mode(
+    uint32_t mode, const uint32_t* channel_offsets) {
+#if XDMA_HAS_GATHER_SCATTER
+    if (mode > XDMA_ADDR_MODE_INDEXED ||
+        (mode == XDMA_ADDR_MODE_INDEXED && channel_offsets == 0)) {
+        return -1;
+    }
+    snax_write_xdma_cfg_reg(XDMA_SRC_ADDR_MODE_PTR, mode);
+    if (mode == XDMA_ADDR_MODE_INDEXED) {
+        for (uint32_t i = 0; i < XDMA_SPATIAL_CHAN; i++) {
+            snax_write_xdma_cfg_reg(XDMA_SRC_CHAN_OFFSET_PTR + i,
+                                    channel_offsets[i]);
+        }
+    }
+    return 0;
+#else
+    (void)channel_offsets;
+    return mode == XDMA_ADDR_MODE_STRIDE ? 0 : -2;
+#endif
+}
+
+int32_t snax_xdma_set_dst_address_mode(
+    uint32_t mode, const uint32_t* channel_offsets) {
+#if XDMA_HAS_GATHER_SCATTER
+    if (mode > XDMA_ADDR_MODE_INDEXED ||
+        (mode == XDMA_ADDR_MODE_INDEXED && channel_offsets == 0)) {
+        return -1;
+    }
+    snax_write_xdma_cfg_reg(XDMA_DST_ADDR_MODE_PTR, mode);
+    if (mode == XDMA_ADDR_MODE_INDEXED) {
+        for (uint32_t i = 0; i < XDMA_SPATIAL_CHAN; i++) {
+            snax_write_xdma_cfg_reg(XDMA_DST_CHAN_OFFSET_PTR + i,
+                                    channel_offsets[i]);
+        }
+    }
+    return 0;
+#else
+    (void)channel_offsets;
+    return mode == XDMA_ADDR_MODE_STRIDE ? 0 : -2;
+#endif
 }

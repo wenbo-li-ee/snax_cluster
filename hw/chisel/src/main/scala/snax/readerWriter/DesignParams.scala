@@ -27,7 +27,10 @@ class AddressGenUnitParam(
   val outputBufferDepth: Int,
   val tcdmSize:          Int,
   val tcdmPhysWordSize:  Int,
-  val tcdmLogicWordSize: Seq[Int]
+  val tcdmLogicWordSize: Seq[Int],
+  // XDMA-only optional mode. Generic accelerator streamers leave this false,
+  // so their CSR map and generated hardware remain unchanged.
+  val hasGatherScatter:  Boolean = false
 )
 
 object AddressGenUnitParam {
@@ -38,7 +41,8 @@ object AddressGenUnitParam {
     outputBufferDepth: Int,
     tcdmSize:          Int,
     tcdmPhysWordSize:  Int,
-    tcdmLogicWordSize: Seq[Int]
+    tcdmLogicWordSize: Seq[Int],
+    hasGatherScatter:  Boolean
   ): AddressGenUnitParam =
     new AddressGenUnitParam(
       spatialBounds     = spatialBounds,
@@ -48,7 +52,28 @@ object AddressGenUnitParam {
       outputBufferDepth = outputBufferDepth,
       tcdmSize          = tcdmSize,
       tcdmPhysWordSize  = tcdmPhysWordSize,
-      tcdmLogicWordSize = tcdmLogicWordSize
+      tcdmLogicWordSize = tcdmLogicWordSize,
+      hasGatherScatter  = hasGatherScatter
+    )
+
+  def apply(
+    spatialBounds:     List[Int],
+    temporalDimension: Int,
+    numChannel:        Int,
+    outputBufferDepth: Int,
+    tcdmSize:          Int,
+    tcdmPhysWordSize:  Int,
+    tcdmLogicWordSize: Seq[Int]
+  ): AddressGenUnitParam =
+    apply(
+      spatialBounds,
+      temporalDimension,
+      numChannel,
+      outputBufferDepth,
+      tcdmSize,
+      tcdmPhysWordSize,
+      tcdmLogicWordSize,
+      hasGatherScatter = false
     )
 
   def apply(
@@ -66,7 +91,8 @@ object AddressGenUnitParam {
       outputBufferDepth = outputBufferDepth,
       tcdmSize          = tcdmSize,
       tcdmPhysWordSize  = 256,
-      tcdmLogicWordSize = Seq(256)
+      tcdmLogicWordSize = Seq(256),
+      hasGatherScatter  = false
     )
 
   def apply(
@@ -83,7 +109,8 @@ object AddressGenUnitParam {
       outputBufferDepth = outputBufferDepth,
       tcdmSize          = tcdmSize,
       tcdmPhysWordSize  = 256,
-      tcdmLogicWordSize = Seq(256)
+      tcdmLogicWordSize = Seq(256),
+      hasGatherScatter  = false
     )
 
   // The Very Simple instantiation of the Param
@@ -117,7 +144,8 @@ class ReaderWriterParam(
   val configurableByteMask: Boolean   = false,
   val crossClockDomain:     Boolean   = false,
   val dynamicPriority:      Boolean   = true,
-  val higherStaticPriority: Boolean   = false
+  val higherStaticPriority: Boolean   = false,
+  val hasGatherScatter:     Boolean   = false
 ) {
   val aguParam = AddressGenUnitParam(
     spatialBounds     = spatialBounds,
@@ -126,7 +154,8 @@ class ReaderWriterParam(
     outputBufferDepth = addressBufferDepth,
     tcdmSize          = tcdmSize,
     tcdmPhysWordSize  = tcdmPhysWordSize,
-    tcdmLogicWordSize = tcdmLogicWordSize
+    tcdmLogicWordSize = tcdmLogicWordSize,
+    hasGatherScatter  = hasGatherScatter
   )
 
   val tcdmParam = TCDMParam(
@@ -146,5 +175,8 @@ class ReaderWriterParam(
                                                                 else
                                                                   0) + (if (tcdmLogicWordSize.length > 1) 1
                                                                         else
-                                                                          0)
+                                                                          0) + (if (hasGatherScatter)
+                                                                                  1 + numChannel
+                                                                                else
+                                                                                  0)
 }

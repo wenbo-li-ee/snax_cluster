@@ -24,6 +24,13 @@ class AddressGenUnitCfgIO(param: AddressGenUnitParam) extends Bundle {
   val temporalBounds    = Vec(param.temporalDimension, UInt(param.addressWidth.W))
   val temporalStrides   = Vec(param.temporalDimension, UInt(param.addressWidth.W))
   val addressRemapIndex = UInt(log2Ceil(param.tcdmLogicWordSize.length).W)
+  // Optional XDMA-only indexed-lane mode:
+  //   0: original Cartesian spatial stride
+  //   1: one independently programmable byte offset per output channel
+  // Generic accelerator streamers elaborate both fields to zero width.
+  val addressMode       = UInt((if (param.hasGatherScatter) 1 else 0).W)
+  val channelOffsets    =
+    Vec(if (param.hasGatherScatter) param.numChannel else 0, UInt(param.addressWidth.W))
 
   def connectWithList(csrList: IndexedSeq[UInt]): IndexedSeq[UInt] = {
     var remainingCSR = csrList
@@ -52,6 +59,17 @@ class AddressGenUnitCfgIO(param: AddressGenUnitParam) extends Bundle {
       remainingCSR = remainingCSR.tail
     } else {
       addressRemapIndex := 0.U
+    }
+
+    if (param.hasGatherScatter) {
+      addressMode := remainingCSR.head
+      remainingCSR = remainingCSR.tail
+      for (i <- 0 until channelOffsets.length) {
+        channelOffsets(i) := remainingCSR.head
+        remainingCSR = remainingCSR.tail
+      }
+    } else {
+      addressMode := 0.U
     }
 
     remainingCSR
@@ -134,9 +152,9 @@ class AddressGenUnit(param: AddressGenUnitParam, moduleNamePrefix: String = "unn
     (0 until param.spatialBounds(i)).map(io.cfg.spatialStrides(i) * _.U)
   }
 
-  val spatialOffsets = for (i <- 0 until param.numChannel) yield {
+  val cartesianSpatialOffsets = for (i <- 0 until param.numChannel) yield {
     var remainder     = i
-    var spatialOffset = temporalOffset
+    var spatialOffset = 0.U(param.addressWidth.W)
     for (j <- 0 until param.spatialBounds.length) {
       spatialOffset = spatialOffset + spatialOffsetTable(j)(
         remainder % param.spatialBounds(j)
@@ -149,7 +167,11 @@ class AddressGenUnit(param: AddressGenUnitParam, moduleNamePrefix: String = "unn
   // Calculate all addresses for different channels together
   val currentAddress = Wire(Vec(io.addr.length, UInt(param.addressWidth.W)))
   currentAddress.zipWithIndex.foreach { case (address, index) =>
-    address := io.cfg.ptr + spatialOffsets(index)
+    val spatialOffset =
+      if (param.hasGatherScatter)
+        Mux(io.cfg.addressMode === 1.U, io.cfg.channelOffsets(index), cartesianSpatialOffsets(index))
+      else cartesianSpatialOffsets(index)
+    address := io.cfg.ptr + temporalOffset + spatialOffset
   }
 
   // Connect it to the input of outputBuffer
