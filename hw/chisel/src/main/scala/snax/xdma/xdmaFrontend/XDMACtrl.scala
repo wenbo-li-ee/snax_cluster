@@ -376,7 +376,7 @@ class XDMACtrl(readerparam: XDMAParam, writerparam: XDMAParam, clusterName: Stri
   )
 
   val interClusterCfgDeserializer = Module(
-    new XDMAInterClusterCfgIODeserializer(writerparam)
+    new XDMAInterClusterCfgIODeserializer(writerparam, clusterName)
   )
   interClusterCfgDeserializer.io.cfgIn <> io.remoteXDMACfg.fromRemote
   cfgFromRemoteDemux.io.in <> interClusterCfgDeserializer.io.cfgOut
@@ -393,7 +393,7 @@ class XDMACtrl(readerparam: XDMAParam, writerparam: XDMAParam, clusterName: Stri
   )
 
   val interClusterCfgSerializer = Module(
-    new XDMAInterClusterCfgIOSerializer(writerparam)
+    new XDMAInterClusterCfgIOSerializer(writerparam, clusterName)
   )
   cfgToRemoteMux.io.out <> interClusterCfgSerializer.io.cfgIn
 
