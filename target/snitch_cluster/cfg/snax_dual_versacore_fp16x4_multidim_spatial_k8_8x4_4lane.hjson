@@ -269,7 +269,7 @@
             writer_buffer: 12
             reader_agu_temporal_dimension: 5
             writer_agu_temporal_dimension: 5
-            has_gather_scatter: true
+            has_gather_scatter: false
             writer_extensions:
             {
                 HasVerilogMemset: {}
