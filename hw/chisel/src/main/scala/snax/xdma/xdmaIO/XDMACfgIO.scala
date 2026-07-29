@@ -492,6 +492,10 @@ class XDMAInterClusterCfgIODeserializer(readerwriterParam: XDMAParam) extends Mo
         readerwriterParam.crossClusterParam.tcdmAddressWidth
       )
     }
+  } else {
+    // addressMode is a zero-width compatibility field when indexed addressing
+    // is disabled, but FIRRTL still requires the sink to be initialized.
+    io.cfgOut.bits.addressMode := 0.U
   }
   // Assign temporalBounds
   io.cfgOut.bits.temporalBounds.foreach { i =>

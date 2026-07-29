@@ -1,0 +1,15 @@
+WEIGHT_OVERLAP_BEGIN shape=1 mode=0 dims=(4,8,8) active_tokens=4 chunk_cols=256 chunks=4 n_tiles=32 ping_banks=16..31 pong_banks=32..47 mode0_output_banks=48..63 l3_layout=wv_interleaved_64B weight_dma_engine=idma+xdma_local dma_shape=idma_stage+xdma_nd dma_payload_bytes=524288 dma_repeat=4096 dma_csr_pipeline=1
+TOKEN_DMA active_tokens=4 banks=0..15 cycles=2354
+CONTROL_CALIBRATION iterations=4 branch_nop_loop=14 barrier_loop=18 barrier_increment=4 sink=4
+MISMATCH mode=0 token=0 col=128 got=0 expected=-16
+MISMATCH mode=0 token=0 col=129 got=30 expected=-40
+MISMATCH mode=0 token=0 col=130 got=0 expected=48
+MISMATCH mode=0 token=0 col=131 got=-16 expected=8
+PIPELINE_RESULT shape=1 mode=0 chunks=4 chunk_cols=256 status=FAIL errors=1990 prologue=27147 first_dma=18756 loop=38863 accel_sum=38018 streamer_sum=38114 compute_path_sum=38407 dma_loop_sum=25041 streamer_preconfig_sum=478 dma_prepared_start_sum=55 dma_next_prepare_sum=706 dma_wait_sum=24244 barrier_wait_sum=20 ideal_overlap_sum=38407 sync_control_overhead=456
+FINAL_RESULT shape=1 mode=0_only weight_overlap=1 weight_dma_engine=idma+xdma_local accelerator_streamer_csr_pipeline=1 dma_csr_pipeline=1 status=FAIL total_errors=1990
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm
+*** FAILED *** (tohost = 1990)

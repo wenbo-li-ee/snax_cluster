@@ -700,7 +700,10 @@ def main():
                 ).replace(" ", ""),
                 gen_path=" --hw-target-dir " + rtl_target_path,
             )
-        elif acc_cfgs[i]["snax_acc_name"] == "snax_dual_versacore_swiglu":
+        elif acc_cfgs[i]["snax_acc_name"] in (
+            "snax_dual_versacore_swiglu",
+            "snax_dual_versacore_swiglu_fp16x4",
+        ):
             snax_dual_versacore_cfg = acc_cfgs[i]
             gen_chisel_file(
                 chisel_path=chisel_acc_path,

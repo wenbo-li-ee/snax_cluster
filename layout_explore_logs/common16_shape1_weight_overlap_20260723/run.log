@@ -1,0 +1,11 @@
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
+[Tracer] Logging Hart          0 to logs/trace_chip_00_hart_00000.dasm
+[Tracer] Logging Hart          1 to logs/trace_chip_00_hart_00001.dasm
+WEIGHT_OVERLAP_BEGIN shape=1 dims=(4,8,8) active_tokens=4 chunk_cols=16 chunks=64 ping_banks=16..31 pong_banks=32..47 mode0_output_banks=48..63 mode1_output_banks=0..15
+TOKEN_DMA active_tokens=4 banks=0..15 cycles=2371
+CONTROL_CALIBRATION iterations=64 branch_nop_loop=204 barrier_loop=258 barrier_increment=54 sink=64
+PIPELINE_RESULT shape=1 mode=0 chunks=64 chunk_cols=16 status=PASS errors=0 prologue=2796 first_dma=1450 loop=88139 accel_sum=33152 streamer_sum=34688 compute_path_sum=39512 dma_loop_sum=84383 preconfig_sum=2968 barrier_wait_sum=41983 ideal_overlap_sum=84999 sync_control_overhead=3140
+PIPELINE_RESULT shape=1 mode=1 chunks=64 chunk_cols=16 status=PASS errors=0 prologue=2634 first_dma=749 loop=47167 accel_sum=16768 streamer_sum=17920 compute_path_sum=22682 dma_loop_sum=43710 preconfig_sum=3594 barrier_wait_sum=17855 ideal_overlap_sum=44067 sync_control_overhead=3100
+FINAL_RESULT shape=1 weight_overlap=1 csr_pipeline=1 status=PASS total_errors=0

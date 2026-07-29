@@ -19,8 +19,12 @@ import fp_unit._
 // - Copies SV resource files for post-processing modules
 // - Generates C stationarity header
 //
-// Mode 0 (SwiGLU): VC0→rescale0→silu_multilane(16b)→ElemMul16b←rescale1←VC1 → rescale_mul → Writer0
-// Mode 1 (GEMM):   VC0→rescale0→Writer0, VC1→rescale1→Writer1
+// Integer mode 0: VC0→rescale0→silu_multilane(16b)→ElemMul16b←rescale1←VC1
+//                 → rescale_mul → Writer0
+// Integer mode 1: VC0→rescale0→Writer0, VC1→rescale1→Writer1
+// FP16xINT4 mode 0: VC0(FP32)→SiLU(FP32)→ElemMul(FP32)←VC1(FP32)
+//                   → FP32-to-FP16 → Writer0
+// FP16xINT4 mode 1: VC0/VC1(FP32)→FP32-to-FP16→Writer0/Writer1
 
 object DualVersaCoreSwigluGen {
   def main(args: Array[String]): Unit = {
@@ -52,6 +56,13 @@ object DualVersaCoreSwigluGen {
     val versacoreCfg = parsedArgs.find(_._1 == "versacoreCfg").get._2
 
     val params = SpatialArrayParamParser.parseFromHjsonString(versacoreCfg)
+    val isFp16Int4 = params.inputTypeA.forall(_ == FP16) &&
+      params.inputTypeB.forall {
+        case intType: IntType => intType.width == 4
+        case _                => false
+      } &&
+      params.inputTypeC.forall(_ == FP32) &&
+      params.outputTypeD.forall(_ == FP32)
 
     // Step 1: Generate VersaCore.sv (same as single VersaCore)
     var sv_string = getVerilogString(new VersaCore(params))
@@ -82,25 +93,31 @@ object DualVersaCoreSwigluGen {
     Files.write(outFile, sv_string.getBytes(StandardCharsets.UTF_8))
 
     // Step 2: Copy SV resource files for post-processing modules
-    val resourceFiles = Seq(
-      "silu_out16_balanced_pkg.sv",
-      "silu_multilane.sv",
-      "silu_top.sv",
-      "partition_detector.sv",
-      "param_selector.sv",
-      "horner_stage.sv",
-      "rescale_down_32to16.sv",
-      "elem_mul_16b.sv"
-    )
-    for (resFile <- resourceFiles) {
-      val resPath = s"/snax_acc/versacore/$resFile"
+    val resourceFiles =
+      if (isFp16Int4) {
+        Seq(
+          "/fp_mul.sv" -> "fp_mul.sv"
+        )
+      } else {
+        Seq(
+          "/snax_acc/versacore/silu_out16_balanced_pkg.sv" -> "silu_out16_balanced_pkg.sv",
+          "/snax_acc/versacore/silu_multilane.sv"          -> "silu_multilane.sv",
+          "/snax_acc/versacore/silu_top.sv"                -> "silu_top.sv",
+          "/snax_acc/versacore/partition_detector.sv"      -> "partition_detector.sv",
+          "/snax_acc/versacore/param_selector.sv"          -> "param_selector.sv",
+          "/snax_acc/versacore/horner_stage.sv"            -> "horner_stage.sv",
+          "/snax_acc/versacore/rescale_down_32to16.sv"     -> "rescale_down_32to16.sv",
+          "/snax_acc/versacore/elem_mul_16b.sv"            -> "elem_mul_16b.sv"
+        )
+      }
+    for ((resPath, targetName) <- resourceFiles) {
       val is = getClass.getResourceAsStream(resPath)
       if (is != null) {
         val content = scala.io.Source.fromInputStream(is)(scala.io.Codec.UTF8).mkString
         is.close()
-        val targetFile = Paths.get(s"$outPath/$resFile")
+        val targetFile = Paths.get(s"$outPath/$targetName")
         Files.write(targetFile, content.getBytes(StandardCharsets.UTF_8))
-        println(s"Copied resource: $resFile -> $outPath/$resFile")
+        println(s"Copied resource: $resPath -> $outPath/$targetName")
       } else {
         println(s"WARNING: Resource not found: $resPath")
       }
@@ -113,6 +130,7 @@ object DualVersaCoreSwigluGen {
 
     // Parse postproc lanes from config (default 64)
     val cfg = ujson.read(versacoreCfg)
+    val TagName = cfg("snax_acc_name").str
     val PostprocLanes = cfg.obj.get("snax_dual_versacore_postproc_lanes")
       .map(_.num.toInt).getOrElse(64)
     val RegRWCount = cfg.obj.get("snax_num_rw_csr").map(_.num.toInt).getOrElse(23)
@@ -145,7 +163,7 @@ object DualVersaCoreSwigluGen {
 // Mode 1 (GEMM):   VC0->rescale0->Writer0, VC1->rescale1->Writer1
 """
 
-    val wrapperSv = header + s"""
+    val integerWrapperSv = header + s"""
 module snax_dual_versacore_swiglu_shell_wrapper #(
     parameter int unsigned RegRWCount   = $RegRWCount,
     parameter int unsigned RegROCount   = $RegROCount,
@@ -842,7 +860,28 @@ $activeChunkCases
 endmodule
 """
 
-    val wrapperFile = Paths.get(s"$outPath/snax_dual_versacore_swiglu_shell_wrapper.sv")
+    val wrapperSv =
+      if (isFp16Int4) {
+        val fpWrapperPath =
+          "/snax_acc/versacore/snax_dual_versacore_swiglu_fp16_shell_wrapper.sv"
+        val is = getClass.getResourceAsStream(fpWrapperPath)
+        require(is != null, s"Missing FP16xINT4 shell resource: $fpWrapperPath")
+        val template = scala.io.Source.fromInputStream(is)(scala.io.Codec.UTF8).mkString
+        is.close()
+        template
+          .replace("@TAG_NAME@", TagName)
+          .replace("@REG_RW_COUNT@", RegRWCount.toString)
+          .replace("@REG_RO_COUNT@", RegROCount.toString)
+          .replace("@DATA_WIDTH_A@", DataWidthA.toString)
+          .replace("@DATA_WIDTH_B@", DataWidthB.toString)
+          .replace("@DATA_WIDTH_D@", DataWidthD.toString)
+          .replace("@DATA_WIDTH_OUT@", DataWidthOut.toString)
+          .replace("@POSTPROC_LANES@", PostprocLanes.toString)
+      } else {
+        integerWrapperSv
+      }
+
+    val wrapperFile = Paths.get(s"$outPath/${TagName}_shell_wrapper.sv")
     Files.write(wrapperFile, wrapperSv.getBytes(StandardCharsets.UTF_8))
     println(s"Generated wrapper file: $wrapperFile")
 

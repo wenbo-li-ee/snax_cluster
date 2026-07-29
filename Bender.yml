@@ -359,6 +359,20 @@ sources:
       # Level 2
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_wrapper.sv
 
+  - target: snax_dual_versacore_swiglu_fp16x4
+    files:
+      # Level 0
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/VersaCore.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/fp_mul.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/snax_dual_versacore_swiglu_fp16x4_shell_wrapper.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/snax_dual_versacore_swiglu_fp16x4_reqrspman_ReqRspManager.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/snax_dual_versacore_swiglu_fp16x4_Streamer.sv
+      # Level 1
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/snax_dual_versacore_swiglu_fp16x4_csrman_wrapper.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/snax_dual_versacore_swiglu_fp16x4_streamer_wrapper.sv
+      # Level 2
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu_fp16x4/snax_dual_versacore_swiglu_fp16x4_wrapper.sv
+
   - target: snax_gemmX
     files:
       # Level 0

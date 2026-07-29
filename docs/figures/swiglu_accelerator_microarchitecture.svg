@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#f3f7fb"/>
+    </linearGradient>
+    <linearGradient id="vcHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#087ea4"/>
+      <stop offset="1" stop-color="#20a4c8"/>
+    </linearGradient>
+    <linearGradient id="postHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1b9c6a"/>
+      <stop offset="1" stop-color="#4fbd84"/>
+    </linearGradient>
+    <marker id="arrowBlue" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#167c9f"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#21966a"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#98a7b5"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; fill:#17324d; }
+      .title { font-size:29px; font-weight:700; letter-spacing:.2px; }
+      .subtitle { font-size:13px; fill:#688096; }
+      .panelTitle { font-size:15px; font-weight:700; }
+      .blockTitle { font-size:14px; font-weight:700; }
+      .small { font-size:11px; }
+      .tiny { font-size:9.5px; }
+      .micro { font-size:8.5px; }
+      .white { fill:#fff; }
+      .muted { fill:#6d8296; }
+      .blue { fill:#087ea4; }
+      .green { fill:#1b9365; }
+      .amber { fill:#b96d08; }
+      .math { font-family:"STIX Two Math","Times New Roman",serif; font-style:italic; }
+      .flowBlue { fill:none; stroke:#167c9f; stroke-width:2.4; marker-end:url(#arrowBlue); }
+      .flowGreen { fill:none; stroke:#21966a; stroke-width:2.5; marker-end:url(#arrowGreen); }
+      .flowGray { fill:none; stroke:#98a7b5; stroke-width:2; stroke-dasharray:7 6; marker-end:url(#arrowGray); }
+      .thin { fill:none; stroke:#87a0b5; stroke-width:1.25; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <text x="42" y="45" class="title">Dual-VersaCore SwiGLU Accelerator</text>
+  <text x="42" y="68" class="subtitle">RTL-faithful microarchitecture · Mode 0: SiLU(xW₁) ⊙ (xV) · Mode 1: dual GEMM bypass</text>
+  <rect x="1227" y="24" width="330" height="42" rx="21" fill="#e8f5ef" stroke="#b6dfcc"/>
+  <circle cx="1252" cy="45" r="7" fill="#21966a"/>
+  <text x="1268" y="50" font-size="12" font-weight="650" fill="#15734f">solid green = Mode 0 active datapath</text>
+
+  <!-- Main architecture panel -->
+  <rect x="35" y="92" width="980" height="770" rx="20" fill="#ffffff" stroke="#d8e3ec" stroke-width="1.5"/>
+  <text x="60" y="122" class="panelTitle">A  ·  Accelerator datapath</text>
+  <text x="786" y="121" class="tiny muted">ready / valid backpressure end-to-end</text>
+
+  <!-- Inputs -->
+  <g>
+    <rect x="260" y="140" width="190" height="44" rx="12" fill="#eef8fc" stroke="#58b8d2" stroke-width="1.5"/>
+    <text x="355" y="158" class="blockTitle blue" text-anchor="middle">Shared x buffer</text>
+    <text x="355" y="175" class="tiny muted" text-anchor="middle">atomic broadcast to both cores</text>
+    <rect x="74" y="140" width="110" height="44" rx="12" fill="#eef8fc" stroke="#58b8d2" stroke-width="1.5"/>
+    <text x="129" y="168" class="blockTitle math blue" text-anchor="middle">W₁ (gate)</text>
+    <rect x="726" y="140" width="110" height="44" rx="12" fill="#eef8fc" stroke="#58b8d2" stroke-width="1.5"/>
+    <text x="781" y="168" class="blockTitle math blue" text-anchor="middle">V (up)</text>
+  </g>
+
+  <!-- input arrows -->
+  <path d="M129 184 V212 H255" class="flowBlue"/>
+  <path d="M355 184 V200 H365 V212" class="flowBlue"/>
+  <path d="M355 184 V200 H690 V212" class="flowBlue"/>
+  <path d="M781 184 V212 H800" class="flowBlue"/>
+
+  <!-- VersaCore 0 -->
+  <g>
+    <rect x="70" y="212" width="410" height="196" rx="14" fill="#f6fbfd" stroke="#2d9fc1" stroke-width="1.8"/>
+    <path d="M70 226 Q70 212 84 212 H466 Q480 212 480 226 V249 H70 Z" fill="url(#vcHead)"/>
+    <text x="88" y="236" class="blockTitle white">VersaCore 0 · gate projection</text>
+    <text x="463" y="236" class="tiny white" text-anchor="end">int8 × int8 → int32</text>
+    <rect x="88" y="263" width="84" height="31" rx="6" fill="#dceff5" stroke="#8bc7d8"/>
+    <text x="130" y="276" class="tiny" text-anchor="middle">A/B spatial</text>
+    <text x="130" y="288" class="tiny" text-anchor="middle">broadcast</text>
+
+    <!-- PE array -->
+    <rect x="188" y="258" width="124" height="82" rx="7" fill="#ffffff" stroke="#8ac5d6"/>
+    <text x="250" y="273" class="tiny blue" font-weight="700" text-anchor="middle">runtime-shaped PE array</text>
+    <g fill="#d9f1f7" stroke="#55afc7" stroke-width=".8">
+      <rect x="199" y="281" width="21" height="20" rx="3"/><rect x="224" y="281" width="21" height="20" rx="3"/>
+      <rect x="249" y="281" width="21" height="20" rx="3"/><rect x="274" y="281" width="21" height="20" rx="3"/>
+      <rect x="199" y="306" width="21" height="20" rx="3"/><rect x="224" y="306" width="21" height="20" rx="3"/>
+      <rect x="249" y="306" width="21" height="20" rx="3"/><rect x="274" y="306" width="21" height="20" rx="3"/>
+    </g>
+    <g class="micro blue" text-anchor="middle" font-weight="700">
+      <text x="209.5" y="295">×</text><text x="234.5" y="295">×</text><text x="259.5" y="295">×</text><text x="284.5" y="295">×</text>
+      <text x="209.5" y="320">×</text><text x="234.5" y="320">×</text><text x="259.5" y="320">×</text><text x="284.5" y="320">×</text>
+    </g>
+    <text x="250" y="352" class="micro muted" text-anchor="middle">1024 MACs · 16×8×8 / 1×32×32</text>
+
+    <!-- reduction and accumulation -->
+    <path d="M327 278 H351 M327 322 H351" class="thin"/>
+    <path d="M351 270 L383 300 L351 330 Z" fill="#e8f5f9" stroke="#3aa4c1"/>
+    <text x="360" y="303" class="tiny blue" font-weight="700">Σ</text>
+    <text x="367" y="343" class="micro muted" text-anchor="middle">adder tree</text>
+    <rect x="397" y="265" width="65" height="72" rx="7" fill="#eaf7f1" stroke="#55b88a"/>
+    <text x="429.5" y="285" class="tiny green" font-weight="700" text-anchor="middle">OS ACC</text>
+    <text x="429.5" y="301" class="micro muted" text-anchor="middle">int32</text>
+    <text x="429.5" y="316" class="micro muted" text-anchor="middle">K-cycle</text>
+    <text x="429.5" y="328" class="micro muted" text-anchor="middle">accumulate</text>
+    <path d="M383 300 H397" class="thin"/>
+    <rect x="343" y="362" width="119" height="30" rx="6" fill="#edf3f8" stroke="#9eb3c4"/>
+    <text x="402.5" y="381" class="tiny" text-anchor="middle">D parallel → serial</text>
+    <path d="M430 337 V362" class="thin"/>
+  </g>
+
+  <!-- VersaCore 1 -->
+  <g>
+    <rect x="535" y="212" width="410" height="196" rx="14" fill="#f6fbfd" stroke="#2d9fc1" stroke-width="1.8"/>
+    <path d="M535 226 Q535 212 549 212 H931 Q945 212 945 226 V249 H535 Z" fill="url(#vcHead)"/>
+    <text x="553" y="236" class="blockTitle white">VersaCore 1 · up projection</text>
+    <text x="928" y="236" class="tiny white" text-anchor="end">int8 × int8 → int32</text>
+    <rect x="553" y="263" width="84" height="31" rx="6" fill="#dceff5" stroke="#8bc7d8"/>
+    <text x="595" y="276" class="tiny" text-anchor="middle">A/B spatial</text>
+    <text x="595" y="288" class="tiny" text-anchor="middle">broadcast</text>
+    <rect x="653" y="258" width="124" height="82" rx="7" fill="#ffffff" stroke="#8ac5d6"/>
+    <text x="715" y="273" class="tiny blue" font-weight="700" text-anchor="middle">runtime-shaped PE array</text>
+    <g fill="#d9f1f7" stroke="#55afc7" stroke-width=".8">
+      <rect x="664" y="281" width="21" height="20" rx="3"/><rect x="689" y="281" width="21" height="20" rx="3"/>
+      <rect x="714" y="281" width="21" height="20" rx="3"/><rect x="739" y="281" width="21" height="20" rx="3"/>
+      <rect x="664" y="306" width="21" height="20" rx="3"/><rect x="689" y="306" width="21" height="20" rx="3"/>
+      <rect x="714" y="306" width="21" height="20" rx="3"/><rect x="739" y="306" width="21" height="20" rx="3"/>
+    </g>
+    <g class="micro blue" text-anchor="middle" font-weight="700">
+      <text x="674.5" y="295">×</text><text x="699.5" y="295">×</text><text x="724.5" y="295">×</text><text x="749.5" y="295">×</text>
+      <text x="674.5" y="320">×</text><text x="699.5" y="320">×</text><text x="724.5" y="320">×</text><text x="749.5" y="320">×</text>
+    </g>
+    <text x="715" y="352" class="micro muted" text-anchor="middle">1024 MACs · 16×8×8 / 1×32×32</text>
+    <path d="M792 278 H816 M792 322 H816" class="thin"/>
+    <path d="M816 270 L848 300 L816 330 Z" fill="#e8f5f9" stroke="#3aa4c1"/>
+    <text x="825" y="303" class="tiny blue" font-weight="700">Σ</text>
+    <text x="832" y="343" class="micro muted" text-anchor="middle">adder tree</text>
+    <rect x="862" y="265" width="65" height="72" rx="7" fill="#eaf7f1" stroke="#55b88a"/>
+    <text x="894.5" y="285" class="tiny green" font-weight="700" text-anchor="middle">OS ACC</text>
+    <text x="894.5" y="301" class="micro muted" text-anchor="middle">int32</text>
+    <text x="894.5" y="316" class="micro muted" text-anchor="middle">K-cycle</text>
+    <text x="894.5" y="328" class="micro muted" text-anchor="middle">accumulate</text>
+    <path d="M848 300 H862" class="thin"/>
+    <rect x="808" y="362" width="119" height="30" rx="6" fill="#edf3f8" stroke="#9eb3c4"/>
+    <text x="867.5" y="381" class="tiny" text-anchor="middle">D parallel → serial</text>
+    <path d="M895 337 V362" class="thin"/>
+  </g>
+
+  <!-- synchronized output to two buffers -->
+  <path d="M402 392 V425" class="flowBlue"/>
+  <path d="M868 392 V425" class="flowBlue"/>
+  <rect x="245" y="415" width="125" height="19" rx="9.5" fill="#e8f5f9"/>
+  <text x="307.5" y="428" class="micro blue" text-anchor="middle">joint output fire</text>
+
+  <!-- Elastic buffers and chunk serializers -->
+  <g>
+    <rect x="95" y="425" width="325" height="51" rx="10" fill="#f8fafc" stroke="#7891a6"/>
+    <text x="111" y="447" class="blockTitle">Decoupled buffer 0</text>
+    <rect x="286" y="437" width="51" height="26" rx="4" fill="#fff" stroke="#7891a6"/>
+    <text x="311.5" y="454" class="tiny" text-anchor="middle">DATA</text>
+    <circle cx="355" cy="450" r="9" fill="#e8f5ef" stroke="#42a878"/>
+    <text x="355" y="454" class="micro green" font-weight="700" text-anchor="middle">V</text>
+    <text x="405" y="458" class="micro muted" text-anchor="end">1 entry</text>
+
+    <rect x="560" y="425" width="325" height="51" rx="10" fill="#f8fafc" stroke="#7891a6"/>
+    <text x="576" y="447" class="blockTitle">Decoupled buffer 1</text>
+    <rect x="751" y="437" width="51" height="26" rx="4" fill="#fff" stroke="#7891a6"/>
+    <text x="776.5" y="454" class="tiny" text-anchor="middle">DATA</text>
+    <circle cx="820" cy="450" r="9" fill="#e8f5ef" stroke="#42a878"/>
+    <text x="820" y="454" class="micro green" font-weight="700" text-anchor="middle">V</text>
+    <text x="870" y="458" class="micro muted" text-anchor="end">1 entry</text>
+
+    <rect x="130" y="494" width="255" height="45" rx="9" fill="#edf4f8" stroke="#8ea7ba"/>
+    <text x="257.5" y="514" class="blockTitle" text-anchor="middle">Shape-aware chunk serializer</text>
+    <text x="257.5" y="530" class="micro muted" text-anchor="middle">4096-bit D → 64 × int32 lanes</text>
+
+    <rect x="595" y="494" width="255" height="45" rx="9" fill="#edf4f8" stroke="#8ea7ba"/>
+    <text x="722.5" y="514" class="blockTitle" text-anchor="middle">Shape-aware chunk serializer</text>
+    <text x="722.5" y="530" class="micro muted" text-anchor="middle">4096-bit D → 64 × int32 lanes</text>
+  </g>
+  <path d="M257 476 V494" class="flowBlue"/>
+  <path d="M722 476 V494" class="flowBlue"/>
+
+  <!-- Rescale blocks -->
+  <g>
+    <rect x="95" y="558" width="325" height="68" rx="10" fill="#eff9f4" stroke="#45ad7d" stroke-width="1.4"/>
+    <text x="111" y="578" class="blockTitle green">Rescale 0 · 64 lanes</text>
+    <g class="micro" text-anchor="middle">
+      <rect x="116" y="589" width="49" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="140.5" y="604">− zin</text>
+      <rect x="174" y="589" width="42" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="195" y="604">× M</text>
+      <rect x="225" y="589" width="50" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="250" y="604">round</text>
+      <rect x="284" y="589" width="42" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="305" y="604">≫ s</text>
+      <rect x="335" y="589" width="65" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="367.5" y="604">+ zout / sat16</text>
+    </g>
+
+    <rect x="560" y="558" width="325" height="68" rx="10" fill="#eff9f4" stroke="#45ad7d" stroke-width="1.4"/>
+    <text x="576" y="578" class="blockTitle green">Rescale 1 · 64 lanes</text>
+    <g class="micro" text-anchor="middle">
+      <rect x="581" y="589" width="49" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="605.5" y="604">− zin</text>
+      <rect x="639" y="589" width="42" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="660" y="604">× M</text>
+      <rect x="690" y="589" width="50" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="715" y="604">round</text>
+      <rect x="749" y="589" width="42" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="770" y="604">≫ s</text>
+      <rect x="800" y="589" width="65" height="23" rx="4" fill="#fff" stroke="#6cbe96"/><text x="832.5" y="604">+ zout / sat16</text>
+    </g>
+  </g>
+  <path d="M257 539 V558" class="flowGreen"/>
+  <path d="M722 539 V558" class="flowGreen"/>
+
+  <!-- Mode 1 bypass -->
+  <path d="M113 626 V767 H365" class="flowGray"/>
+  <path d="M865 626 H916 V810 H680" class="flowGray"/>
+  <text x="116" y="748" class="tiny muted">Mode 1 bypass → Writer 0</text>
+  <text x="817" y="757" class="tiny muted" text-anchor="middle">Mode 1 bypass → Writer 1</text>
+
+  <!-- SiLU -->
+  <g>
+    <rect x="95" y="650" width="325" height="91" rx="11" fill="#f0faf5" stroke="#32a672" stroke-width="1.6"/>
+    <path d="M95 664 Q95 650 109 650 H406 Q420 650 420 664 V677 H95 Z" fill="url(#postHead)"/>
+    <text x="111" y="669" class="blockTitle white">SiLU · 64 parallel Q16.11 lanes · 3 stages</text>
+    <g class="micro" text-anchor="middle">
+      <rect x="113" y="689" width="67" height="34" rx="5" fill="#fff" stroke="#65bb94"/><text x="146.5" y="703">segment</text><text x="146.5" y="715">detector</text>
+      <rect x="190" y="689" width="57" height="34" rx="5" fill="#fff" stroke="#65bb94"/><text x="218.5" y="703">coeff.</text><text x="218.5" y="715">LUT</text>
+      <rect x="257" y="689" width="64" height="34" rx="5" fill="#fff" stroke="#65bb94"/><text x="289" y="703">a2·x+a1</text><text x="289" y="715">Horner 0</text>
+      <rect x="331" y="689" width="71" height="34" rx="5" fill="#fff" stroke="#65bb94"/><text x="366.5" y="703">t0·x+a0</text><text x="366.5" y="715">Horner 1</text>
+    </g>
+  </g>
+  <path d="M257 626 V650" class="flowGreen"/>
+
+  <!-- Element-wise multiplier -->
+  <g>
+    <rect x="500" y="650" width="385" height="91" rx="11" fill="#fff8eb" stroke="#e29a35" stroke-width="1.6"/>
+    <text x="518" y="674" class="blockTitle amber">Element-wise multiply · 64 lanes</text>
+    <rect x="520" y="686" width="58" height="35" rx="5" fill="#fff" stroke="#e2ad62"/>
+    <text x="549" y="701" class="micro" text-anchor="middle">FIFO 0</text><text x="549" y="713" class="micro muted" text-anchor="middle">1 entry</text>
+    <rect x="590" y="686" width="58" height="35" rx="5" fill="#fff" stroke="#e2ad62"/>
+    <text x="619" y="701" class="micro" text-anchor="middle">FIFO 1</text><text x="619" y="713" class="micro muted" text-anchor="middle">1 entry</text>
+    <circle cx="690" cy="703" r="23" fill="#fff" stroke="#d88c26" stroke-width="1.4"/>
+    <text x="690" y="710" font-size="24" class="amber" text-anchor="middle">×</text>
+    <rect x="735" y="686" width="127" height="35" rx="5" fill="#fff" stroke="#e2ad62"/>
+    <text x="798.5" y="701" class="micro" text-anchor="middle">registered output</text>
+    <text x="798.5" y="714" class="micro muted" text-anchor="middle">int16 × int16 → int32</text>
+    <path d="M578 703 H590" class="thin"/><path d="M648 703 H667" class="thin"/><path d="M713 703 H735" class="thin"/>
+  </g>
+  <path d="M420 704 H500" class="flowGreen"/>
+  <path d="M722 626 V638 H619 V650" class="flowGreen"/>
+  <text x="473" y="694" class="micro green" text-anchor="middle">SiLU(xW₁)</text>
+  <text x="650" y="641" class="micro green" text-anchor="middle">xV</text>
+
+  <!-- post-mul rescale -->
+  <g>
+    <rect x="500" y="758" width="385" height="54" rx="10" fill="#eff9f4" stroke="#45ad7d" stroke-width="1.4"/>
+    <text x="518" y="780" class="blockTitle green">Rescale MUL · int32 → int16</text>
+    <text x="518" y="799" class="tiny muted">64 lane quantize + rounding + saturation · registered output</text>
+  </g>
+  <path d="M692 741 V758" class="flowGreen"/>
+
+  <!-- mux and output assembly -->
+  <path d="M692 812 V825 H488" class="flowGreen"/>
+  <path d="M488 808 L526 830 L488 852 Z" fill="#ffffff" stroke="#3a9f72" stroke-width="1.8"/>
+  <text x="500" y="834" class="tiny green" font-weight="700" text-anchor="middle">M</text>
+  <rect x="545" y="820" width="185" height="36" rx="8" fill="#edf4f8" stroke="#8da6b9"/>
+  <text x="637.5" y="837" class="tiny" text-anchor="middle">output assembler / packer</text>
+  <text x="637.5" y="849" class="micro muted" text-anchor="middle">64 × int16 → writer beat</text>
+  <path d="M526 830 H545" class="flowGreen"/>
+  <path d="M730 838 H772" class="flowGreen"/>
+  <rect x="772" y="819" width="127" height="40" rx="10" fill="#e8f5ef" stroke="#54b88b"/>
+  <text x="835.5" y="837" class="blockTitle green" text-anchor="middle">Writer 0</text>
+  <text x="835.5" y="851" class="micro muted" text-anchor="middle">Mode 0 / Mode 1-left</text>
+  <rect x="902" y="819" width="87" height="40" rx="10" fill="#f2f5f7" stroke="#a8b7c3"/>
+  <text x="945.5" y="837" class="tiny" text-anchor="middle">Writer 1</text>
+  <text x="945.5" y="851" class="micro muted" text-anchor="middle">Mode 1-right</text>
+  <path d="M916 810 V819" class="flowGray"/>
+
+  <!-- Right detail panel -->
+  <rect x="1035" y="92" width="530" height="770" rx="20" fill="#ffffff" stroke="#d8e3ec" stroke-width="1.5"/>
+  <text x="1060" y="122" class="panelTitle">B  ·  Circuit-level expansion of the “small boxes”</text>
+  <text x="1060" y="143" class="tiny muted">One representative lane is drawn; the datapath is replicated NUM_LANES times.</text>
+
+  <!-- Detail 1 buffer -->
+  <g>
+    <rect x="1058" y="163" width="484" height="118" rx="13" fill="#f8fafc" stroke="#c8d4df"/>
+    <rect x="1058" y="163" width="7" height="118" rx="3.5" fill="#68849a"/>
+    <text x="1080" y="187" class="blockTitle">① Decoupled elastic buffer</text>
+    <text x="1518" y="186" class="tiny muted" text-anchor="end">jointly fired across two branches</text>
+    <rect x="1082" y="207" width="74" height="42" rx="7" fill="#fff" stroke="#91a8ba"/>
+    <text x="1119" y="225" class="tiny" text-anchor="middle">in_data</text>
+    <text x="1119" y="240" class="micro muted" text-anchor="middle">in_valid</text>
+    <rect x="1200" y="201" width="108" height="54" rx="8" fill="#eef3f7" stroke="#7891a6"/>
+    <text x="1254" y="222" class="tiny" font-weight="700" text-anchor="middle">DATA register</text>
+    <text x="1254" y="240" class="tiny muted" text-anchor="middle">valid bit</text>
+    <path d="M1156 228 H1200" class="thin"/>
+    <path d="M1308 228 H1352" class="thin"/>
+    <rect x="1352" y="207" width="74" height="42" rx="7" fill="#fff" stroke="#91a8ba"/>
+    <text x="1389" y="225" class="tiny" text-anchor="middle">out_data</text>
+    <text x="1389" y="240" class="micro muted" text-anchor="middle">out_valid</text>
+    <rect x="1452" y="202" width="72" height="53" rx="8" fill="#edf8f3" stroke="#61b78f"/>
+    <text x="1488" y="220" class="tiny green" font-weight="700" text-anchor="middle">READY</text>
+    <text x="1488" y="235" class="micro" text-anchor="middle">¬valid ∨</text>
+    <text x="1488" y="247" class="micro" text-anchor="middle">out_ready</text>
+    <path d="M1452 228 H1426" class="thin"/>
+    <text x="1081" y="270" class="micro muted">Allows refill and drain in the same cycle; preserves branch alignment under backpressure.</text>
+  </g>
+
+  <!-- Detail 2 Rescale -->
+  <g>
+    <rect x="1058" y="298" width="484" height="125" rx="13" fill="#f2faf6" stroke="#c5e2d4"/>
+    <rect x="1058" y="298" width="7" height="125" rx="3.5" fill="#42a878"/>
+    <text x="1080" y="322" class="blockTitle green">② RescaleDown lane</text>
+    <text x="1518" y="322" class="tiny muted" text-anchor="end">registered ready/valid output</text>
+    <g class="micro" text-anchor="middle">
+      <rect x="1080" y="343" width="70" height="40" rx="7" fill="#fff" stroke="#68ba94"/><text x="1115" y="359">x − zin</text><text x="1115" y="374" class="muted">signed 32b</text>
+      <rect x="1161" y="343" width="70" height="40" rx="7" fill="#fff" stroke="#68ba94"/><text x="1196" y="359">× M</text><text x="1196" y="374" class="muted">signed 64b</text>
+      <rect x="1242" y="343" width="76" height="40" rx="7" fill="#fff" stroke="#68ba94"/><text x="1280" y="359">round</text><text x="1280" y="374" class="muted">bias correction</text>
+      <rect x="1329" y="343" width="70" height="40" rx="7" fill="#fff" stroke="#68ba94"/><text x="1364" y="359">arith. ≫ s</text><text x="1364" y="374" class="muted">requantize</text>
+      <rect x="1410" y="343" width="110" height="40" rx="7" fill="#fff" stroke="#68ba94"/><text x="1465" y="359">+ zout → clamp</text><text x="1465" y="374" class="muted">[−32768, 32767]</text>
+    </g>
+    <path d="M1150 363 H1161 M1231 363 H1242 M1318 363 H1329 M1399 363 H1410" class="thin"/>
+    <text x="1080" y="405" class="micro muted">y = sat16( round((x − zin) · M / 2ˢ) + zout )</text>
+  </g>
+
+  <!-- Detail 3 SiLU -->
+  <g>
+    <rect x="1058" y="440" width="484" height="190" rx="13" fill="#f2faf6" stroke="#c5e2d4"/>
+    <rect x="1058" y="440" width="7" height="190" rx="3.5" fill="#2f9f70"/>
+    <text x="1080" y="464" class="blockTitle green">③ SiLU polynomial lane · Q16.11</text>
+    <text x="1518" y="464" class="tiny muted" text-anchor="end">piecewise quadratic · 3-stage CE pipeline</text>
+    <rect x="1080" y="485" width="101" height="44" rx="8" fill="#fff" stroke="#65b990"/>
+    <text x="1130.5" y="502" class="tiny" text-anchor="middle">partition detector</text>
+    <text x="1130.5" y="518" class="micro muted" text-anchor="middle">x → segment index</text>
+    <rect x="1200" y="485" width="97" height="44" rx="8" fill="#fff" stroke="#65b990"/>
+    <text x="1248.5" y="502" class="tiny" text-anchor="middle">coefficient LUT</text>
+    <text x="1248.5" y="518" class="micro muted" text-anchor="middle">{a₂, a₁, a₀}</text>
+    <path d="M1181 507 H1200" class="thin"/>
+    <rect x="1320" y="480" width="91" height="54" rx="8" fill="#fff" stroke="#65b990"/>
+    <text x="1365.5" y="499" class="tiny" text-anchor="middle">Horner stage 0</text>
+    <text x="1365.5" y="517" class="tiny green" text-anchor="middle">t₀ = a₂·x + a₁</text>
+    <rect x="1430" y="480" width="91" height="54" rx="8" fill="#fff" stroke="#65b990"/>
+    <text x="1475.5" y="499" class="tiny" text-anchor="middle">Horner stage 1</text>
+    <text x="1475.5" y="517" class="tiny green" text-anchor="middle">y = t₀·x + a₀</text>
+    <path d="M1297 507 H1320 M1411 507 H1430" class="thin"/>
+    <rect x="1082" y="550" width="438" height="52" rx="9" fill="#eaf6f0" stroke="#acd8c2"/>
+    <text x="1096" y="570" class="tiny green" font-weight="700">Backpressure controller</text>
+    <text x="1096" y="589" class="micro muted">stage_ready propagates backward; CE[0:2] freezes data and valid together</text>
+    <g>
+      <circle cx="1346" cy="576" r="14" fill="#fff" stroke="#68b995"/><text x="1346" y="580" class="micro" text-anchor="middle">S0</text>
+      <circle cx="1400" cy="576" r="14" fill="#fff" stroke="#68b995"/><text x="1400" y="580" class="micro" text-anchor="middle">S1</text>
+      <circle cx="1454" cy="576" r="14" fill="#fff" stroke="#68b995"/><text x="1454" y="580" class="micro" text-anchor="middle">S2</text>
+      <path d="M1360 576 H1386 M1414 576 H1440 M1468 576 H1502" class="thin"/>
+    </g>
+    <text x="1080" y="617" class="micro muted">All lanes share segment coefficients and control structure, but compute independently in parallel.</text>
+  </g>
+
+  <!-- Detail 4 EW multiply -->
+  <g>
+    <rect x="1058" y="647" width="484" height="122" rx="13" fill="#fff9ef" stroke="#ead0a8"/>
+    <rect x="1058" y="647" width="7" height="122" rx="3.5" fill="#df9531"/>
+    <text x="1080" y="671" class="blockTitle amber">④ Element-wise multiplier lane</text>
+    <text x="1518" y="671" class="tiny muted" text-anchor="end">independent input capture + matched join</text>
+    <rect x="1082" y="692" width="94" height="42" rx="7" fill="#fff" stroke="#d9a85f"/>
+    <text x="1129" y="708" class="tiny" text-anchor="middle">input FIFO 0</text>
+    <text x="1129" y="724" class="micro muted" text-anchor="middle">SiLU branch</text>
+    <rect x="1082" y="740" width="94" height="0" fill="none"/>
+    <rect x="1200" y="692" width="94" height="42" rx="7" fill="#fff" stroke="#d9a85f"/>
+    <text x="1247" y="708" class="tiny" text-anchor="middle">input FIFO 1</text>
+    <text x="1247" y="724" class="micro muted" text-anchor="middle">linear branch</text>
+    <path d="M1176 713 H1200" class="thin"/>
+    <rect x="1320" y="685" width="86" height="56" rx="10" fill="#fff" stroke="#d99637" stroke-width="1.4"/>
+    <text x="1363" y="707" class="tiny amber" font-weight="700" text-anchor="middle">JOIN + ×</text>
+    <text x="1363" y="726" class="micro muted" text-anchor="middle">fire if V₀ ∧ V₁</text>
+    <path d="M1294 713 H1320" class="thin"/>
+    <rect x="1432" y="692" width="88" height="42" rx="7" fill="#fff" stroke="#d9a85f"/>
+    <text x="1476" y="708" class="tiny" text-anchor="middle">output reg</text>
+    <text x="1476" y="724" class="micro muted" text-anchor="middle">signed int32</text>
+    <path d="M1406 713 H1432" class="thin"/>
+    <text x="1080" y="758" class="micro muted">No token is consumed until both corresponding operands and the output slot are available.</text>
+  </g>
+
+  <!-- implementation note -->
+  <rect x="1058" y="787" width="484" height="54" rx="12" fill="#eef5fb" stroke="#c5d9e8"/>
+  <text x="1080" y="808" class="tiny blue" font-weight="700">Implementation note</text>
+  <text x="1080" y="827" class="micro muted">Mode / shape / rescale CSRs are snapshotted into active_cfg at START and held until the full post-process pipeline drains.</text>
+
+  <!-- Footer -->
+  <text x="42" y="887" class="micro muted">Source of truth: DualVersaCoreSwigluGen.scala, VersaCore.scala, Array.scala, rescale_down_32to16.sv, silu_multilane.sv, elem_mul_16b.sv</text>
+</svg>

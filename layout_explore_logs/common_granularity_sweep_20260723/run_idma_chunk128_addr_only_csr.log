@@ -1,0 +1,8 @@
+WEIGHT_OVERLAP_BEGIN shape=1 mode=0 dims=(4,8,8) active_tokens=4 chunk_cols=128 chunks=8 n_tiles=16 ping_banks=16..31 pong_banks=32..47 mode0_output_banks=48..63 l3_layout=wv_interleaved_64B weight_dma_engine=idma dma_shape=idma_2d_size_128B dma_payload_bytes=262144 dma_repeat=2048 dma_csr_pipeline=1
+TOKEN_DMA active_tokens=4 banks=0..15 cycles=2351
+CONTROL_CALIBRATION iterations=8 branch_nop_loop=26 barrier_loop=34 barrier_increment=8 sink=8
+PIPELINE_RESULT shape=1 mode=0 chunks=8 chunk_cols=128 status=PASS errors=0 prologue=6571 first_dma=6510 loop=48685 accel_sum=32816 streamer_sum=33008 compute_path_sum=33626 dma_loop_sum=44119 streamer_preconfig_sum=346 dma_prepared_start_sum=35 dma_next_prepare_sum=273 dma_wait_sum=43720 barrier_wait_sum=14198 ideal_overlap_sum=48313 sync_control_overhead=372
+FINAL_RESULT shape=1 mode=0_only weight_overlap=1 weight_dma_engine=idma accelerator_streamer_csr_pipeline=1 dma_csr_pipeline=1 status=PASS total_errors=0
+[fesvr] Wrote 36 bytes of bootrom to 0x1000
+[fesvr] Wrote entry point 0x80000000 to bootloader slot 0x1020
+[fesvr] Wrote 72 bytes of bootdata to 0x1024
