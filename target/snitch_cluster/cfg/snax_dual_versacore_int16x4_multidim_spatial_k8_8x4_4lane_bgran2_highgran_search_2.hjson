@@ -6,9 +6,15 @@
 // K=8 / 2D multi-shape flow.
 // New shape family: S0(8,8,4), S1(4,8,8), S2(2,8,16).
 // TCDM ports: A(16) + B0(8) + B1(8) + D0(1) + D1(1).
-// High-granularity search cfg: keep A conservative, raise B0/B1
-// sparse access granularity to 2. Expected sparse fan-in:
-// 16/1 + 8/2 + 8/2 + 1/1 + 1/1 = 26.
+// Common16 resident-layout minimum cfg.  For the fixed 16-column invocation,
+// all five streamer AGUs need at most three temporal dimensions.  The current
+// spatial layout still needs 2/2/2/1/1 spatial dimensions.
+//
+// Sparse access granularity 2 is legal for A/B0/B1: every valid request from
+// channel i reaches a bank congruent to i modulo 2.  Writers are one-channel
+// ports and therefore must remain at granularity 1.  Streamer-port fan-in
+// contribution per TCDM bank:
+// 16/2 + 8/2 + 8/2 + 1/1 + 1/1 = 18.
 
 {
     nr_s1_quadrant: 1
@@ -136,13 +142,13 @@
                 ]
                 // 3 readers: A(16ch) + B0(8ch) + B1(8ch) = 32
                 // 2 writers: D0(1ch) + D1(1ch) = 2
-                // Sparse fan-in = 26 with B0/B1 granularity 2.
+                // Streamer-port fan-in contribution = 18 with A/B0/B1 g=2.
                 snax_tcdm_ports: 34
                 sparse_interconnect_config:
                 [
                     [
                         16
-                        1
+                        2
                     ]
                     [
                         8
@@ -322,9 +328,9 @@
             ]
             temporal_dim:
             [
-                6
-                4
-                4
+                3
+                3
+                3
             ]
             num_channel:
             [
@@ -376,8 +382,8 @@
             ]
             temporal_dim:
             [
-                4
-                4
+                3
+                3
             ]
             num_channel:
             [

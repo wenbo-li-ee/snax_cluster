@@ -242,28 +242,25 @@ static int check_mode1_chunk(const shape_cfg_t *cfg, int right,
 
 static void mode0_writer_cfg(const shape_cfg_t *cfg, uint32_t col_start,
                              uint32_t n_tiles, int32_t *base,
-                             int32_t bound[4], int32_t stride[4]) {
+                             int32_t bound[3], int32_t stride[3]) {
     if (cfg->array_shape == 0) {
         *base = MODE0_D_BASE + (int32_t)((col_start / 8u) * TCDM_ROW_BYTES);
-        bound[0] = 1;
-        bound[1] = 8;
-        bound[2] = 2;
-        bound[3] = n_tiles / 2u;
-        stride[0] = 8;
-        stride[1] = 16;
-        stride[2] = 8;
-        stride[3] = TCDM_ROW_BYTES;
+        // Drop the old leading bound=1 dimension.
+        bound[0] = 8;
+        bound[1] = 2;
+        bound[2] = n_tiles / 2u;
+        stride[0] = 16;
+        stride[1] = 8;
+        stride[2] = TCDM_ROW_BYTES;
     } else if (cfg->array_shape == 1) {
         *base = MODE0_D_BASE + (int32_t)((col_start / 16u) * TCDM_ROW_BYTES);
         bound[0] = 2;
         bound[1] = 4;
         bound[2] = 2;
-        bound[3] = n_tiles / 2u;
         stride[0] = 8;
         stride[1] = 16;
         stride[2] = 64;
-        stride[3] = TCDM_ROW_BYTES;
-    } else if (n_tiles == 1u) {
+    } else {
         uint32_t global_tile = col_start / 16u;
         *base = MODE0_D_BASE +
                 (int32_t)((global_tile / 2u) * TCDM_ROW_BYTES) +
@@ -271,23 +268,9 @@ static void mode0_writer_cfg(const shape_cfg_t *cfg, uint32_t col_start,
         bound[0] = 4;
         bound[1] = 2;
         bound[2] = 1;
-        bound[3] = 1;
         stride[0] = 8;
         stride[1] = 32;
         stride[2] = 64;
-        stride[3] = TCDM_ROW_BYTES;
-    } else {
-        uint32_t global_tile = col_start / 16u;
-        *base = MODE0_D_BASE +
-                (int32_t)((global_tile / 2u) * TCDM_ROW_BYTES);
-        bound[0] = 4;
-        bound[1] = 2;
-        bound[2] = 2;
-        bound[3] = n_tiles / 2u;
-        stride[0] = 8;
-        stride[1] = 32;
-        stride[2] = 64;
-        stride[3] = TCDM_ROW_BYTES;
     }
 }
 
@@ -298,14 +281,14 @@ static int run_mode0_chunk(const shape_cfg_t *cfg, uint32_t chunk,
     uint32_t n_tiles = cols / cfg->meshCol;
     uint32_t panel_span = mode_panel_span(0);
     int32_t a_sstride[2] = {8, 16};
-    int32_t a_tbound[6] = {cfg->K0_tiles, n_tiles, 1, 1, 1, 1};
-    int32_t a_tstride[6] = {TCDM_ROW_BYTES, 0, 0, 0, 0, 0};
+    int32_t a_tbound[3] = {cfg->K0_tiles, n_tiles, 1};
+    int32_t a_tstride[3] = {TCDM_ROW_BYTES, 0, 0};
     int32_t b_sstride[2] = {8, (int32_t)panel_span};
-    int32_t b_tbound[4] = {4, cfg->K0_tiles / 4, n_tiles, 1};
-    int32_t b_tstride[4] = {
-        16, TCDM_ROW_BYTES, cfg->q_shape0_cols * (int32_t)panel_span, 0};
+    int32_t b_tbound[3] = {4, cfg->K0_tiles / 4, n_tiles};
+    int32_t b_tstride[3] = {
+        16, TCDM_ROW_BYTES, cfg->q_shape0_cols * (int32_t)panel_span};
     int32_t d_sstride[1] = {8};
-    int32_t d_tbound[4], d_tstride[4], d_base;
+    int32_t d_tbound[3], d_tstride[3], d_base;
     int32_t b0_base = weight_base(0, 0, chunk);
     int32_t b1_base = weight_base(0, 1, chunk);
     uint32_t subtraction =
@@ -352,9 +335,9 @@ static int run_mode0_chunk(const shape_cfg_t *cfg, uint32_t chunk,
 }
 
 static void mode1_a_cfg(const shape_cfg_t *cfg, uint32_t n_tiles,
-                        int32_t sstride[2], int32_t bound[6],
-                        int32_t stride[6]) {
-    for (int i = 0; i < 6; i++) {
+                        int32_t sstride[2], int32_t bound[3],
+                        int32_t stride[3]) {
+    for (int i = 0; i < 3; i++) {
         bound[i] = 1;
         stride[i] = 0;
     }
@@ -378,7 +361,6 @@ static void mode1_a_cfg(const shape_cfg_t *cfg, uint32_t n_tiles,
         bound[0] = 2;
         bound[1] = 2;
         bound[2] = cfg->K1_tiles / 4;
-        bound[3] = n_tiles;
         stride[0] = 16;
         stride[1] = 64;
         stride[2] = TCDM_ROW_BYTES;
@@ -392,16 +374,16 @@ static int run_mode1_chunk(const shape_cfg_t *cfg, uint32_t chunk,
     uint32_t n_tiles = cols / cfg->meshCol;
     uint32_t panel_span = mode_panel_span(1);
     uint32_t beats_per_tile = cfg->meshCol / 4u;
-    int32_t a_sstride[2], a_tbound[6], a_tstride[6];
+    int32_t a_sstride[2], a_tbound[3], a_tstride[3];
     int32_t b_sstride[2] = {8, (int32_t)panel_span};
-    int32_t b_tbound[4] = {4, cfg->K1_tiles / 4, n_tiles, 1};
-    int32_t b_tstride[4] = {
-        16, TCDM_ROW_BYTES, cfg->q_shape0_cols * (int32_t)panel_span, 0};
+    int32_t b_tbound[3] = {4, cfg->K1_tiles / 4, n_tiles};
+    int32_t b_tstride[3] = {
+        16, TCDM_ROW_BYTES, cfg->q_shape0_cols * (int32_t)panel_span};
     int32_t d_sstride[1] = {8};
-    int32_t d_tbound[4] = {
-        (int32_t)beats_per_tile, cfg->meshRow, (int32_t)n_tiles, 1};
-    int32_t d_tstride[4] = {
-        TCDM_ROW_BYTES, 8, (int32_t)(beats_per_tile * TCDM_ROW_BYTES), 0};
+    int32_t d_tbound[3] = {
+        (int32_t)beats_per_tile, cfg->meshRow, (int32_t)n_tiles};
+    int32_t d_tstride[3] = {
+        TCDM_ROW_BYTES, 8, (int32_t)(beats_per_tile * TCDM_ROW_BYTES)};
     int32_t b0_base = weight_base(1, 0, chunk);
     int32_t b1_base = weight_base(1, 1, chunk);
     int32_t d0_base = MODE1_D0_BASE +
@@ -458,16 +440,15 @@ static void print_streamer_contract(const shape_cfg_t *cfg, int mode) {
     uint32_t n_tiles = cols / cfg->meshCol;
     uint32_t span = mode_panel_span(mode);
     if (!mode) {
-        printf("STREAMER_CONTRACT shape=%d mode=0 chunk_cols=%u A_sstride=[8,16] A_bound=[%d,%u,1,1,1,1] A_stride=[512,0,0,0,0,0] B_sstride=[8,%u] B_bound=[4,%d,%u,1] B_stride=[16,512,%u,0]\n",
+        printf("STREAMER_CONTRACT shape=%d mode=0 chunk_cols=%u A_sstride=[8,16] A_bound=[%d,%u,1] A_stride=[512,0,0] B_sstride=[8,%u] B_bound=[4,%d,%u] B_stride=[16,512,%u]\n",
                cfg->array_shape, cols, cfg->K0_tiles, n_tiles, span,
                cfg->K0_tiles / 4, n_tiles, cfg->q_shape0_cols * span);
     } else {
-        int32_t as[2], ab[6], at[6];
+        int32_t as[2], ab[3], at[3];
         mode1_a_cfg(cfg, n_tiles, as, ab, at);
-        printf("STREAMER_CONTRACT shape=%d mode=1 chunk_cols=%u A_sstride=[%d,%d] A_bound=[%d,%d,%d,%d,%d,%d] A_stride=[%d,%d,%d,%d,%d,%d] B_sstride=[8,%u] B_bound=[4,%d,%u,1] B_stride=[16,512,%u,0] D_bound=[%u,%d,%u,1] D_stride=[512,8,%u,0]\n",
+        printf("STREAMER_CONTRACT shape=%d mode=1 chunk_cols=%u A_sstride=[%d,%d] A_bound=[%d,%d,%d] A_stride=[%d,%d,%d] B_sstride=[8,%u] B_bound=[4,%d,%u] B_stride=[16,512,%u] D_bound=[%u,%d,%u] D_stride=[512,8,%u]\n",
                cfg->array_shape, cols, as[0], as[1], ab[0], ab[1], ab[2],
-               ab[3], ab[4], ab[5], at[0], at[1], at[2], at[3], at[4],
-               at[5], span, cfg->K1_tiles / 4, n_tiles,
+               at[0], at[1], at[2], span, cfg->K1_tiles / 4, n_tiles,
                cfg->q_shape0_cols * span, cfg->meshCol / 4u, cfg->meshRow,
                n_tiles, (cfg->meshCol / 4u) * TCDM_ROW_BYTES);
     }
@@ -532,16 +513,9 @@ static int run_shape(const shape_cfg_t *cfg) {
 }
 
 int main(void) {
-    if (CHUNK_COLS < 16 || (CHUNK_COLS % 16) != 0) {
+    if (CHUNK_COLS != 16) {
         if (snrt_global_core_idx() == 0) {
-            printf("Invalid CHUNK_COLS=%d: common B granularity must be a multiple of 16 columns\n",
-                   CHUNK_COLS);
-        }
-        return 1;
-    }
-    if (CHUNK_COLS != 16 && (CHUNK_COLS % 32) != 0) {
-        if (snrt_global_core_idx() == 0) {
-            printf("Unsupported CHUNK_COLS=%d: B supports every 16-column multiple, but the preserved S2 Mode0-D layout needs 16 or a multiple of 32 for one accelerator command per chunk\n",
+            printf("Invalid CHUNK_COLS=%d: the minimized 3D streamer cfg is specialized for common16 invocations\n",
                    CHUNK_COLS);
         }
         return 1;

@@ -184,10 +184,12 @@ def emit_header(params, hwcfg):
     assert (m_total, k0, n0, k1, n1) == (8, 2048, 1024, 1024, 1024)
 
     acc = hwcfg["snax_dual_versacore_int16x4_core_template"]["snax_acc_cfg"][0]
-    assert acc["sparse_interconnect_config"] == [[16, 1], [8, 1], [8, 1], [1, 1], [1, 1]]
+    assert acc["sparse_interconnect_config"] == [[16, 2], [8, 2], [8, 2], [1, 1], [1, 1]]
     streamer = hwcfg["snax_dual_versacore_int16x4_streamer_template"]
-    assert streamer["data_reader_params"]["temporal_dim"] == [6, 4, 4]
-    assert streamer["data_writer_params"]["temporal_dim"] == [4, 4]
+    assert streamer["data_reader_params"]["spatial_bounds"] == [[2, 8], [2, 4], [2, 4]]
+    assert streamer["data_writer_params"]["spatial_bounds"] == [[1], [1]]
+    assert streamer["data_reader_params"]["temporal_dim"] == [3, 3, 3]
+    assert streamer["data_writer_params"]["temporal_dim"] == [3, 3]
 
     a = make_a(m_total, k0)
     w = make_sparse_s0_weights(n0 // 4, k0 // 8, seed=1, sign=1)

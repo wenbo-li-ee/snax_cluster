@@ -1,0 +1,66 @@
+make: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster'
+rm -f sw/runtime/common/snitch_cluster_cfg.h sw/runtime/common/snitch_cluster_addrmap.h sw/runtime/common/snitch_cluster_peripheral.h
+make -C sw TARGET=clean
+make[1]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw'
+make -C math clean
+make[2]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/math'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/math//include/bits
+rm -f /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/sw/math//include/bits/alltypes.h
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/math/build
+make[2]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/math'
+make -C runtime/rtl-generic clean
+make[2]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic/build
+make[2]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/runtime/rtl-generic'
+make -C snax/mac clean
+make[2]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/snax/mac'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/snax/mac/build
+make[2]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/snax/mac'
+make -C apps TARGET=clean
+make[2]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps'
+make -C lto clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/lto'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/lto/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/lto'
+make -C nop clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/nop'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/nop/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/nop'
+make -C montecarlo/pi_estimation clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/montecarlo/pi_estimation'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/montecarlo/pi_estimation/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/montecarlo/pi_estimation'
+make -C snax-mac clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac'
+make -C snax-mac-simple/untiled clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/untiled'
+rm -f /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/untiled/src/data.h
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/untiled/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/untiled'
+make -C snax-mac-simple/tiled clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/tiled'
+rm -f /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/tiled/src/data.h
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/tiled/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-mac-simple/tiled'
+make -C snax-multi-cluster-playground clean
+make[3]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-multi-cluster-playground'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-multi-cluster-playground/build
+make[3]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps/snax-multi-cluster-playground'
+make[2]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/apps'
+make -C tests clean
+make[2]: Entering directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/tests'
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/tests/build
+make[2]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw/tests'
+make[1]: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/sw'
+rm -rf work
+rm -rf bin/snitch_cluster.vsim bin/snitch_cluster.vsim.gui work-vsim vsim.wlf
+rm -rf bin work-vlt
+rm -rf bin/snitch_cluster.vcs work-vcs vc_hdrs.h
+rm -rf work-syn
+rm -rf logs
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../Bender.lock /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../.bender/
+rm -rf /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/generated /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../target/snitch_cluster/test/testharness.sv /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../hw/chisel/src/main/scala/snax/csr_manager/CsrManParamGen.scala /esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster/../../hw/chisel/src/main/scala/snax/streamer/StreamParamGen.scala 
+make: Leaving directory '/esat/studscratch/r1015498/Thesis/original_snax/snax_cluster/target/snitch_cluster'
+ELAPSED=0:12.39 EXIT=0
