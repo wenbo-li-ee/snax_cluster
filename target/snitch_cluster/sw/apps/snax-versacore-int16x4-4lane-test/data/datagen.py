@@ -217,7 +217,11 @@ def emit_dual_versacore_data(**kwargs):
     b_tile_padded = max(b_tile_raw, b_channel_footprint_bytes)
 
     # ===================== A streamer settings (Reader 0) ====================
+    # The target streamer factors its 16 A channels as spatial_bounds=[2, 8].
+    # Preserve the original contiguous channel layout with offsets
+    # (i % 2) * 8 + (i // 2) * 16.
     data_str += [format_scalar_definition("int32_t", "Aslstride0", int(bankWidth // 8))]
+    data_str += [format_scalar_definition("int32_t", "Aslstride1", int(2 * bankWidth // 8))]
 
     Atlbound0 = K
     Atlstride0 = int(a_len * tileSize * meshRow // 8)
@@ -252,7 +256,10 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "a_data_length", a_data_length)]
 
     # ===================== B0 streamer settings (Reader 1) ====================
+    # B0/B1 use spatial_bounds=[2, 4]; the same two-dimensional
+    # flattening maps the eight enabled channels to contiguous 64-bit words.
     data_str += [format_scalar_definition("int32_t", "B0slstride0", bankWidth // 8)]
+    data_str += [format_scalar_definition("int32_t", "B0slstride1", 2 * bankWidth // 8)]
 
     B0tlbound0 = K
     B0tlstride0 = b_tile_padded
@@ -281,6 +288,7 @@ def emit_dual_versacore_data(**kwargs):
 
     # ===================== B1 streamer settings (Reader 2) ====================
     data_str += [format_scalar_definition("int32_t", "B1slstride0", bankWidth // 8)]
+    data_str += [format_scalar_definition("int32_t", "B1slstride1", 2 * bankWidth // 8)]
     data_str += [format_scalar_definition("int32_t", "B1tlbound0", B0tlbound0)]
     data_str += [format_scalar_definition("int32_t", "B1tlstride0", B0tlstride0)]
     data_str += [format_scalar_definition("int32_t", "B1tlbound1", B0tlbound1)]
@@ -519,6 +527,12 @@ def emit_dual_versacore_data(**kwargs):
             break
         delta_local_mode1_d1 += bank_word_bytes
 
+    # XDMA extensions operate on TCDM streams. Stage the external-memory FP16
+    # input with iDMA, then locally quantize it into delta_local_a with XDMA.
+    delta_local_a_fp16_stage = align_wide_addr(
+        delta_local_mode1_d1 + m1_d_alloc, 64
+    )
+
     data_str += [format_scalar_definition("int32_t", "a1_data_length", a1_data_length)]
     data_str += [format_scalar_definition("int32_t", "delta_local_a1", delta_local_a1)]
     data_str += [format_scalar_definition("int32_t", "w2l_data_length", w2l_data_length)]
@@ -527,6 +541,7 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_scalar_definition("int32_t", "delta_local_w2r", delta_local_w2r)]
     data_str += [format_scalar_definition("int32_t", "delta_local_mode1_d0", delta_local_mode1_d0)]
     data_str += [format_scalar_definition("int32_t", "delta_local_mode1_d1", delta_local_mode1_d1)]
+    data_str += [format_scalar_definition("int32_t", "delta_local_a_fp16_stage", delta_local_a_fp16_stage)]
     data_str += [format_scalar_definition("int32_t", "mode1_output_elems", mode1_output_elems)]
     data_str += [format_scalar_definition("int32_t", "mode1_output_elems_padded", mode1_output_elems_padded)]
 
@@ -552,7 +567,11 @@ def emit_dual_versacore_data(**kwargs):
     W_packed = pad_b_tiles(W_packed_raw, num_b_tiles, b_tile_raw, b_tile_padded)
     V_packed = pad_b_tiles(V_packed_raw, num_b_tiles, b_tile_raw, b_tile_padded)
 
-    data_str += [format_vector_definition("int16_t", "A", A_int16)]
+    # Mode0 source is transported as FP16 and quantized to INT16 by XDMA.
+    # The values are small integers, hence exactly representable in FP16.
+    A_fp16 = A_int16.astype(np.float16).view(np.uint16)
+    data_str += [format_vector_definition("uint16_t", "A_fp16", A_fp16)]
+    data_str += [format_vector_definition("int16_t", "A_int16_golden", A_int16)]
     data_str += [format_vector_definition("uint8_t", "W", W_packed)]
     data_str += [format_vector_definition("uint8_t", "V", V_packed)]
 
@@ -614,7 +633,8 @@ def emit_dual_versacore_data(**kwargs):
     data_str += [format_vector_definition("uint8_t", "W2_left", W2_left_packed)]
     data_str += [format_vector_definition("uint8_t", "W2_right", W2_right_packed)]
 
-    # Mode 1 golden: direct Mode 0 D0 flat layout @ W2 -> int32 -> rescale -> int16
+    # Mode 1 golden: raw INT32 accumulators converted directly to IEEE FP16
+    # (RNE, overflow to signed infinity), matching Int32ToFp16PE.
     golden_d0_int32 = block_gemm_int16x4(
         M1, K1, N1, meshRow, tileSize, meshCol,
         mode1_A_flat, W2_left_int4, subtraction_a, subtraction_b
@@ -624,18 +644,16 @@ def emit_dual_versacore_data(**kwargs):
         mode1_A_flat, W2_right_int4, subtraction_a, subtraction_b
     )
 
-    mode1_golden_d0 = rescale_down_32to16(golden_d0_int32, rescale_input_zp,
-                                           rescale_multiplier, rescale_output_zp, rescale_shift)
-    mode1_golden_d1 = rescale_down_32to16(golden_d1_int32, rescale_input_zp,
-                                           rescale_multiplier, rescale_output_zp, rescale_shift)
+    mode1_golden_d0 = golden_d0_int32.astype(np.float16).view(np.uint16)
+    mode1_golden_d1 = golden_d1_int32.astype(np.float16).view(np.uint16)
 
-    data_str += [format_vector_definition("int16_t", "mode1_golden_d0", mode1_golden_d0)]
-    data_str += [format_vector_definition("int16_t", "mode1_golden_d1", mode1_golden_d1)]
+    data_str += [format_vector_definition("uint16_t", "mode1_golden_d0", mode1_golden_d0)]
+    data_str += [format_vector_definition("uint16_t", "mode1_golden_d1", mode1_golden_d1)]
     # With 4-lane postproc, no within-beat padding — padded == real data.
     mode1_golden_d0_padded = mode1_golden_d0.copy()
     mode1_golden_d1_padded = mode1_golden_d1.copy()
-    data_str += [format_vector_definition("int16_t", "mode1_golden_d0_padded", mode1_golden_d0_padded)]
-    data_str += [format_vector_definition("int16_t", "mode1_golden_d1_padded", mode1_golden_d1_padded)]
+    data_str += [format_vector_definition("uint16_t", "mode1_golden_d0_padded", mode1_golden_d0_padded)]
+    data_str += [format_vector_definition("uint16_t", "mode1_golden_d1_padded", mode1_golden_d1_padded)]
 
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_A", 0)]
     data_str += [format_scalar_definition("int32_t", "set_addr_remap_index_B0", 0)]

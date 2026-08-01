@@ -137,5 +137,10 @@ uint32_t read_dual_versacore_streamer_perf_counter();
 uint32_t check_dual_versacore_result_i16(const int16_t* output, const int16_t* output_golden,
                                          int32_t num_elements);
 
+// Mode1 writes IEEE FP16 bit patterns (not scaled INT16 values).
+uint32_t check_dual_versacore_result_fp16_bits(const uint16_t* output,
+                                               const uint16_t* output_golden,
+                                               int32_t num_elements);
+
 // Poll until both streamer writers finish.
 void wait_dual_versacore_writer();

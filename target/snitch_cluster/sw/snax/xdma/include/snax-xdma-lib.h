@@ -90,6 +90,12 @@ int32_t snax_xdma_disable_src_ext(uint8_t ext);
 int32_t snax_xdma_enable_dst_ext(uint8_t ext, uint32_t* csr_value);
 int32_t snax_xdma_disable_dst_ext(uint8_t ext);
 
+// Enable the cfg-selected 1:1 FP16 -> INT16 reader quantizer. The argument is
+// the raw IEEE FP32 bit pattern of inv_scale (for example 0x3f800000 for 1.0).
+// Returns -2 when the current generated XDMA has no such extension.
+int32_t snax_xdma_enable_fp16_to_int16(uint32_t inv_scale_bits);
+int32_t snax_xdma_disable_fp16_to_int16(void);
+
 // Start
 static inline uint32_t snax_xdma_start() {
     uint32_t local_task_id = snax_read_xdma_cfg_reg(XDMA_COMMIT_LOCAL_TASK_PTR);

@@ -350,6 +350,7 @@ sources:
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/silu_multilane.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/rescale_down_32to16.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/elem_mul_16b.sv
+      - target/snitch_cluster/generated/snax_dual_versacore_swiglu/int32_to_fp16.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_shell_wrapper.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_reqrspman_ReqRspManager.sv
       - target/snitch_cluster/generated/snax_dual_versacore_swiglu/snax_dual_versacore_swiglu_Streamer.sv

@@ -11,8 +11,6 @@ import java.nio.file.Paths
 
 import chisel3._
 
-import fp_unit._
-
 // DualVersaCoreSwigluGen: generates all RTL for the dual-VersaCore SwiGLU accelerator
 // - Generates VersaCore.sv (reused from single VersaCore)
 // - Generates snax_dual_versacore_swiglu_shell_wrapper.sv
@@ -20,7 +18,7 @@ import fp_unit._
 // - Generates C stationarity header
 //
 // Mode 0 (SwiGLU): VC0→rescale0→silu_multilane(16b)→ElemMul16b←rescale1←VC1 → rescale_mul → Writer0
-// Mode 1 (GEMM):   VC0→rescale0→Writer0, VC1→rescale1→Writer1
+// Mode 1 (GEMM):   VC0→int32_to_fp16→Writer0, VC1→int32_to_fp16→Writer1
 
 object DualVersaCoreSwigluGen {
   def main(args: Array[String]): Unit = {
@@ -90,6 +88,7 @@ object DualVersaCoreSwigluGen {
       "param_selector.sv",
       "horner_stage.sv",
       "rescale_down_32to16.sv",
+      "int32_to_fp16.sv",
       "elem_mul_16b.sv"
     )
     for (resFile <- resourceFiles) {
@@ -142,7 +141,7 @@ object DualVersaCoreSwigluGen {
 //
 // Dual VersaCore SwiGLU shell wrapper
 // Mode 0 (SwiGLU): VC0->rescale0->silu_multilane(16b)->ElemMul16b<-rescale1<-VC1 -> rescale_mul -> Writer0
-// Mode 1 (GEMM):   VC0->rescale0->Writer0, VC1->rescale1->Writer1
+// Mode 1 (GEMM):   VC0->int32_to_fp16->Writer0, VC1->int32_to_fp16->Writer1
 """
 
     val wrapperSv = header + s"""
@@ -485,7 +484,7 @@ $activeChunkCases
     endfunction
 
     // =========================================================================
-    // Path 0: buffer -> chunk serializer -> rescale0
+    // Path 0: buffer -> chunk serializer -> Mode0 rescale / Mode1 INT32->FP16
     // =========================================================================
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_0;
     logic chunk_last_0;
@@ -524,7 +523,7 @@ $activeChunkCases
     end
 
     // =========================================================================
-    // Path 1: buffer -> chunk serializer -> rescale1
+    // Path 1: buffer -> chunk serializer -> Mode0 rescale / Mode1 INT32->FP16
     // =========================================================================
     logic [$$clog2(NumChunks > 1 ? NumChunks : 2)-1:0] chunk_cnt_1;
     logic chunk_last_1;
@@ -563,10 +562,47 @@ $activeChunkCases
     end
 
     // =========================================================================
-    // RescaleDown 0 (VC0 path): int32 -> int16
+    // Mode1 conversion: one four-lane INT32 -> FP16 elastic pipeline per path.
+    // Each module has the reference conversion arithmetic followed by a
+    // one-entry registered output with ready/valid backpressure.
+    // =========================================================================
+    logic [PostprocLanes-1:0][15:0] int32_fp16_0_data;
+    logic [PostprocLanes-1:0][15:0] int32_fp16_1_data;
+    logic int32_fp16_0_valid, int32_fp16_0_in_ready, int32_fp16_0_out_ready;
+    logic int32_fp16_1_valid, int32_fp16_1_in_ready, int32_fp16_1_out_ready;
+
+    int32_to_fp16 #(
+        .NUM_LANES(PostprocLanes)
+    ) u_int32_to_fp16_0 (
+        .clk_i   (clk_i),
+        .rst_ni  (rst_ni),
+        .data_i  (chunk_ser0_data),
+        .valid_i (chunk_ser0_valid && mode_sel),
+        .ready_o (int32_fp16_0_in_ready),
+        .data_o  (int32_fp16_0_data),
+        .valid_o (int32_fp16_0_valid),
+        .ready_i (int32_fp16_0_out_ready)
+    );
+
+    int32_to_fp16 #(
+        .NUM_LANES(PostprocLanes)
+    ) u_int32_to_fp16_1 (
+        .clk_i   (clk_i),
+        .rst_ni  (rst_ni),
+        .data_i  (chunk_ser1_data),
+        .valid_i (chunk_ser1_valid && mode_sel),
+        .ready_o (int32_fp16_1_in_ready),
+        .data_o  (int32_fp16_1_data),
+        .valid_o (int32_fp16_1_valid),
+        .ready_i (int32_fp16_1_out_ready)
+    );
+
+    // =========================================================================
+    // RescaleDown 0 (VC0 path): Mode0-only int32 -> int16
     // =========================================================================
     logic [PostprocLanes-1:0][15:0] rescale0_out_data;
     logic rescale0_out_valid, rescale0_out_ready;
+    logic rescale0_in_ready;
 
     rescale_down_32to16 #(
         .NUM_LANES(PostprocLanes)
@@ -578,18 +614,19 @@ $activeChunkCases
         .output_zp  (rescale0_output_zp),
         .shift      (rescale0_shift),
         .data_i     (chunk_ser0_data),
-        .valid_i    (chunk_ser0_valid),
-        .ready_o    (chunk_ser0_ready),
+        .valid_i    (chunk_ser0_valid && !mode_sel),
+        .ready_o    (rescale0_in_ready),
         .data_o     (rescale0_out_data),
         .valid_o    (rescale0_out_valid),
         .ready_i    (rescale0_out_ready)
     );
 
     // =========================================================================
-    // RescaleDown 1 (VC1 path): int32 -> int16
+    // RescaleDown 1 (VC1 path): Mode0-only int32 -> int16
     // =========================================================================
     logic [PostprocLanes-1:0][15:0] rescale1_out_data;
     logic rescale1_out_valid, rescale1_out_ready;
+    logic rescale1_in_ready;
 
     rescale_down_32to16 #(
         .NUM_LANES(PostprocLanes)
@@ -601,12 +638,15 @@ $activeChunkCases
         .output_zp  (rescale1_output_zp),
         .shift      (rescale1_shift),
         .data_i     (chunk_ser1_data),
-        .valid_i    (chunk_ser1_valid),
-        .ready_o    (chunk_ser1_ready),
+        .valid_i    (chunk_ser1_valid && !mode_sel),
+        .ready_o    (rescale1_in_ready),
         .data_o     (rescale1_out_data),
         .valid_o    (rescale1_out_valid),
         .ready_i    (rescale1_out_ready)
     );
+
+    assign chunk_ser0_ready = mode_sel ? int32_fp16_0_in_ready : rescale0_in_ready;
+    assign chunk_ser1_ready = mode_sel ? int32_fp16_1_in_ready : rescale1_in_ready;
 
     // =========================================================================
     // Real SiLU (balanced Q16.11, on rescale0 output)
@@ -694,7 +734,7 @@ $activeChunkCases
     // Mode mux: route rescale outputs to out_assemble paths
     // =========================================================================
     // Mode 0: rescale_mul -> out_assemble0, Writer1 idle
-    // Mode 1: rescale0 -> out_assemble0, rescale1 -> out_assemble1
+    // Mode 1: int32_fp16_0 -> out_assemble0, int32_fp16_1 -> out_assemble1
 
     // Signals feeding into out_assemble0
     logic [PostprocLanes-1:0][15:0] oa0_in_data;
@@ -706,16 +746,18 @@ $activeChunkCases
 
     always_comb begin
         if (mode_sel) begin
-            // Mode 1 (GEMM): rescale0 -> out0, rescale1 -> out1
-            oa0_in_data  = rescale0_out_data;
-            oa0_in_valid = rescale0_out_valid;
-            rescale0_out_ready = oa0_in_ready;
+            // Mode 1 (GEMM): bypass integer rescale, emit IEEE FP16.
+            oa0_in_data  = int32_fp16_0_data;
+            oa0_in_valid = int32_fp16_0_valid;
+            int32_fp16_0_out_ready = oa0_in_ready;
 
-            oa1_in_data  = rescale1_out_data;
-            oa1_in_valid = rescale1_out_valid;
-            rescale1_out_ready = oa1_in_ready;
+            oa1_in_data  = int32_fp16_1_data;
+            oa1_in_valid = int32_fp16_1_valid;
+            int32_fp16_1_out_ready = oa1_in_ready;
 
             // In mode 1, silu/elem_mul/rescale_mul stay idle (valid=0 already from gating above)
+            rescale0_out_ready = 1'b1;
+            rescale1_out_ready = 1'b1;
             rescale_mul_out_ready = 1'b1;  // Don't backpressure unused rescale_mul
         end else begin
             // Mode 0 (SwiGLU): rescale_mul -> out0 only, Writer1 idle.
@@ -725,6 +767,8 @@ $activeChunkCases
 
             oa1_in_data  = '0;
             oa1_in_valid = 1'b0;
+            int32_fp16_0_out_ready = 1'b1;
+            int32_fp16_1_out_ready = 1'b1;
 
             // rescale0 ready is driven by SiLU
             rescale0_out_ready = silu_in_ready;
@@ -747,7 +791,10 @@ $activeChunkCases
     logic [DataWidthOut-1:0] out_assemble_0;
     logic out_assemble_0_valid;
 
-    assign oa0_in_ready = !out_assemble_0_valid;
+    // Elastic one-entry output register: allow pop+push in the same cycle so
+    // a continuously-ready writer does not force an avoidable bubble between
+    // adjacent four-lane results.
+    assign oa0_in_ready = !out_assemble_0_valid || acc2stream_0_ready_i;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -789,7 +836,7 @@ $activeChunkCases
     logic [DataWidthOut-1:0] out_assemble_1;
     logic out_assemble_1_valid;
 
-    assign oa1_in_ready = !out_assemble_1_valid;
+    assign oa1_in_ready = !out_assemble_1_valid || acc2stream_1_ready_i;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -825,6 +872,7 @@ $activeChunkCases
     // has drained. Input-A buffering is intentionally excluded: the streamer
     // may prefill it before the next accelerator START.
     assign postproc_busy = buf0_valid || buf1_valid ||
+                           int32_fp16_0_valid || int32_fp16_1_valid ||
                            rescale0_out_valid || rescale1_out_valid ||
                            silu_busy || elem_mul_busy ||
                            rescale_mul_out_valid ||

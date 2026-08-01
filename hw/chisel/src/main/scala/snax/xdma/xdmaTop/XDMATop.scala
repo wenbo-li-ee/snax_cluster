@@ -349,15 +349,25 @@ return new $extensionName($extensionArgs)
       )
     )
 
-    // Perform dirty fix on the Chisel's bug that append the file list at the end of the file
-    sv_string = sv_string
+    // Drop only CIRCT's trailing file-list pseudo-file. Keep any inlined FP
+    // resource modules used by datapath extensions.
+    val truncated = sv_string
       .split("\n")
       .takeWhile(
         !_.contains(
           """// ----- 8< ----- FILE "firrtl_black_box_resource_files.f" ----- 8< -----"""
         )
       )
-      .mkString("\n")
+
+    // CIRCT emits inlined resources after the circuit that instantiates them,
+    // but SystemVerilog packages must be declared before use. Hoist the whole
+    // resource block while preserving its internal dependency order.
+    val firstResource = truncated.indexWhere(_.contains("// ----- 8< ----- FILE"))
+    sv_string =
+      if (firstResource >= 0)
+        (truncated.drop(firstResource) ++ truncated.take(firstResource)).mkString("\n")
+      else
+        truncated.mkString("\n")
 
     // Write the sv_string to the SystemVerilog file
     val hardware_dir = parsedArgs.getOrElse(

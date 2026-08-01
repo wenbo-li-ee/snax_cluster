@@ -499,6 +499,25 @@ int32_t snax_xdma_disable_dst_ext(uint8_t ext) {
 
     return 0;
 }
+
+int32_t snax_xdma_enable_fp16_to_int16(uint32_t inv_scale_bits) {
+#ifdef READER_EXT_FP16TOINT16
+    uint32_t csr[1] = {inv_scale_bits};
+    return snax_xdma_enable_src_ext(READER_EXT_FP16TOINT16, csr);
+#else
+    (void)inv_scale_bits;
+    return -2;
+#endif
+}
+
+int32_t snax_xdma_disable_fp16_to_int16(void) {
+#ifdef READER_EXT_FP16TOINT16
+    return snax_xdma_disable_src_ext(READER_EXT_FP16TOINT16);
+#else
+    return -2;
+#endif
+}
+
 int32_t snax_xdma_set_src_address_mode(
     uint32_t mode, const uint32_t* token_offsets) {
 #if XDMA_HAS_GATHER_SCATTER

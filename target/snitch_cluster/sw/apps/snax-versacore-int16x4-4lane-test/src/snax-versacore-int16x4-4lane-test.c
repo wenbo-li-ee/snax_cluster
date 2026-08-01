@@ -5,15 +5,17 @@
 
 #include "data.h"
 #include "snax-dual-versacore-swiglu-lib.h"
+#include "snax-xdma-lib.h"
 
 int main() {
     int err = 0;
 
     int16_t *local_a;
+    uint16_t *local_a_fp16_stage;
     uint8_t *local_b0, *local_b1;
     int16_t *local_d0, *local_d1_mode0;
     uint8_t *local_w2l, *local_w2r;
-    int16_t *local_mode1_d0, *local_mode1_d1;
+    uint16_t *local_mode1_d0, *local_mode1_d1;
 
     local_a  = (int16_t *)(snrt_l1_next() + delta_local_a);
     local_b0 = (uint8_t *)(snrt_l1_next() + delta_local_b0);
@@ -22,12 +24,28 @@ int main() {
     local_d1_mode0 = (int16_t *)(snrt_l1_next() + delta_local_d1_mode0);
     local_w2l = (uint8_t *)(snrt_l1_next() + delta_local_w2l);
     local_w2r = (uint8_t *)(snrt_l1_next() + delta_local_w2r);
-    local_mode1_d0 = (int16_t *)(snrt_l1_next() + delta_local_mode1_d0);
-    local_mode1_d1 = (int16_t *)(snrt_l1_next() + delta_local_mode1_d1);
+    local_mode1_d0 = (uint16_t *)(snrt_l1_next() + delta_local_mode1_d0);
+    local_mode1_d1 = (uint16_t *)(snrt_l1_next() + delta_local_mode1_d1);
+    local_a_fp16_stage =
+        (uint16_t *)(snrt_l1_next() + delta_local_a_fp16_stage);
 
     // DMA: load all inputs. Mode 1 A is produced by Mode 0 D0, not DMA.
     if (snrt_is_dm_core()) {
-        snrt_dma_start_1d(local_a, A, a_data_length);
+        // XDMA's extension stream is TCDM-local. Stage the ELF-resident FP16
+        // source with iDMA, then exercise the cfg-selected 1:1 quantizer.
+        snrt_dma_start_1d(local_a_fp16_stage, A_fp16, a_data_length);
+        snrt_dma_wait_all();
+        if (snax_xdma_memcpy_1d(local_a_fp16_stage, local_a, a_data_length) != 0 ||
+            snax_xdma_enable_fp16_to_int16(0x3f800000u) != 0) {
+            return 1;
+        }
+        printf("Starting FP16 -> INT16 XDMA input conversion.\n");
+        uint32_t xdma_task = snax_xdma_start();
+        snax_xdma_local_wait(xdma_task);
+        printf("FP16 -> INT16 XDMA input conversion finished.\n");
+        if (snax_xdma_disable_fp16_to_int16() != 0) {
+            return 1;
+        }
         snrt_dma_start_1d(local_b0, W, b0_data_length);
         snrt_dma_start_1d(local_b1, V, b1_data_length);
         snrt_dma_start_1d(local_w2l, W2_left, w2l_data_length);
@@ -38,23 +56,29 @@ int main() {
     snrt_cluster_hw_barrier();
 
     if (snrt_global_core_idx() == 0) {
+        printf("Input staging finished; starting Mode 0.\n");
+        int input_err = check_dual_versacore_result_i16(
+            local_a, A_int16_golden, a_data_length / sizeof(int16_t));
+        printf("FP16 -> INT16 XDMA result: %s, Error: %d\n",
+               input_err ? "FAIL" : "PASS", input_err);
+        if (input_err) return input_err;
         uint32_t subtraction_setting =
             gen_dual_vc_subtraction_config(subtraction_a, subtraction_b);
 
         // ============================================================
         // Mode 0 (SwiGLU)
         // ============================================================
-        int32_t Aslstride_arr[] = {Aslstride0};
+        int32_t Aslstride_arr[] = {Aslstride0, Aslstride1};
         int32_t Atlbound_arr[]  = {Atlbound0, Atlbound1, Atlbound2,
                                    Atlbound3, Atlbound4, Atlbound5};
         int32_t Atlstride_arr[] = {Atlstride0, Atlstride1, Atlstride2,
                                    Atlstride3, Atlstride4, Atlstride5};
 
-        int32_t B0slstride_arr[] = {B0slstride0};
+        int32_t B0slstride_arr[] = {B0slstride0, B0slstride1};
         int32_t B0tlbound_arr[]  = {B0tlbound0, B0tlbound1, B0tlbound2, B0tlbound3};
         int32_t B0tlstride_arr[] = {B0tlstride0, B0tlstride1, B0tlstride2, B0tlstride3};
 
-        int32_t B1slstride_arr[] = {B1slstride0};
+        int32_t B1slstride_arr[] = {B1slstride0, B1slstride1};
         int32_t B1tlbound_arr[]  = {B1tlbound0, B1tlbound1, B1tlbound2, B1tlbound3};
         int32_t B1tlstride_arr[] = {B1tlstride0, B1tlstride1, B1tlstride2, B1tlstride3};
 
@@ -68,7 +92,7 @@ int main() {
 
         uint32_t m0_start = snrt_mcycle();
 
-        set_dual_versacore_streamer_csr(
+        set_dual_versacore_streamer_csr_d0_only(
             delta_local_a, Aslstride_arr, Atlbound_arr, Atlstride_arr,
             set_addr_remap_index_A, channel_en_A,
             delta_local_b0, B0slstride_arr, B0tlbound_arr, B0tlstride_arr,
@@ -76,9 +100,7 @@ int main() {
             delta_local_b1, B1slstride_arr, B1tlbound_arr, B1tlstride_arr,
             set_addr_remap_index_B1, channel_en_B1,
             delta_local_d0, D0slstride_arr, D0tlbound_arr, D0tlstride_arr,
-            set_addr_remap_index_D0, channel_en_D0,
-            delta_local_d1_mode0, D1slstride_arr, D1tlbound_arr, D1tlstride_arr,
-            set_addr_remap_index_D1, channel_en_D1);
+            set_addr_remap_index_D0, channel_en_D0);
 
         set_dual_versacore_csr(1, K, N * M, subtraction_setting,
                                array_shape, data_type);
@@ -99,35 +121,32 @@ int main() {
 
         int err_m0_d0 = check_dual_versacore_result_i16(
             local_d0, (int16_t *)mode0_golden_padded, mode0_output_elems_padded);
-        int err_m0_d1 = check_dual_versacore_result_i16(
-            local_d1_mode0, (int16_t *)mode0_d1_golden_padded, mode0_output_elems_padded);
-        err += err_m0_d0 + err_m0_d1;
+        err += err_m0_d0;
 
         int32_t cycles_m0 = read_dual_versacore_perf_counter();
         int32_t str_cycles_m0 = read_dual_versacore_streamer_perf_counter();
         printf("Mode 0 SwiGLU D0: %s, Error: %d\n",
                err_m0_d0 ? "FAIL" : "PASS", err_m0_d0);
-        printf("Mode 0 SwiGLU D1: %s, Error: %d\n",
-               err_m0_d1 ? "FAIL" : "PASS", err_m0_d1);
+        printf("Mode 0 uses Writer0 only; Writer1 is intentionally idle.\n");
         printf("  M0 Cycles: accel=%d, streamer=%d, wall=%u\n",
                cycles_m0, str_cycles_m0, m0_end - m0_start);
 
         // ============================================================
         // Mode 1 (GEMM) — chained: read Mode 0 D0 directly as A input
         // ============================================================
-        int32_t M1_Aslstride_arr[] = {Aslstride0};
+        int32_t M1_Aslstride_arr[] = {Aslstride0, Aslstride1};
         int32_t M1_Atlbound_arr[]  = {M1_Atlbound0, M1_Atlbound1, M1_Atlbound2,
                                       1, 1, 1};
         int32_t M1_Atlstride_arr[] = {M1_Atlstride0, M1_Atlstride1, M1_Atlstride2,
                                       0, 0, 0};
 
-        int32_t M1_B0slstride_arr[] = {B0slstride0};
+        int32_t M1_B0slstride_arr[] = {B0slstride0, B0slstride1};
         int32_t M1_B0tlbound_arr[]  = {M1_B0tlbound0, M1_B0tlbound1,
                                        M1_B0tlbound2, M1_B0tlbound3};
         int32_t M1_B0tlstride_arr[] = {M1_B0tlstride0, M1_B0tlstride1,
                                        M1_B0tlstride2, M1_B0tlstride3};
 
-        int32_t M1_B1slstride_arr[] = {B1slstride0};
+        int32_t M1_B1slstride_arr[] = {B1slstride0, B1slstride1};
         int32_t M1_B1tlbound_arr[]  = {M1_B1tlbound0, M1_B1tlbound1,
                                        M1_B1tlbound2, M1_B1tlbound3};
         int32_t M1_B1tlstride_arr[] = {M1_B1tlstride0, M1_B1tlstride1,
@@ -176,10 +195,10 @@ int main() {
 
         uint32_t m1_end = snrt_mcycle();
 
-        int err_d0 = check_dual_versacore_result_i16(
-            local_mode1_d0, (int16_t *)mode1_golden_d0_padded, mode1_output_elems_padded);
-        int err_d1 = check_dual_versacore_result_i16(
-            local_mode1_d1, (int16_t *)mode1_golden_d1_padded, mode1_output_elems_padded);
+        int err_d0 = check_dual_versacore_result_fp16_bits(
+            local_mode1_d0, mode1_golden_d0_padded, mode1_output_elems_padded);
+        int err_d1 = check_dual_versacore_result_fp16_bits(
+            local_mode1_d1, mode1_golden_d1_padded, mode1_output_elems_padded);
         err += err_d0 + err_d1;
 
         int32_t cycles_m1 = read_dual_versacore_perf_counter();

@@ -286,7 +286,19 @@
             {
                 HasVerilogMemset: {}
             }
-            reader_extensions: {}
+            reader_extensions:
+            {
+                // Mode0 FP16 activation staging: 32 FP16 values per 512-bit
+                // beat, quantized 1:1 to INT16 by four time-multiplexed PEs.
+                HasFp16ToInt16:
+                {
+                    in_elementWidth: 16
+                    out_elementWidth: 16
+                    dataWidth: 512
+                    computeLanes: 4
+                    fpPipe: 1
+                }
+            }
         }
         xdma: true
         xssr: false

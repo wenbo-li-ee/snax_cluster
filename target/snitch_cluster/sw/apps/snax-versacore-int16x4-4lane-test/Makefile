@@ -5,10 +5,12 @@
 APP = snax-versacore-int16x4-4lane-test
 
 INCDIRS = data \
-          ../../snax/dual-versacore-swiglu/include
+          ../../snax/dual-versacore-swiglu/include \
+          ../../snax/xdma/include
 
 # Link against the shared dual-versacore-swiglu library
 RISCV_LDFLAGS += ../../snax/dual-versacore-swiglu/build/snax-dual-versacore-swiglu-lib.o
+RISCV_LDFLAGS += ../../snax/xdma/build/snax-xdma-lib.o
 
 SRCS = src/snax-versacore-int16x4-4lane-test.c
 

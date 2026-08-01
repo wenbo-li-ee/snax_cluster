@@ -343,6 +343,20 @@ uint32_t check_dual_versacore_result_i16(const int16_t* output, const int16_t* o
     return err;
 }
 
+uint32_t check_dual_versacore_result_fp16_bits(const uint16_t* output,
+                                               const uint16_t* output_golden,
+                                               int32_t num_elements) {
+    uint32_t err = 0;
+    for (int i = 0; i < num_elements; i++) {
+        if (output[i] != output_golden[i]) {
+            err++;
+            printf("Unequals. fp16_bits[%d] = 0x%04x, golden[%d] = 0x%04x\n",
+                   i, output[i], i, output_golden[i]);
+        }
+    }
+    return err;
+}
+
 void wait_dual_versacore_writer() {
     while (csrr_ss(WRITER_BUSY_CSR) || csrr_ss(WRITER1_BUSY_CSR)) {
     }
