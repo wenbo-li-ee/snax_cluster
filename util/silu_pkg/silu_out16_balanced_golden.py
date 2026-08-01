@@ -44,6 +44,10 @@ The segment coefficients and breakpoints match:
 
 - `silu_out16_balanced_pkg.sv`
 
+The six fitted polynomials cover the closed interval [-8, 6]. Inputs below
+-8 bypass to zero, while inputs above 6 bypass the polynomial and return the
+input code unchanged.
+
 Recommended use
 ---------------
 For hardware verification, the most useful function is:
@@ -301,6 +305,11 @@ def silu_out16_balanced_eval_q(x_q: int) -> int:
     - the returned value is the exact golden output integer code for this config
     """
     x_q = saturate_signed(int(x_q), INPUT_WIDTH)
+    if x_q < BREAKPOINTS_Q[0]:
+        return 0
+    if x_q > BREAKPOINTS_Q[-1]:
+        return x_q
+
     seg_idx = segment_index_from_x(x_q)
     t0_q = eval_stage0(x_q, SEG_A2_Q[seg_idx], SEG_A1_Q[seg_idx])
     _stage1_mul_q, y_q = eval_stage1(x_q, t0_q, SEG_A0_Q[seg_idx])
@@ -328,12 +337,23 @@ def silu_out16_balanced_eval_q_debug(x_q: int) -> dict:
     a2_q = SEG_A2_Q[seg_idx]
 
     t0_q = eval_stage0(x_q_sat, a2_q, a1_q)
-    stage1_mul_q, y_q = eval_stage1(x_q_sat, t0_q, a0_q)
+    stage1_mul_q, polynomial_y_q = eval_stage1(x_q_sat, t0_q, a0_q)
+
+    if x_q_sat < BREAKPOINTS_Q[0]:
+        bypass = "zero"
+        y_q = 0
+    elif x_q_sat > BREAKPOINTS_Q[-1]:
+        bypass = "input"
+        y_q = x_q_sat
+    else:
+        bypass = None
+        y_q = polynomial_y_q
 
     return {
         "x_q": x_q_sat,
         "x_real": fixed_to_real(x_q_sat, INPUT_FRAC),
         "segment_index": seg_idx,
+        "bypass": bypass,
         "breakpoints_q": list(BREAKPOINTS_Q),
         "coeff_q": {
             "a0": a0_q,
@@ -344,6 +364,7 @@ def silu_out16_balanced_eval_q_debug(x_q: int) -> dict:
         "stage0_real": fixed_to_real(t0_q, STAGE0_FRAC),
         "stage1_mul_q": stage1_mul_q,
         "stage1_mul_real": fixed_to_real(stage1_mul_q, STAGE1_MUL_FRAC),
+        "polynomial_y_q": polynomial_y_q,
         "y_q": y_q,
         "y_real": fixed_to_real(y_q, OUTPUT_FRAC),
     }

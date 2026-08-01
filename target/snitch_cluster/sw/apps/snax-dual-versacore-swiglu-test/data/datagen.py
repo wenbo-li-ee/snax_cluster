@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Data generator for dual VersaCore SwiGLU test
-# Mode 0 (SwiGLU): output = rescale_mul( rescale0(A@W)>>2 * rescale1(A@V) )
+# Mode 0 (SwiGLU): output = rescale_mul( SiLU(rescale0(A@W)) * rescale1(A@V) )
 # Mode 1 (GEMM): D0 = rescale0(A1@W2_left), D1 = rescale1(A1@W2_right)
 
 import numpy as np
@@ -22,6 +22,12 @@ from snax_utils import (  # noqa E402
     block_gemm_golden_model,
     align_wide_addr,
 )  # noqa E402
+
+_silu_pkg = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), "../../../../../../util/silu_pkg")
+)
+sys.path.insert(0, _silu_pkg)
+from silu_out16_balanced_golden import silu_out16_balanced_eval_q  # noqa E402
 
 np.random.seed(42)
 
@@ -46,9 +52,13 @@ def rescale_down_32to16(arr_int32, input_zp, mult, output_zp, shift):
     return np.clip(out, -32768, 32767).astype(np.int16)
 
 
-def arithmetic_right_shift_int16(arr_int16, n):
-    """SiLU placeholder: arithmetic right shift by n on int16."""
-    return (arr_int16.astype(np.int32) >> n).clip(-32768, 32767).astype(np.int16)
+def apply_silu_vectorized(arr_int16):
+    """Apply the bit-true SiLU RTL golden model element-wise."""
+    flat = arr_int16.reshape(-1)
+    result = np.array(
+        [silu_out16_balanced_eval_q(int(x)) for x in flat], dtype=np.int16
+    )
+    return result.reshape(arr_int16.shape)
 
 
 def emit_header_file(**kwargs):
@@ -356,8 +366,8 @@ def emit_dual_versacore_data(**kwargs):
     vc0_int16 = rescale_down_32to16(vc0_int32, rescale_input_zp, rescale_multiplier,
                                      rescale_output_zp, rescale_shift)
 
-    # Step 4: Shifter 6-stage (SiLU placeholder): arithmetic right shift by 2
-    vc0_silu = arithmetic_right_shift_int16(vc0_int16, 2)
+    # Step 4: Bit-true piecewise-polynomial SiLU with out-of-range bypasses
+    vc0_silu = apply_silu_vectorized(vc0_int16)
 
     # Step 5: RescaleDown1 (int32 -> int16) with identity params
     vc1_int16 = rescale_down_32to16(vc1_int32, rescale_input_zp, rescale_multiplier,
