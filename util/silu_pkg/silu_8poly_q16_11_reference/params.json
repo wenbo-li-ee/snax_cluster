@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "name": "silu_8poly_q16_11_candidate",
+  "status": "reference_only_not_integrated",
+  "warning": "Float-optimized candidate. Direct quantization is currently less accurate than the existing six-polynomial fixed-point RTL; run hardware-aware optimization before final integration.",
+  "source": {
+    "fit_output": "/users/students/r1015498/thesis/silu/silu_fit/test_outputs_v2_8poly",
+    "hardware_evaluation": "/users/students/r1015498/thesis/silu/silu_fit/test_outputs_v2_8poly/hardware_q16_11_balanced",
+    "optimizer_final_loss": 2.8166116572520225e-06,
+    "stopped_after_iteration": 24
+  },
+  "partitioning": {
+    "total_regions": 10,
+    "polynomial_segments": 8,
+    "polynomial_degree": 2,
+    "polynomial_interval": [-8.0, 6.0],
+    "left_bypass": "x < -8 -> y = 0",
+    "right_bypass": "x > 6 -> y = x",
+    "segment_id_width": 3,
+    "below_fit_range_width": 1,
+    "above_fit_range_width": 1,
+    "interval_convention": "left-closed/right-open for segments 0 through 6; segment 7 includes x=6; bypass comparisons are strict"
+  },
+  "formats": {
+    "input": {"width": 16, "frac": 11},
+    "breakpoint": {"width": 16, "frac": 11},
+    "output": {"width": 16, "frac": 11},
+    "a0": {"width": 30, "frac": 22},
+    "a1": {"width": 22, "frac": 16},
+    "a2": {"width": 18, "frac": 14},
+    "stage0_output": {"width": 14, "frac": 12},
+    "stage1_multiply": {"width": 15, "frac": 11},
+    "rounding": "arithmetic_shift_truncation",
+    "overflow": "saturate"
+  },
+  "fixed_shifts": {
+    "stage0_product_right_shift": 13,
+    "stage0_a1_right_shift": 4,
+    "stage1_product_right_shift": 12,
+    "stage1_a0_right_shift": 11
+  },
+  "float_breakpoints": [
+    -8.0,
+    -6.241610247760381,
+    -4.501760815501237,
+    -2.0045867117091207,
+    -0.9529750779853431,
+    0.9463931250502647,
+    1.9923392396152,
+    4.221166155292254,
+    6.0
+  ],
+  "quantized_breakpoints": [
+    -16384,
+    -12782,
+    -9219,
+    -4105,
+    -1951,
+    1938,
+    4080,
+    8644,
+    12288
+  ],
+  "quantized_breakpoints_as_real": [
+    -8.0,
+    -6.2412109375,
+    -4.50146484375,
+    -2.00439453125,
+    -0.95263671875,
+    0.9462890625,
+    1.9921875,
+    4.220703125,
+    6.0
+  ],
+  "coefficient_order": ["a0", "a1", "a2"],
+  "segments": [
+    {
+      "index": 0,
+      "nominal_range": [-8.0, -6.241610247760381],
+      "float_coefficients": [-0.16358772696989893, -0.03908649709423273, -0.0023751750239273195],
+      "quantized_coefficients": [-686136, -2561, -38],
+      "prealigned_addends": {"a1_q_frac12": -161, "a0_q_frac11": -336}
+    },
+    {
+      "index": 1,
+      "nominal_range": [-6.241610247760381, -4.501760815501237],
+      "float_coefficients": [-0.36699717872465915, -0.10599168592692479, -0.007872866902518092],
+      "quantized_coefficients": [-1539297, -6946, -128],
+      "prealigned_addends": {"a1_q_frac12": -435, "a0_q_frac11": -752}
+    },
+    {
+      "index": 2,
+      "nominal_range": [-4.501760815501237, -2.0045867117091207],
+      "float_coefficients": [-0.5127903586232336, -0.1642100782061348, -0.013562546478751833],
+      "quantized_coefficients": [-2150798, -10761, -222],
+      "prealigned_addends": {"a1_q_frac12": -673, "a0_q_frac11": -1051}
+    },
+    {
+      "index": 3,
+      "nominal_range": [-2.0045867117091207, -0.9529750779853431],
+      "float_coefficients": [-0.12307855997337594, 0.22720752142012926, 0.08431831076332255],
+      "quantized_coefficients": [-516228, 14890, 1381],
+      "prealigned_addends": {"a1_q_frac12": 930, "a0_q_frac11": -253}
+    },
+    {
+      "index": 4,
+      "nominal_range": [-0.9529750779853431, 0.9463931250502647],
+      "float_coefficients": [0.003226391371477173, 0.5000543379872285, 0.22688265637482724],
+      "quantized_coefficients": [13532, 32771, 3717],
+      "prealigned_addends": {"a1_q_frac12": 2048, "a0_q_frac11": 6}
+    },
+    {
+      "index": 5,
+      "nominal_range": [0.9463931250502647, 1.9923392396152],
+      "float_coefficients": [-0.12078842721798222, 0.7694023971869329, 0.08549851176343137],
+      "quantized_coefficients": [-506623, 50423, 1400],
+      "prealigned_addends": {"a1_q_frac12": 3151, "a0_q_frac11": -248}
+    },
+    {
+      "index": 6,
+      "nominal_range": [1.9923392396152, 4.221166155292254],
+      "float_coefficients": [-0.5049593143872828, 1.1586231063929076, -0.012617920084561014],
+      "quantized_coefficients": [-2117952, 75931, -206],
+      "prealigned_addends": {"a1_q_frac12": 4745, "a0_q_frac11": -1035}
+    },
+    {
+      "index": 7,
+      "nominal_range": [4.221166155292254, 6.0],
+      "float_coefficients": [-0.4223134773945434, 1.1277508669346474, -0.00999484759806591],
+      "quantized_coefficients": [-1771311, 73908, -163],
+      "prealigned_addends": {"a1_q_frac12": 4619, "a0_q_frac11": -865}
+    }
+  ],
+  "metrics": {
+    "float_dense_65536": {
+      "mse": 2.816636434039502e-06,
+      "mae": 0.0012193001901888332,
+      "max_abs_error": 0.003750569058497133
+    },
+    "fixed_point_inner_interval_65536": {
+      "mse": 7.376766058255559e-06,
+      "mae": 0.00224846330025059,
+      "max_abs_error": 0.006383613627418027,
+      "total_overflow_count": 0,
+      "total_saturation_count": 0
+    }
+  }
+}

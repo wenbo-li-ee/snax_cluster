@@ -12,15 +12,10 @@ module horner_stage #(
   parameter int OUT_WIDTH    = 16,
   parameter int OUT_FRAC     = 8
 ) (
-  input  logic                           clk,
-  input  logic                           rst_n,
-  input  logic                           ce,
   input  logic signed [OP_A_WIDTH-1:0]   op_a_in,
   input  logic signed [OP_B_WIDTH-1:0]   op_b_in,
   input  logic signed [ADDEND_WIDTH-1:0] addend_in,
-  input  logic                           valid_in,
-  output logic signed [OUT_WIDTH-1:0]    out_q,
-  output logic                           valid_out
+  output logic signed [OUT_WIDTH-1:0]    out_q
 );
 
   import silu_out16_balanced_pkg::*;
@@ -51,7 +46,6 @@ module horner_stage #(
   logic signed [ADD_WIDTH-1:0]         add_sat_int;
   logic signed [OUT_ALIGN_WIDTH-1:0]   out_aligned_int;
   logic signed [OUT_WIDTH-1:0]         out_sat_int;
-  logic signed [OUT_WIDTH-1:0] out_next;
 
   function automatic logic signed [MUL_ALIGN_WIDTH-1:0] align_mul_product(
     input logic signed [MUL_FULL_WIDTH-1:0] value
@@ -189,17 +183,7 @@ module horner_stage #(
     add_sat_int        = saturate_add(raw_sum_int);
     out_aligned_int    = align_output_frac(add_sat_int);
     out_sat_int        = saturate_out(out_aligned_int);
-    out_next           = out_sat_int;
-  end
-
-  always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      out_q     <= '0;
-      valid_out <= 1'b0;
-    end else if (ce) begin
-      out_q     <= out_next;
-      valid_out <= valid_in;
-    end
+    out_q              = out_sat_int;
   end
 
 endmodule

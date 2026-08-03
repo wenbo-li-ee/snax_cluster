@@ -3,7 +3,7 @@ package silu_out16_balanced_pkg;
   localparam int NUM_SEGMENTS = 6;
   localparam int NUM_BREAKPOINTS = 7;
   localparam int SEG_IDX_WIDTH = 3;
-  localparam int PIPELINE_LATENCY = 3;
+  localparam int PIPELINE_LATENCY = 1;
 
   localparam int INPUT_WIDTH = 16;
   localparam int INPUT_FRAC  = 11;
