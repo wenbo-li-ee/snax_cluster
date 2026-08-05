@@ -7,12 +7,12 @@ This directory is the handoff point for the candidate SiLU configuration with:
 - right bypass `x > 6 -> y = x`
 - ten total regions
 
-Status: **reference only; not integrated into the current six-segment RTL**.
+Status: **integrated into the SWIGLU RTL with a single output register stage**.
 
-The float breakpoint optimization improves the float-domain MSE, but direct
-quantization to the current narrow Horner datapath is not yet better than the
-existing six-polynomial configuration. Run hardware-aware re-optimization before
-selecting this candidate as the final RTL implementation.
+The float breakpoint optimization improves the float-domain MSE. Direct
+quantization to the current narrow Horner datapath is less accurate than the
+previous six-polynomial configuration, but this candidate is now the selected
+SWIGLU RTL implementation.
 
 The canonical machine-readable values are in [params.json](params.json).
 
@@ -127,8 +127,6 @@ overflow count  = 0
 saturation count = 0
 ```
 
-The current six-polynomial configuration remains the better fixed-point result
-under this datapath. This eight-polynomial candidate should therefore be used as
-the starting point for an eight-segment hardware-aware optimization, not as a
-drop-in replacement package.
-
+The previous six-polynomial configuration had the better fixed-point result
+under this datapath. The integrated eight-polynomial coefficients can still be
+improved later with hardware-aware re-optimization.

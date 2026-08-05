@@ -44,7 +44,7 @@ The segment coefficients and breakpoints match:
 
 - `silu_out16_balanced_pkg.sv`
 
-The six fitted polynomials cover the closed interval [-8, 6]. Inputs below
+The eight fitted polynomials cover the closed interval [-8, 6]. Inputs below
 -8 bypass to zero, while inputs above 6 bypass the polynomial and return the
 input code unchanged.
 
@@ -85,8 +85,8 @@ from __future__ import annotations
 # Top-level fixed-point format constants
 # ---------------------------------------------------------------------------
 
-NUM_SEGMENTS = 6
-NUM_BREAKPOINTS = 7
+NUM_SEGMENTS = 8
+NUM_BREAKPOINTS = 9
 
 INPUT_WIDTH = 16
 INPUT_FRAC = 11
@@ -121,39 +121,47 @@ STAGE1_MUL_FRAC = 11
 
 BREAKPOINTS_Q = [
     -16384,
-    -11230,
-    -4126,
-    -1945,
-    1932,
-    4061,
+    -12782,
+    -9219,
+    -4105,
+    -1951,
+    1938,
+    4080,
+    8644,
     12288,
 ]
 
 SEG_A0_Q = [
-    -877179,
-    -2166905,
-    -518345,
-    13417,
-    -501092,
-    -2146849,
+    -686136,
+    -1539297,
+    -2150798,
+    -516228,
+    13532,
+    -506623,
+    -2117952,
+    -1771311,
 ]
 
 SEG_A1_Q = [
-    -3415,
-    -10937,
-    14823,
+    -2561,
+    -6946,
+    -10761,
+    14890,
     32771,
-    50290,
-    76289,
+    50423,
+    75931,
+    73908,
 ]
 
 SEG_A2_Q = [
-    -54,
-    -229,
-    1374,
-    3718,
-    1412,
-    -223,
+    -38,
+    -128,
+    -222,
+    1381,
+    3717,
+    1400,
+    -206,
+    -163,
 ]
 
 
@@ -223,13 +231,13 @@ def segment_index_from_x(x_q: int) -> int:
 
     This matches the tree structure used in the existing SV package.
     """
-    if x_q < BREAKPOINTS_Q[3]:
+    if x_q < BREAKPOINTS_Q[4]:
         if x_q < BREAKPOINTS_Q[2]:
             return 0 if x_q < BREAKPOINTS_Q[1] else 1
-        return 2
-    if x_q < BREAKPOINTS_Q[5]:
-        return 3 if x_q < BREAKPOINTS_Q[4] else 4
-    return 5
+        return 2 if x_q < BREAKPOINTS_Q[3] else 3
+    if x_q < BREAKPOINTS_Q[6]:
+        return 4 if x_q < BREAKPOINTS_Q[5] else 5
+    return 6 if x_q < BREAKPOINTS_Q[7] else 7
 
 
 # ---------------------------------------------------------------------------

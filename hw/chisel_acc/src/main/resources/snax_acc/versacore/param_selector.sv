@@ -34,10 +34,20 @@ module param_selector (
         a1_q = SEG_A1_Q[4];
         a2_q = SEG_A2_Q[4];
       end
-      default: begin
+      seg_idx_t'(5): begin
         a0_q = SEG_A0_Q[5];
         a1_q = SEG_A1_Q[5];
         a2_q = SEG_A2_Q[5];
+      end
+      seg_idx_t'(6): begin
+        a0_q = SEG_A0_Q[6];
+        a1_q = SEG_A1_Q[6];
+        a2_q = SEG_A2_Q[6];
+      end
+      default: begin
+        a0_q = SEG_A0_Q[7];
+        a1_q = SEG_A1_Q[7];
+        a2_q = SEG_A2_Q[7];
       end
     endcase
   end

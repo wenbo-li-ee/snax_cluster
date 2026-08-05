@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "name": "silu_8poly_q16_11_candidate",
-  "status": "reference_only_not_integrated",
-  "warning": "Float-optimized candidate. Direct quantization is currently less accurate than the existing six-polynomial fixed-point RTL; run hardware-aware optimization before final integration.",
+  "status": "integrated_in_swiglu_rtl",
+  "warning": "Direct quantization is less accurate than the previous six-polynomial fixed-point RTL; hardware-aware re-optimization may improve it.",
   "source": {
     "fit_output": "/users/students/r1015498/thesis/silu/silu_fit/test_outputs_v2_8poly",
     "hardware_evaluation": "/users/students/r1015498/thesis/silu/silu_fit/test_outputs_v2_8poly/hardware_q16_11_balanced",

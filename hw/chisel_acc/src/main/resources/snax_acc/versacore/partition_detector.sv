@@ -8,7 +8,7 @@ module partition_detector (
   import silu_out16_balanced_pkg::*;
 
   always_comb begin
-    // Eight total partitions: two bypass regions surrounding the six fitted
+    // Ten total regions: two bypass regions surrounding the eight fitted
     // polynomial segments.  The boundary points themselves remain in the
     // fitted range, so only strict comparisons select a bypass partition.
     below_fit_range_out = (x_in < BREAKPOINTS_Q[0]);

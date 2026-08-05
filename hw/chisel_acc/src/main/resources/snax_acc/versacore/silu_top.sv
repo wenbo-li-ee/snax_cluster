@@ -77,7 +77,7 @@ module silu_top (
     .out_q     (polynomial_comb)
   );
 
-  // The six fitted polynomials cover the closed interval [-8, 6].  Outside
+  // The eight fitted polynomials cover the closed interval [-8, 6].  Outside
   // that interval, select the intended SiLU asymptote before the output flop.
   always_comb begin
     if (below_fit_range_comb) begin

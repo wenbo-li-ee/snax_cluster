@@ -1,7 +1,7 @@
 package silu_out16_balanced_pkg;
 
-  localparam int NUM_SEGMENTS = 6;
-  localparam int NUM_BREAKPOINTS = 7;
+  localparam int NUM_SEGMENTS = 8;
+  localparam int NUM_BREAKPOINTS = 9;
   localparam int SEG_IDX_WIDTH = 3;
   localparam int PIPELINE_LATENCY = 1;
 
@@ -36,54 +36,64 @@ package silu_out16_balanced_pkg;
 
   localparam breakpoint_t BREAKPOINTS_Q[NUM_BREAKPOINTS] = '{
     -16'sd16384,
-    -16'sd11230,
-    -16'sd4126,
-    -16'sd1945,
-     16'sd1932,
-     16'sd4061,
+    -16'sd12782,
+    -16'sd9219,
+    -16'sd4105,
+    -16'sd1951,
+     16'sd1938,
+     16'sd4080,
+     16'sd8644,
      16'sd12288
   };
 
   localparam a0_t SEG_A0_Q[NUM_SEGMENTS] = '{
-    -30'sd877179,
-    -30'sd2166905,
-    -30'sd518345,
-     30'sd13417,
-    -30'sd501092,
-    -30'sd2146849
+    -30'sd686136,
+    -30'sd1539297,
+    -30'sd2150798,
+    -30'sd516228,
+     30'sd13532,
+    -30'sd506623,
+    -30'sd2117952,
+    -30'sd1771311
   };
 
   localparam a1_t SEG_A1_Q[NUM_SEGMENTS] = '{
-    -22'sd3415,
-    -22'sd10937,
-     22'sd14823,
+    -22'sd2561,
+    -22'sd6946,
+    -22'sd10761,
+     22'sd14890,
      22'sd32771,
-     22'sd50290,
-     22'sd76289
+     22'sd50423,
+     22'sd75931,
+     22'sd73908
   };
 
   localparam a2_t SEG_A2_Q[NUM_SEGMENTS] = '{
-    -18'sd54,
-    -18'sd229,
-     18'sd1374,
-     18'sd3718,
-     18'sd1412,
-    -18'sd223
+    -18'sd38,
+    -18'sd128,
+    -18'sd222,
+     18'sd1381,
+     18'sd3717,
+     18'sd1400,
+    -18'sd206,
+    -18'sd163
   };
 
   function automatic seg_idx_t segment_index_from_x(input input_t x_q);
     begin
-      if (x_q < BREAKPOINTS_Q[3]) begin
+      // Three-level balanced decision tree for the seven internal boundaries.
+      // Equality selects the segment that starts at the boundary.
+      if (x_q < BREAKPOINTS_Q[4]) begin
         if (x_q < BREAKPOINTS_Q[2]) begin
           segment_index_from_x = (x_q < BREAKPOINTS_Q[1]) ? seg_idx_t'(0) : seg_idx_t'(1);
         end else begin
-          segment_index_from_x = seg_idx_t'(2);
+          segment_index_from_x = (x_q < BREAKPOINTS_Q[3]) ? seg_idx_t'(2) : seg_idx_t'(3);
         end
       end else begin
-        if (x_q < BREAKPOINTS_Q[5]) begin
-          segment_index_from_x = (x_q < BREAKPOINTS_Q[4]) ? seg_idx_t'(3) : seg_idx_t'(4);
+        if (x_q < BREAKPOINTS_Q[6]) begin
+          segment_index_from_x = (x_q < BREAKPOINTS_Q[5]) ? seg_idx_t'(4) : seg_idx_t'(5);
         end else begin
-          segment_index_from_x = seg_idx_t'(5);
+          segment_index_from_x = (x_q < BREAKPOINTS_Q[7]) ? seg_idx_t'(6) : seg_idx_t'(7);
         end
       end
     end
